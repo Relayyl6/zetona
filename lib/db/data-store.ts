@@ -1,12 +1,13 @@
 import fs from "fs";
 import path from "path";
 import { neon } from "@neondatabase/serverless";
-import { PhotoDTO, CollectionDTO, SiteSettingsDTO, mockPhotos, mockCollections, mockSettings } from "./queries";
+import { PhotoDTO, CollectionDTO, SiteSettingsDTO, TestimonialDTO, mockPhotos, mockCollections, mockSettings, mockTestimonials } from "./queries";
 
 interface SiteData {
   settings: SiteSettingsDTO;
   photos: PhotoDTO[];
   collections: CollectionDTO[];
+  testimonials?: TestimonialDTO[];
 }
 
 const DATA_DIR = path.join(process.cwd(), "data");
@@ -637,6 +638,100 @@ export async function toggleEnquiryHandled(id: string): Promise<boolean> {
       item.handledAt = item.handledAt ? null : new Date().toISOString();
       persistFile(data);
     }
+  }
+  return true;
+}
+
+// ──────────────── TESTIMONIALS ────────────────
+
+export async function getAllTestimonials(): Promise<TestimonialDTO[]> {
+  const sql = getNeonSql();
+  if (sql) {
+    try {
+      const rows = await sql`
+        SELECT * FROM testimonials 
+        WHERE visible = true 
+        ORDER BY sort_order ASC, created_at ASC;
+      `;
+      if (rows && rows.length > 0) {
+        return rows.map((r: any) => ({
+          id: r.id,
+          author: r.author,
+          role: r.role || null,
+          location: r.location || null,
+          quote: r.quote,
+          sortOrder: r.sort_order ?? 0,
+          visible: Boolean(r.visible),
+        }));
+      }
+    } catch (err) {
+      console.warn("Neon get testimonials failed, using local store:", err);
+    }
+  }
+
+  const data = ensureDataFile() as any;
+  if (data.testimonials && Array.isArray(data.testimonials) && data.testimonials.length > 0) {
+    return data.testimonials.filter((t: any) => t.visible !== false);
+  }
+  return mockTestimonials;
+}
+
+export async function saveTestimonial(item: TestimonialDTO): Promise<TestimonialDTO> {
+  const sql = getNeonSql();
+  if (sql) {
+    try {
+      await sql`
+        INSERT INTO testimonials (id, author, role, location, quote, sort_order, visible, updated_at)
+        VALUES (
+          ${item.id},
+          ${item.author},
+          ${item.role || null},
+          ${item.location || null},
+          ${item.quote},
+          ${item.sortOrder ?? 0},
+          ${item.visible !== false},
+          NOW()
+        )
+        ON CONFLICT (id) DO UPDATE SET
+          author = EXCLUDED.author,
+          role = EXCLUDED.role,
+          location = EXCLUDED.location,
+          quote = EXCLUDED.quote,
+          sort_order = EXCLUDED.sort_order,
+          visible = EXCLUDED.visible,
+          updated_at = NOW();
+      `;
+    } catch (err) {
+      console.warn("Neon save testimonial failed:", err);
+    }
+  }
+
+  const data = ensureDataFile() as any;
+  if (!data.testimonials) data.testimonials = [...mockTestimonials];
+  const idx = data.testimonials.findIndex((t: any) => t.id === item.id);
+  if (idx >= 0) {
+    data.testimonials[idx] = { ...data.testimonials[idx], ...item };
+  } else {
+    data.testimonials.push(item);
+  }
+  persistFile(data);
+  return item;
+}
+
+export async function deleteTestimonial(id: string): Promise<boolean> {
+  const sql = getNeonSql();
+  if (sql) {
+    try {
+      await sql`DELETE FROM testimonials WHERE id = ${id};`;
+    } catch (err) {
+      console.warn("Neon delete testimonial failed:", err);
+    }
+  }
+
+  const data = ensureDataFile() as any;
+  if (data.testimonials) {
+    data.testimonials = data.testimonials.filter((t: any) => t.id !== id);
+    persistFile(data);
   }
   return true;
 }

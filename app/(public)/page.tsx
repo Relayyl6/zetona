@@ -6,7 +6,7 @@ import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { ScrollLitText } from "@/components/motion/ScrollLitText";
 import { Reveal } from "@/components/motion/Reveal";
 import { mockPhotos, mockCollections } from "@/lib/db/queries";
-import { getSiteSettings, getAllPhotos, getAllCollections } from "@/lib/db/data-store";
+import { getSiteSettings, getAllPhotos, getAllCollections, getAllTestimonials } from "@/lib/db/data-store";
 import { siteConfig } from "@/lib/site-config";
 import { buildLocalBusinessJsonLd } from "@/lib/seo/jsonld";
 import type { Metadata } from "next";
@@ -27,10 +27,11 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [settings, photos, collections] = await Promise.all([
+  const [settings, photos, collections, testimonials] = await Promise.all([
     getSiteSettings(),
     getAllPhotos(),
     getAllCollections(),
+    getAllTestimonials(),
   ]);
   const featuredPhotos = photos.filter((p) => p.featuredHome);
   const jsonLd = buildLocalBusinessJsonLd();
@@ -154,8 +155,8 @@ export default async function HomePage() {
         {/* 4. Interactive Hover-Reveal Sessions List (Conditioned on settings.showAwards) */}
         {settings.showAwards && <FeaturedEditorialList items={sessionListItems} />}
 
-        {/* 5. Cinematic Testimonials Section with Client Avatars (Conditioned on settings.showTestimonials) */}
-        {settings.showTestimonials && <TestimonialsSection />}
+        {/* 5. Cinematic Testimonials Section with Client Monograms (Conditioned on settings.showTestimonials) */}
+        {settings.showTestimonials && <TestimonialsSection testimonials={testimonials} />}
 
         {/* 6. Last Section: Selected Work Incorporating the Filmstrip Carousel (Image 3) */}
         <FilmstripSelector

@@ -58,6 +58,9 @@ export default async function AdminLayout({
                 </span>
               )}
             </Link>
+            <Link href="/admin/settings#testimonials" className="hover:text-[var(--fg)] transition-colors">
+              Testimonials
+            </Link>
             <Link href="/admin/settings" className="hover:text-[var(--fg)] transition-colors">
               Settings
             </Link>

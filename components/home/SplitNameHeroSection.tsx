@@ -81,10 +81,10 @@ export function SplitNameHeroSection({ photos }: SplitNameHeroSectionProps) {
                   <m.div
                     key={activePhoto.id}
                     className="absolute inset-0"
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.6, ease: ease.outExpo }}
+                    initial={{ opacity: 0, scale: 1.05, filter: "blur(6px)" }}
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, filter: "blur(4px)" }}
+                    transition={{ duration: 0.7, ease: ease.outExpo }}
                   >
                     <Image
                       src={getOptimizedSrc(activePhoto.displayKey, 800)}

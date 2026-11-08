@@ -182,19 +182,21 @@ function CollageCard({
         rotate: shouldReduce ? 0 : `${slot.rotate ?? 0}deg`,
         willChange: "transform, opacity",
       }}
-      initial={shouldReduce ? { opacity: 1 } : { opacity: 0, scale: 1.08, y: 20 }}
+      initial={shouldReduce ? { opacity: 1 } : { opacity: 0, scale: 1.08, y: 22, filter: "blur(6px)" }}
       animate={
         shouldReduce
           ? {}
           : {
               opacity: 1,
               scale: 1,
+              filter: "blur(0px)",
               y: [0, -amplitude, 0, amplitude, 0],
             }
       }
       transition={{
-        opacity: { duration: dur.md, ease: ease.outExpo, delay: 0.05 + index * stagger.cards },
-        scale: { duration: dur.md, ease: ease.outExpo },
+        opacity: { duration: dur.lg, ease: ease.outExpo, delay: 0.08 + index * stagger.cards },
+        scale: { duration: dur.lg, ease: ease.outExpo, delay: 0.08 + index * stagger.cards },
+        filter: { duration: dur.lg, ease: ease.outExpo, delay: 0.08 + index * stagger.cards },
         y: {
           repeat: Infinity,
           duration: periodSec,

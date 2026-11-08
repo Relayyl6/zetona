@@ -1,186 +1,158 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import { m, AnimatePresence, useReducedMotion } from "motion/react";
-import { dur, ease } from "@/lib/motion/tokens";
+import { TestimonialDTO, mockTestimonials } from "@/lib/db/queries";
+import { ease } from "@/lib/motion/tokens";
 
-interface TestimonialItem {
-  id: string;
-  quote: string;
-  author: string;
-  role: string;
-  location: string;
-  avatarSrc: string;
+interface TestimonialsSectionProps {
+  testimonials?: TestimonialDTO[];
 }
 
-const TESTIMONIALS: TestimonialItem[] = [
-  {
-    id: "test_01",
-    quote:
-      "Zetona brings a very distinctive eye to every portrait session. What stood out most was the attention to natural light and small, almost unnoticed expressions that ultimately became the strongest images of the shoot. The process was thoughtful, collaborative, and incredibly well considered from beginning to end.",
-    author: "LAURENT SHAHA",
-    role: "Creative Director",
-    location: "Northline Studio",
-    avatarSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=80",
-  },
-  {
-    id: "test_02",
-    quote:
-      "Working with Zetona in Benin City was an extraordinary experience. She has this calm mastery that immediately puts you at ease. The resulting portraits captured an elegance and quiet dignity that went far beyond what we had envisioned for the editorial feature.",
-    author: "OSASERE IGHODARO",
-    role: "Editorial Lead",
-    location: "Edo Contemporary Arts",
-    avatarSrc: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=80",
-  },
-  {
-    id: "test_03",
-    quote:
-      "Every frame felt like fine art. Zetona didn't just document the session; she sculpted atmosphere and contrast with studio light. Our brand campaign was celebrated across Lagos and Accra for its sheer cinematic depth.",
-    author: "CHUKWUEMEKA OBI",
-    role: "Founder & Curator",
-    location: "Atelier V",
-    avatarSrc: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=80",
-  },
-  {
-    id: "test_04",
-    quote:
-      "The precision with lighting and skin tone fidelity is unmatched. She understands the weight of a gaze and the poetry of shadow. We booked two full-day studio sessions and the results were gallery-grade.",
-    author: "AMINAT BELLO",
-    role: "Fashion Stylist",
-    location: "Benin City",
-    avatarSrc: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=160&q=80",
-  },
-  {
-    id: "test_05",
-    quote:
-      "A photographer who truly listens and creates an intimate, refined atmosphere. Our executive portrait suite received unanimous acclaim from our board and clients alike.",
-    author: "KOUAME DIOP",
-    role: "Managing Director",
-    location: "Pan-African Design Hub",
-    avatarSrc: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=160&q=80",
-  },
-  {
-    id: "test_06",
-    quote:
-      "Zetona is a generational talent. The sensitivity she brings to natural form and personal storytelling creates images you hold onto for decades.",
-    author: "EFE OSAZEE",
-    role: "Architect & Collector",
-    location: "Benin City, Nigeria",
-    avatarSrc: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=160&q=80",
-  },
-];
+const TESTIMONIAL_DURATION = 6000; // 6 seconds per testimonial
 
-const TESTIMONIAL_DURATION = 5500; // 5.5 seconds per testimonial
+export function getInitials(name: string): string {
+  if (!name) return "";
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 /**
- * Pattern P7 / P8: Cinematic Testimonials Section with Interactive Avatars and Timed Progression
- * Source: Image 3 (Kristin Watson reference) & docs/DESIGN.md §6.4
+ * Pattern P7 / P8: Cinematic Testimonials Section with Big Typographic Initials Monograms
+ * Bespoke entrance animations, blur-to-sharp crossfades, and admin editable data.
  */
-export function TestimonialsSection() {
+export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [progressKey, setProgressKey] = useState(0);
   const shouldReduce = useReducedMotion();
-  const current = TESTIMONIALS[activeIdx];
+
+  const list = testimonials && testimonials.length > 0 ? testimonials : mockTestimonials;
+  const current = list[activeIdx % list.length];
 
   // Auto-advance timer across testimonials
   React.useEffect(() => {
-    if (shouldReduce || isPaused) return;
+    if (shouldReduce || isPaused || list.length <= 1) return;
 
     const timer = setTimeout(() => {
-      setActiveIdx((prev) => (prev + 1) % TESTIMONIALS.length);
+      setActiveIdx((prev) => (prev + 1) % list.length);
       setProgressKey((k) => k + 1);
     }, TESTIMONIAL_DURATION);
 
     return () => clearTimeout(timer);
-  }, [activeIdx, isPaused, shouldReduce, progressKey]);
+  }, [activeIdx, isPaused, shouldReduce, progressKey, list.length]);
 
   const handleSelect = (idx: number) => {
     setActiveIdx(idx);
     setProgressKey((k) => k + 1);
   };
 
-  return (
-    <section className="relative bg-[var(--bg)] border-t border-[var(--line)] overflow-hidden flex flex-col justify-between py-14 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 select-none">
-      {/* Cinematic subtle ambient light (pure GPU radial gradient, zero blur filter cost) */}
-      <div className="absolute top-0 left-0 right-0 h-40 overflow-hidden pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.05),transparent_70%)]" />
+  if (!list || list.length === 0) return null;
 
-      {/* Main Grid: Label on left, Quote & Avatar controls on right */}
-      <div className="relative z-10 grid lg:grid-cols-12 gap-8 lg:gap-10 items-start max-w-6xl mx-auto w-full my-auto">
+  return (
+    <section className="relative bg-[var(--bg)] border-t border-[var(--line)] overflow-hidden flex flex-col justify-between py-16 sm:py-24 md:py-28 px-4 sm:px-6 md:px-12 select-none">
+      {/* Cinematic subtle atmospheric glow */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] overflow-hidden pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(201,169,110,0.08),rgba(255,255,255,0.02)_40%,transparent_70%)]"
+      />
+
+      {/* Main Grid: Label on left, Quote & Monogram controls on right */}
+      <m.div
+        initial={shouldReduce ? {} : { opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: 0.8, ease: ease.outExpo }}
+        className="relative z-10 grid lg:grid-cols-12 gap-8 lg:gap-12 items-start max-w-6xl mx-auto w-full my-auto"
+      >
         {/* Left Column: • TESTIMONIALS */}
         <div className="lg:col-span-3">
           <span className="font-condensed uppercase tracking-tight text-[var(--fg)] text-xl sm:text-2xl md:text-3xl flex items-center gap-2">
             <span className="text-[var(--accent-text)]">•</span> TESTIMONIALS
           </span>
           <span className="font-mono text-xs text-[var(--fg-dim)] block mt-1.5 sm:mt-2">
-            [ 0{activeIdx + 1} / 0{TESTIMONIALS.length} ]
+            [ 0{((activeIdx) % list.length) + 1} / 0{list.length} ]
           </span>
           <div className="mt-3 sm:mt-4 flex items-center gap-2 text-[11px] font-mono text-[var(--fg-dim)]">
-            <span className={`w-1.5 h-1.5 rounded-full ${isPaused ? "bg-amber-400" : "bg-[var(--accent)] animate-pulse"}`} />
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${isPaused ? "bg-amber-400" : "bg-[var(--accent)] animate-pulse"}`}
+            />
             <span>{isPaused ? "Paused" : "Auto-playing"}</span>
           </div>
         </div>
 
-        {/* Right Column: Quote + Author + Avatars in Opaque Composite Container */}
+        {/* Right Column: Quote + Author + Big Initials Monograms */}
         <div className="lg:col-span-9">
           <div
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="bg-[#101010] border border-white/10 p-5 sm:p-8 md:p-12 rounded-2xl shadow-2xl relative transform-gpu"
+            className="bg-[#101010] border border-white/10 p-6 sm:p-10 md:p-14 rounded-2xl shadow-2xl relative transform-gpu"
           >
+            {/* Watermark Quote Icon */}
+            <div
+              aria-hidden="true"
+              className="absolute top-4 right-6 sm:top-6 sm:right-10 text-6xl sm:text-8xl font-serif text-white/[0.04] pointer-events-none select-none font-bold"
+            >
+              “
+            </div>
+
             <AnimatePresence mode="wait">
               <m.div
                 key={current.id}
-                initial={{ opacity: 0, y: shouldReduce ? 0 : 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: shouldReduce ? 0 : -12 }}
-                transition={{ duration: 0.35, ease: ease.outExpo }}
+                initial={shouldReduce ? { opacity: 0 } : { opacity: 0, y: 16, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: -12, filter: "blur(4px)" }}
+                transition={{ duration: 0.45, ease: ease.outExpo }}
               >
+                {/* Author Monogram Badge & Headline */}
+                <div className="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#242424] to-[#121212] border border-[var(--accent)]/40 flex items-center justify-center font-serif text-2xl sm:text-3xl font-bold text-[var(--accent-text)] shadow-xl ring-1 ring-white/10 flex-shrink-0">
+                    {getInitials(current.author)}
+                  </div>
+                  <div>
+                    <h4 className="font-condensed uppercase text-[var(--fg)] text-lg sm:text-xl md:text-2xl tracking-wide">
+                      {current.author}
+                    </h4>
+                    <p className="font-sans text-xs sm:text-sm text-[var(--fg-dim)] mt-0.5">
+                      {current.role}
+                      {current.location ? ` · ${current.location}` : ""}
+                    </p>
+                  </div>
+                </div>
+
                 {/* Quote Text */}
-                <p className="font-sans text-[var(--fg-muted)] text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed mb-6 sm:mb-8">
+                <p className="font-serif italic text-[var(--fg)] text-base sm:text-lg md:text-xl lg:text-2xl leading-relaxed mb-8 sm:mb-12 font-light">
                   &ldquo;{current.quote}&rdquo;
                 </p>
-
-                {/* Author Info */}
-                <div className="mb-6 sm:mb-10">
-                  <h4 className="font-condensed uppercase text-[var(--fg)] text-lg sm:text-xl md:text-2xl tracking-wide">
-                    {current.author}
-                  </h4>
-                  <p className="font-sans text-xs text-[var(--fg-dim)] mt-0.5">
-                    {current.role}, {current.location}
-                  </p>
-                </div>
               </m.div>
             </AnimatePresence>
 
-            {/* Avatar thumbnail row with smooth timing indicators going across */}
-            <div className="pt-5 sm:pt-6 border-t border-white/10 flex items-center gap-2.5 sm:gap-3.5 overflow-x-auto no-scrollbar">
-              {TESTIMONIALS.map((t, idx) => {
-                const isActive = idx === activeIdx;
-                const isPassed = idx < activeIdx;
+            {/* Bottom Row: Big Initials Switcher with Progress Track */}
+            <div className="pt-6 sm:pt-8 border-t border-white/10 flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar pb-1">
+              {list.map((t, idx) => {
+                const isActive = idx === (activeIdx % list.length);
+                const isPassed = idx < (activeIdx % list.length);
+                const initials = getInitials(t.author);
 
                 return (
-                  <button
+                  <m.button
                     key={t.id}
                     onClick={() => handleSelect(idx)}
+                    whileHover={shouldReduce ? {} : { scale: 1.08, y: -2 }}
+                    whileTap={shouldReduce ? {} : { scale: 0.95 }}
                     aria-label={`View testimonial from ${t.author}`}
-                    className="focus:outline-none cursor-pointer flex-shrink-0 flex flex-col items-center gap-2 group"
+                    className="focus:outline-none cursor-pointer flex-shrink-0 flex flex-col items-center gap-2.5 group"
                   >
+                    {/* Big Initials Badge */}
                     <div
-                      className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded overflow-hidden relative transition-all duration-300 ${
+                      className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center font-serif text-base sm:text-lg md:text-xl font-bold tracking-tight transition-all duration-300 ${
                         isActive
-                          ? "ring-2 ring-[var(--accent)] ring-offset-2 ring-offset-black scale-105 brightness-100 shadow-xl"
-                          : "opacity-40 grayscale hover:opacity-80 hover:grayscale-0"
+                          ? "bg-gradient-to-b from-[#252525] to-[#141414] text-[var(--accent-text)] ring-2 ring-[var(--accent)] shadow-[0_0_22px_rgba(201,169,110,0.35)] scale-105 border border-[var(--accent)]/50"
+                          : "bg-white/[0.04] text-white/50 border border-white/10 hover:border-white/30 hover:text-white hover:bg-white/[0.08]"
                       }`}
                     >
-                      <Image
-                        src={t.avatarSrc}
-                        alt={t.author}
-                        fill
-                        className="object-cover"
-                        sizes="48px"
-                      />
+                      {initials}
                     </div>
 
                     {/* Timer progress track going across one avatar to the other */}
@@ -204,13 +176,13 @@ export function TestimonialsSection() {
                         />
                       )}
                     </div>
-                  </button>
+                  </m.button>
                 );
               })}
             </div>
           </div>
         </div>
-      </div>
+      </m.div>
     </section>
   );
 }
