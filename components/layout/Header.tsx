@@ -23,117 +23,129 @@ export function Header({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const menuOpenRef = React.useRef(menuOpen);
-  React.useEffect(() => {
-    menuOpenRef.current = menuOpen;
-  }, [menuOpen]);
-
-  const isHoveredRef = React.useRef(false);
-  const hideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const showTimeRef = React.useRef(0);
+  const [isVisible, setIsVisible] = useState(true);
+  const idleTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const lastScrollYRef = React.useRef(0);
   const { lenis, stop, start } = useLenisScroll();
 
-  const clearHideTimer = React.useCallback(() => {
-    if (hideTimerRef.current) {
-      clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = null;
-    }
-  }, []);
+  // Universal Bulletproof Sticky Headroom Navigation across all devices (Mobile, Tablet, Desktop):
+  // - Immediately slides/pops into view on ANY upward scroll (native scroll, touch swipe, or wheel)
+  // - Stays reliably visible while reading (6s idle timeout)
+  // - Disappears ONLY on intentional downward scroll (> 15px downward delta)
+  // - Always visible at top of page (<= 60px) or when mobile drawer menu is open
+  //
+  // IMPORTANT: menuOpen is read via ref (not in dep array) so that lastY and accumulatedDown
+  // are NEVER reset when the menu opens/closes. The effect only re-runs when lenis initialises.
+  const menuOpenRef = React.useRef(menuOpen);
+  React.useEffect(() => { menuOpenRef.current = menuOpen; }, [menuOpen]);
 
-  const showNavbar = React.useCallback(() => {
-    setIsVisible(true);
-    showTimeRef.current = Date.now();
-    clearHideTimer();
-
-    // Auto-hide after 3.5 seconds of stationary reading unless menu is open or user is hovering
-    hideTimerRef.current = setTimeout(() => {
-      if (!isHoveredRef.current && !menuOpenRef.current) {
-        setIsVisible(false);
-      }
-    }, 3500);
-  }, [clearHideTimer]);
-
-  const hideNavbar = React.useCallback(() => {
-    if (menuOpenRef.current) return;
-    if (isHoveredRef.current) return;
-    // 600ms cooldown: prevent micro-rebound from finger-lift cancelling the reveal
-    if (Date.now() - showTimeRef.current < 600) return;
-
-    clearHideTimer();
-    setIsVisible(false);
-  }, [clearHideTimer]);
-
-  // Bulletproof Headroom Navigation (at ANY point on ANY non-admin route):
-  // - Invisible entirely by default
-  // - Scrolling UP from ANY point (even footer) immediately brings it into view
-  // - Stays visible for 3.5s, then automatically fades away if not hovering or interacting
-  // - Hovering on desktop keeps it pinned indefinitely
-  // - Scrolling DOWN intentionally hides it immediately
   React.useEffect(() => {
+    let idleTimer: NodeJS.Timeout | null = null;
+    // lastY is initialised ONCE on mount and never reset by menu state changes
+    let lastY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
+    let accumulatedDown = 0;
+
     const getScrollY = () =>
       window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
 
-    lastScrollYRef.current = getScrollY();
-    setIsScrolled(lastScrollYRef.current > 20);
+    const showNav = () => {
+      accumulatedDown = 0;
+      setIsVisible(true);
+      if (idleTimer) clearTimeout(idleTimer);
+      // Keep visible for 6 seconds of stationary reading
+      idleTimer = setTimeout(() => {
+        if (!menuOpenRef.current && getScrollY() > 60) {
+          setIsVisible(false);
+        }
+      }, 6000);
+    };
 
-    // 1. Unified Window Scroll listener (covers Lenis, momentum, desktop and mobile)
-    let ticking = false;
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const currentY = getScrollY();
-          setIsScrolled(currentY > 20);
-
-          const delta = currentY - lastScrollYRef.current;
-
-          // Scrolling UP: ANY upward movement (> 3px) brings the nav into view
-          if (delta < -3) {
-            showNavbar();
-          }
-          // Scrolling DOWN: intentional downward movement (> 12px) hides it
-          else if (delta > 12) {
-            hideNavbar();
-          }
-
-          lastScrollYRef.current = currentY;
-          ticking = false;
-        });
-        ticking = true;
+    const hideNav = () => {
+      if (getScrollY() > 60 && !menuOpenRef.current) {
+        if (idleTimer) clearTimeout(idleTimer);
+        setIsVisible(false);
       }
     };
 
-    // 2. Hardware Wheel / Trackpad listener (instantaneous desktop response)
+    // 1. Direct hardware wheel / trackpad listener (immediate desktop intent)
     const onWheel = (e: WheelEvent) => {
-      if (e.deltaY < -2) {
-        // Scrolling up with trackpad or mouse wheel
-        showNavbar();
-      } else if (e.deltaY > 12) {
-        // Scrolling down with trackpad or mouse wheel
-        hideNavbar();
-      }
+      if (getScrollY() <= 60 || menuOpenRef.current) { showNav(); return; }
+      if (e.deltaY < -3) showNav();
+      else if (e.deltaY > 15) hideNav();
     };
 
-    // 3. Hardware Touch listener (instantaneous finger swipe response on mobile)
+    // 2. Mobile touch screen gestures (immediate finger drag response)
     let touchStartY = 0;
     const onTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0]?.clientY || 0;
     };
     const onTouchMove = (e: TouchEvent) => {
+      if (getScrollY() <= 60 || menuOpenRef.current) { showNav(); return; }
       const touchY = e.touches[0]?.clientY || 0;
-      const diff = touchY - touchStartY; // positive = dragging finger down = scrolling UP
-
-      if (diff > 8) {
-        // Swiping down to scroll UP
-        showNavbar();
-        touchStartY = touchY;
-      } else if (diff < -18) {
-        // Swiping up to scroll DOWN
-        hideNavbar();
-        touchStartY = touchY;
-      }
+      const diff = touchY - touchStartY;
+      // Dragging finger DOWN means scrolling UP
+      if (diff > 6) { showNav(); touchStartY = touchY; }
+      // Dragging finger UP means scrolling DOWN
+      else if (diff < -15) { hideNav(); touchStartY = touchY; }
     };
+
+    // 3. Native window scroll listener (guaranteed on 100% of devices, iOS, Android, Desktop)
+    const onScroll = () => {
+      const currentY = getScrollY();
+      setIsScrolled(currentY > 20);
+
+      if (currentY <= 60 || menuOpenRef.current) {
+        showNav();
+        lastY = currentY;
+        accumulatedDown = 0;
+        return;
+      }
+
+      const delta = currentY - lastY;
+
+      // Scrolling UP (delta is negative)
+      if (delta < -2) {
+        showNav();
+      }
+      // Scrolling DOWN: accumulate delta so settling jitter never accidentally hides the navbar
+      else if (delta > 0) {
+        accumulatedDown += delta;
+        if (accumulatedDown > 15) {
+          hideNav();
+          accumulatedDown = 0;
+        }
+      }
+
+      lastY = currentY;
+    };
+
+    // 4. Lenis virtual scroll subscription (desktop Lenis-intercepted scroll events)
+    //    This covers the gap where Lenis handles smooth scroll but native window.scroll
+    //    fires less frequently or with a slight lag.
+    let lenisScrollHandler: ((e: { scroll: number }) => void) | null = null;
+    if (lenis) {
+      lenisScrollHandler = ({ scroll }: { scroll: number }) => {
+        setIsScrolled(scroll > 20);
+        if (scroll <= 60 || menuOpenRef.current) {
+          showNav();
+          lastY = scroll;
+          accumulatedDown = 0;
+          return;
+        }
+        const delta = scroll - lastY;
+        if (delta < -2) {
+          showNav();
+        } else if (delta > 0) {
+          accumulatedDown += delta;
+          if (accumulatedDown > 15) {
+            hideNav();
+            accumulatedDown = 0;
+          }
+        }
+        lastY = scroll;
+      };
+      lenis.on("scroll", lenisScrollHandler);
+    }
 
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("wheel", onWheel, { passive: true });
@@ -145,9 +157,11 @@ export function Header({
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
-      clearHideTimer();
+      if (lenisScrollHandler && lenis) lenis.off("scroll", lenisScrollHandler);
+      if (idleTimer) clearTimeout(idleTimer);
     };
-  }, [clearHideTimer, hideNavbar, showNavbar]);
+    // Re-run only when lenis instance becomes available; menuOpen is tracked via ref
+  }, [lenis]);
 
   // Lock body scroll when full-screen menu is open
   React.useEffect(() => {
@@ -188,23 +202,6 @@ export function Header({
     start();
   };
 
-  const handleMouseEnter = () => {
-    isHoveredRef.current = true;
-    clearHideTimer();
-  };
-
-  const handleMouseLeave = () => {
-    isHoveredRef.current = false;
-    if (!menuOpenRef.current) {
-      clearHideTimer();
-      hideTimerRef.current = setTimeout(() => {
-        if (!isHoveredRef.current && !menuOpenRef.current) {
-          setIsVisible(false);
-        }
-      }, 2500);
-    }
-  };
-
   return (
     <>
       {/* ──────────────── TOP BAR (STICKY ATOP WITH ELEGANT FADING & FAST HEADROOM) ──────────────── */}
@@ -215,15 +212,17 @@ export function Header({
           y: isVisible ? 0 : -35,
         }}
         transition={{
-          duration: 0.25,
+          duration: 0.2,
           ease: [0.16, 1, 0.3, 1],
         }}
         style={{
           pointerEvents: isVisible ? "auto" : "none",
         }}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 py-3 sm:py-4 bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/10 shadow-2xl flex items-center justify-between"
+        className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 transition-[background-color,border-color,padding] duration-200 flex items-center justify-between ${
+          isScrolled
+            ? "py-3 bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/10 shadow-2xl"
+            : "py-4 sm:py-5 md:py-6 bg-transparent"
+        }`}
       >
         {/* Wordmark */}
         <Link
