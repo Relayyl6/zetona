@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+
+  /* Colors per docs/DESIGN.md §3.1 */
+  --bg: #0A0A0A;
+  --bg-raised: #161616;
+  --bg-elevated: #1F1F1F;
+  --line: rgba(246, 242, 230, 0.14);
+  --line-strong: rgba(246, 242, 230, 0.32);
+  --fg: #F6F2E6;
+  --fg-muted: rgba(246, 242, 230, 0.62);
+  --fg-dim: rgba(246, 242, 230, 0.34);
+  
+  /* Brand Accent: Cobalt (client approved Blue) */
+  --accent: #2B59FF;
+  --accent-text: #7B97FF;
+  --accent-soft: rgba(43, 89, 255, 0.16);
+  --accent-deep: #1237C9;
+  
+  --danger: #FF5D5D;
+  --success: #4FD18B;
+
+  /* Fluid typography */
+  --fs-mega: clamp(4.5rem, 17vw, 18rem);
+  --fs-hero: clamp(2.75rem, 7.2vw, 8rem);
+  --fs-h1: clamp(2.25rem, 5vw, 5.5rem);
+  --fs-h2: clamp(1.75rem, 3.2vw, 3.5rem);
+  --fs-h3: clamp(1.25rem, 1.8vw, 1.75rem);
+  --fs-lead: clamp(1.25rem, 2.1vw, 2.25rem);
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-micro: 0.6875rem;
+
+  /* Typography roles per docs/DESIGN.md §3.2 */
+  --font-serif: "Instrument Serif", "Cormorant Garamond", Georgia, serif;
+  --font-condensed: "Anton", "Bebas Neue", "Big Shoulders Display", sans-serif;
+  --font-sans: "Inter Tight", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+[data-motion="reduced"] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+::selection {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
