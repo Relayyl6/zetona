@@ -56,7 +56,10 @@ html {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  /* overflow-x: clip instead of hidden — "hidden" creates a scroll container
+     which silently kills position:sticky on ALL descendants. "clip" prevents
+     horizontal overflow without creating a scroll container. */
+  overflow-x: clip;
   max-width: 100vw;
   width: 100%;
 }
@@ -65,7 +68,7 @@ body {
   background-color: var(--bg);
   color: var(--fg);
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip; /* same fix: clip ≠ scroll-container, sticky works */
   max-width: 100vw;
   width: 100%;
   position: relative;
