@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { siteConfig } from "@/lib/site-config";
 import { ADMIN_COOKIE_NAME, verifyAdminSessionToken } from "@/lib/auth/admin-auth";
 import { getAllEnquiries } from "@/lib/db/data-store";
-import { AdminDesktopNav, AdminMobileSubNav, AdminBottomNav } from "@/components/admin/AdminNav";
+import { AdminDesktopNav, AdminMobileSubNav } from "@/components/admin/AdminNav";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -67,17 +67,14 @@ export default async function AdminLayout({
           </div>
         </div>
 
-        {/* Mobile secondary navigation strip: Photos, Collections, Messages, Testimonials, Settings */}
+        {/* Mobile top navigation pill strip (Photos, Collections, Messages, Testimonials, Settings) */}
         <AdminMobileSubNav initialCount={unhandledCount} />
       </header>
 
-      {/* Main content */}
-      <main className="flex-1 p-6 md:p-10 max-w-7xl w-full mx-auto pb-24 md:pb-12">
+      {/* Main content - clean single-header navigation without bottom bar */}
+      <main className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl w-full mx-auto pb-12">
         {children}
       </main>
-
-      {/* Mobile bottom navigation bar */}
-      <AdminBottomNav initialCount={unhandledCount} />
     </div>
   );
 }

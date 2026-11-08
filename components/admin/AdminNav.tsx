@@ -47,35 +47,63 @@ export function useUnhandledCount(initialCount = 0) {
 }
 
 /**
+ * Helper hook to track URL hash changes for distinguishing #testimonials vs /admin/settings.
+ */
+function useUrlHash() {
+  const [hash, setHash] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setHash(window.location.hash);
+
+    const onHashChange = () => setHash(window.location.hash);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  return [hash, setHash] as const;
+}
+
+/**
  * Desktop navigation bar (Photos, Collections, Messages, Testimonials, Settings)
  * Rendered in the top header on md+ screens.
  */
 export function AdminDesktopNav({ initialCount = 0 }: { initialCount?: number }) {
   const pathname = usePathname();
   const unhandledCount = useUnhandledCount(initialCount);
+  const [hash, setHash] = useUrlHash();
+
+  const isPhotos = pathname === "/admin" || pathname.startsWith("/admin/photos");
+  const isCollections = pathname.startsWith("/admin/collections");
+  const isEnquiries = pathname.startsWith("/admin/enquiries");
+  const isTestimonials = pathname.startsWith("/admin/settings") && hash === "#testimonials";
+  const isSettings = pathname === "/admin/settings" && hash !== "#testimonials";
 
   return (
     <nav className="hidden md:flex items-center gap-6 text-sm text-[var(--fg-muted)]">
       <Link
         href="/admin"
+        onClick={() => setHash("")}
         className={`hover:text-[var(--fg)] transition-colors ${
-          pathname === "/admin" ? "text-[var(--fg)] font-semibold" : ""
+          isPhotos ? "text-[var(--fg)] font-semibold" : ""
         }`}
       >
         Photos
       </Link>
       <Link
         href="/admin/collections"
+        onClick={() => setHash("")}
         className={`hover:text-[var(--fg)] transition-colors ${
-          pathname.startsWith("/admin/collections") ? "text-[var(--fg)] font-semibold" : ""
+          isCollections ? "text-[var(--fg)] font-semibold" : ""
         }`}
       >
         Collections
       </Link>
       <Link
         href="/admin/enquiries"
+        onClick={() => setHash("")}
         className={`hover:text-[var(--fg)] transition-colors flex items-center gap-1.5 ${
-          pathname.startsWith("/admin/enquiries") ? "text-[var(--fg)] font-semibold" : ""
+          isEnquiries ? "text-[var(--fg)] font-semibold" : ""
         }`}
       >
         <span>Messages</span>
@@ -87,16 +115,18 @@ export function AdminDesktopNav({ initialCount = 0 }: { initialCount?: number })
       </Link>
       <Link
         href="/admin/settings#testimonials"
+        onClick={() => setHash("#testimonials")}
         className={`hover:text-[var(--fg)] transition-colors ${
-          pathname.startsWith("/admin/settings") ? "text-[var(--fg)]" : ""
+          isTestimonials ? "text-[var(--accent-text)] font-semibold" : ""
         }`}
       >
         Testimonials
       </Link>
       <Link
         href="/admin/settings"
+        onClick={() => setHash("")}
         className={`hover:text-[var(--fg)] transition-colors ${
-          pathname === "/admin/settings" ? "text-[var(--fg)] font-semibold" : ""
+          isSettings ? "text-[var(--fg)] font-semibold" : ""
         }`}
       >
         Settings
@@ -107,50 +137,63 @@ export function AdminDesktopNav({ initialCount = 0 }: { initialCount?: number })
 
 /**
  * Mobile secondary top navigation bar.
- * Persistently visible on mobile so Photos, Collections, Messages, Testimonials, Settings NEVER disappear!
+ * Persistently visible beneath header on mobile so Photos, Collections, Messages, Testimonials, Settings NEVER disappear!
+ * Features smooth momentum horizontal scrolling with right-edge breathing space so no item is clipped.
  */
 export function AdminMobileSubNav({ initialCount = 0 }: { initialCount?: number }) {
   const pathname = usePathname();
   const unhandledCount = useUnhandledCount(initialCount);
+  const [hash, setHash] = useUrlHash();
+
+  const isPhotos = pathname === "/admin" || pathname.startsWith("/admin/photos");
+  const isCollections = pathname.startsWith("/admin/collections");
+  const isEnquiries = pathname.startsWith("/admin/enquiries");
+  const isTestimonials = pathname.startsWith("/admin/settings") && hash === "#testimonials";
+  const isSettings = pathname === "/admin/settings" && hash !== "#testimonials";
 
   return (
     <div
       aria-label="Admin mobile sub-navigation"
-      className="md:hidden border-t border-[var(--line)] bg-[var(--bg)]/95 px-3 py-2 overflow-x-auto no-scrollbar flex items-center gap-1.5 text-xs font-mono"
+      className="md:hidden border-t border-[var(--line)] bg-[var(--bg)] px-3 py-2.5 overflow-x-auto touch-pan-x scroll-smooth no-scrollbar flex items-center gap-2 text-xs font-mono"
     >
       <Link
         href="/admin"
-        className={`px-3 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-          pathname === "/admin"
-            ? "bg-[var(--accent)] text-white font-semibold shadow-sm"
-            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)]"
+        onClick={() => setHash("")}
+        className={`shrink-0 px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+          isPhotos
+            ? "bg-[var(--accent)] text-white font-semibold shadow-sm ring-1 ring-[var(--accent)]/50"
+            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)] hover:border-white/20"
         }`}
       >
         Photos
       </Link>
+
       <Link
         href="/admin/collections"
-        className={`px-3 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-          pathname.startsWith("/admin/collections")
-            ? "bg-[var(--accent)] text-white font-semibold shadow-sm"
-            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)]"
+        onClick={() => setHash("")}
+        className={`shrink-0 px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+          isCollections
+            ? "bg-[var(--accent)] text-white font-semibold shadow-sm ring-1 ring-[var(--accent)]/50"
+            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)] hover:border-white/20"
         }`}
       >
         Collections
       </Link>
+
       <Link
         href="/admin/enquiries"
-        className={`px-3 py-1.5 rounded-md whitespace-nowrap transition-colors flex items-center gap-1.5 ${
-          pathname.startsWith("/admin/enquiries")
-            ? "bg-[var(--accent)] text-white font-semibold shadow-sm"
-            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)]"
+        onClick={() => setHash("")}
+        className={`shrink-0 px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all flex items-center gap-1.5 ${
+          isEnquiries
+            ? "bg-[var(--accent)] text-white font-semibold shadow-sm ring-1 ring-[var(--accent)]/50"
+            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)] hover:border-white/20"
         }`}
       >
         <span>Messages</span>
         {unhandledCount > 0 && (
           <span
-            className={`text-[9px] font-mono px-1.5 py-0.2 rounded-full font-bold ${
-              pathname.startsWith("/admin/enquiries")
+            className={`text-[9px] font-mono px-1.5 py-0.2 rounded-full font-bold shadow-sm ${
+              isEnquiries
                 ? "bg-white text-[var(--accent)]"
                 : "bg-[var(--accent)] text-white"
             }`}
@@ -159,99 +202,33 @@ export function AdminMobileSubNav({ initialCount = 0 }: { initialCount?: number 
           </span>
         )}
       </Link>
+
       <Link
         href="/admin/settings#testimonials"
-        className={`px-3 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-          pathname.startsWith("/admin/settings")
-            ? "bg-[var(--accent)]/15 text-[var(--accent-text)] border border-[var(--accent)]/40 font-semibold"
-            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)]"
+        onClick={() => setHash("#testimonials")}
+        className={`shrink-0 px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+          isTestimonials
+            ? "bg-[var(--accent)] text-white font-semibold shadow-sm ring-1 ring-[var(--accent)]/50"
+            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)] hover:border-white/20"
         }`}
       >
         Testimonials
       </Link>
+
       <Link
         href="/admin/settings"
-        className={`px-3 py-1.5 rounded-md whitespace-nowrap transition-colors ${
-          pathname === "/admin/settings"
-            ? "bg-[var(--accent)] text-white font-semibold shadow-sm"
-            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)]"
+        onClick={() => setHash("")}
+        className={`shrink-0 px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+          isSettings
+            ? "bg-[var(--accent)] text-white font-semibold shadow-sm ring-1 ring-[var(--accent)]/50"
+            : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)] hover:border-white/20"
         }`}
       >
         Settings
       </Link>
+
+      {/* Trailing spacer ensures 'Settings' has comfortable padding and is never clipped at the screen edge */}
+      <div className="w-4 shrink-0" aria-hidden="true" />
     </div>
-  );
-}
-
-/**
- * Mobile persistent bottom navigation bar.
- * Contains all 5 sections (Photos, Collections, Messages, Testimonials, Settings).
- */
-export function AdminBottomNav({ initialCount = 0 }: { initialCount?: number }) {
-  const pathname = usePathname();
-  const unhandledCount = useUnhandledCount(initialCount);
-
-  return (
-    <nav
-      aria-label="Admin mobile navigation bottom bar"
-      className="md:hidden fixed bottom-0 left-0 right-0 border-t border-[var(--line)] bg-[var(--bg-elevated)]/95 backdrop-blur-md px-2 py-2.5 flex items-center justify-around z-40 text-[11px] font-medium text-[var(--fg-muted)] shadow-2xl"
-    >
-      <Link
-        href="/admin"
-        className={`flex flex-col items-center gap-1 transition-colors ${
-          pathname === "/admin" ? "text-[var(--accent-text)] font-semibold" : "hover:text-[var(--fg)]"
-        }`}
-      >
-        <span className="text-base leading-none">📷</span>
-        <span>Photos</span>
-      </Link>
-      <Link
-        href="/admin/collections"
-        className={`flex flex-col items-center gap-1 transition-colors ${
-          pathname.startsWith("/admin/collections")
-            ? "text-[var(--accent-text)] font-semibold"
-            : "hover:text-[var(--fg)]"
-        }`}
-      >
-        <span className="text-base leading-none">📁</span>
-        <span>Collections</span>
-      </Link>
-      <Link
-        href="/admin/enquiries"
-        className={`flex flex-col items-center gap-1 relative transition-colors ${
-          pathname.startsWith("/admin/enquiries")
-            ? "text-[var(--accent-text)] font-semibold"
-            : "hover:text-[var(--fg)]"
-        }`}
-      >
-        <span className="text-base leading-none">✉️</span>
-        <span>Messages</span>
-        {unhandledCount > 0 && (
-          <span className="absolute -top-1.5 right-1 bg-[var(--accent)] text-white text-[9px] font-mono min-w-4 h-4 px-1 rounded-full flex items-center justify-center font-bold shadow-md">
-            {unhandledCount}
-          </span>
-        )}
-      </Link>
-      <Link
-        href="/admin/settings#testimonials"
-        className={`flex flex-col items-center gap-1 transition-colors ${
-          pathname.startsWith("/admin/settings")
-            ? "text-[var(--accent-text)] font-semibold"
-            : "hover:text-[var(--fg)]"
-        }`}
-      >
-        <span className="text-base leading-none">💬</span>
-        <span>Reviews</span>
-      </Link>
-      <Link
-        href="/admin/settings"
-        className={`flex flex-col items-center gap-1 transition-colors ${
-          pathname === "/admin/settings" ? "text-[var(--accent-text)] font-semibold" : "hover:text-[var(--fg)]"
-        }`}
-      >
-        <span className="text-base leading-none">⚙️</span>
-        <span>Settings</span>
-      </Link>
-    </nav>
   );
 }
