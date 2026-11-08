@@ -74,7 +74,7 @@ export function CollageHero({
       aria-label="Photography portfolio hero"
     >
       {/* ──────────────── DESKTOP & TABLET COLLAGE (HIDDEN ON MOBILE) ──────────────── */}
-      <div className="hidden md:block absolute inset-0 pointer-events-none [--card-scale:1.45] lg:[--card-scale:0.95] xl:[--card-scale:1] [--card-max:170px] lg:[--card-max:185px] xl:[--card-max:205px] [--card-min:120px] lg:[--card-min:95px]">
+      <div className="hidden md:block absolute inset-0 pointer-events-none [--card-scale:1.35] lg:[--card-scale:1]">
         {slots.map((slot, i) => {
           const photo = photos[i % photos.length];
           return (
@@ -175,8 +175,6 @@ function CollageCard({
         left: `${slot.x}%`,
         top: `${slot.y}%`,
         width: `calc(var(--card-scale, 1) * ${slot.widthVw}vw)`,
-        maxWidth: `var(--card-max, 195px)`,
-        minWidth: `var(--card-min, 95px)`,
         zIndex: slot.z,
         x: shouldReduce ? 0 : (springX as unknown as any),
         rotate: shouldReduce ? 0 : `${slot.rotate ?? 0}deg`,
