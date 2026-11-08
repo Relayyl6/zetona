@@ -28,131 +28,138 @@ export function Header({
   const lastScrollYRef = React.useRef(0);
   const { lenis, stop, start } = useLenisScroll();
 
-  // Multi-layered Sticky Headroom Navigation:
-  // 1. Immediately pops into view when scrolling UP (hardware wheel, mobile touch swipe, or scroll delta)
-  // 2. Disappears immediately when scrolling DOWN
-  // 3. Fades away when staying in one place (> 2.5s)
-  // 4. Stays permanently visible at the top of the page (<= 60px) or when mobile drawer menu is open
+  // Bulletproof Sticky Headroom Navigation:
+  // - Immediately slides/pops into view on ANY upward scroll (wheel, touch swipe, or scroll delta)
+  // - Stays reliably visible while reading or navigating (4.5s idle timeout)
+  // - Disappears ONLY on intentional downward scroll (> 15px downward delta)
+  // - Always visible at top of page (<= 60px) or when mobile drawer menu is open
   React.useEffect(() => {
+    let idleTimer: NodeJS.Timeout | null = null;
+    let lastY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    let accumulatedDown = 0;
+
     const showNav = () => {
+      accumulatedDown = 0;
       setIsVisible(true);
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-      // Staying stationary in one place -> fade away after 2.5 seconds
-      idleTimerRef.current = setTimeout(() => {
+      if (idleTimer) clearTimeout(idleTimer);
+      // Gentle idle fade after 4.5 seconds of stationary inactivity
+      idleTimer = setTimeout(() => {
         const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
         if (!menuOpen && currentY > 60) {
           setIsVisible(false);
         }
-      }, 2500);
+      }, 4500);
     };
 
     const hideNav = () => {
       const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
       if (currentY > 60 && !menuOpen) {
-        if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+        if (idleTimer) clearTimeout(idleTimer);
         setIsVisible(false);
       }
     };
 
-    // --- 1. Immediate Hardware Wheel & Trackpad Listener (0-delay response) ---
-    const handleWheel = (e: WheelEvent) => {
+    // 1. Direct hardware wheel / trackpad listener (immediate user intent)
+    const onWheel = (e: WheelEvent) => {
       const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
       if (currentY <= 60 || menuOpen) {
-        if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-        setIsVisible(true);
+        showNav();
         return;
       }
 
-      if (e.deltaY < -1.5) {
+      // Scrolling UP with wheel/trackpad
+      if (e.deltaY < -4) {
         showNav();
-      } else if (e.deltaY > 1.5) {
+      }
+      // Intentional downward scroll (filter out minor trackpad lift bounce)
+      else if (e.deltaY > 18) {
         hideNav();
       }
     };
 
-    // --- 2. Mobile & Touch Screen Swipes ---
+    // 2. Mobile touch screen gestures
     let touchStartY = 0;
-    const handleTouchStart = (e: TouchEvent) => {
+    const onTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0]?.clientY || 0;
     };
-    const handleTouchMove = (e: TouchEvent) => {
+    const onTouchMove = (e: TouchEvent) => {
       const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
       if (currentY <= 60 || menuOpen) {
-        if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-        setIsVisible(true);
+        showNav();
         return;
       }
 
       const touchY = e.touches[0]?.clientY || 0;
-      const delta = touchY - touchStartY;
-      if (delta > 6) {
-        // Finger drag down = user scrolling UP the page
+      const diff = touchY - touchStartY;
+
+      // Dragging finger DOWN means scrolling UP
+      if (diff > 8) {
         showNav();
         touchStartY = touchY;
-      } else if (delta < -6) {
-        // Finger drag up = user scrolling DOWN the page
+      }
+      // Dragging finger UP means scrolling DOWN
+      else if (diff < -18) {
         hideNav();
         touchStartY = touchY;
       }
     };
 
-    // --- 3. Native Window Scroll (keyboard, scrollbar drag, programmatic) ---
-    const handleScroll = () => {
-      const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    // 3. Unified scroll position tracking (handles scrollbar drag, keyboard navigation, and Lenis updates)
+    const onScrollPosition = (currentY: number) => {
       setIsScrolled(currentY > 20);
 
       if (currentY <= 60 || menuOpen) {
-        if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-        setIsVisible(true);
-        lastScrollYRef.current = currentY;
+        showNav();
+        lastY = currentY;
         return;
       }
 
-      const delta = currentY - lastScrollYRef.current;
-      if (delta < -4) {
+      const delta = currentY - lastY;
+
+      // Scrolling UP (delta is negative)
+      if (delta < -3) {
         showNav();
-      } else if (delta > 6) {
-        hideNav();
+      }
+      // Scrolling DOWN: accumulate delta so settling jitter never accidentally hides the navbar
+      else if (delta > 0) {
+        accumulatedDown += delta;
+        if (accumulatedDown > 16) {
+          hideNav();
+          accumulatedDown = 0;
+        }
       }
 
-      lastScrollYRef.current = currentY;
+      lastY = currentY;
     };
 
-    // --- 4. Lenis Smooth Scroll Integration (if active) ---
+    // 4. Attach scroll listener: use Lenis if active, otherwise fallback to native scroll
     let unsubLenis: (() => void) | null = null;
     if (lenis) {
-      const handleLenis = (l: any) => {
-        const y = l.scroll ?? (window.pageYOffset || 0);
-        setIsScrolled(y > 20);
-
-        if (y <= 60 || menuOpen) {
-          if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-          setIsVisible(true);
-          return;
-        }
-
-        if (l.velocity < -0.2 || l.direction === -1) {
-          showNav();
-        } else if (l.velocity > 0.5 || l.direction === 1) {
-          hideNav();
-        }
+      const onLenis = (l: any) => {
+        const y = typeof l.scroll === "number" ? l.scroll : (window.pageYOffset || 0);
+        onScrollPosition(y);
       };
-      lenis.on("scroll", handleLenis);
-      unsubLenis = () => lenis.off("scroll", handleLenis);
+      lenis.on("scroll", onLenis);
+      unsubLenis = () => lenis.off("scroll", onLenis);
+    } else {
+      const onNative = () => {
+        const y = window.pageYOffset || document.documentElement.scrollTop || 0;
+        onScrollPosition(y);
+      };
+      window.addEventListener("scroll", onNative, { passive: true });
+      unsubLenis = () => window.removeEventListener("scroll", onNative);
     }
 
-    window.addEventListener("wheel", handleWheel, { passive: true });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
       if (unsubLenis) unsubLenis();
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      if (idleTimer) clearTimeout(idleTimer);
     };
   }, [lenis, menuOpen]);
 
@@ -202,10 +209,10 @@ export function Header({
         initial={false}
         animate={{
           opacity: isVisible ? 1 : 0,
-          y: isVisible ? 0 : -20,
+          y: isVisible ? 0 : -35,
         }}
         transition={{
-          duration: 0.22,
+          duration: 0.2,
           ease: [0.16, 1, 0.3, 1],
         }}
         style={{

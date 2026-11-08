@@ -103,17 +103,8 @@ export function TestimonialsSection() {
 
   return (
     <section className="relative min-h-[80vh] bg-[var(--bg)] border-t border-[var(--line)] overflow-hidden flex flex-col justify-between py-24 px-6 md:px-12 select-none">
-      {/* Cinematic blurred backdrop sliver (matching Image 3) */}
-      <div className="absolute top-0 left-0 right-0 h-40 overflow-hidden pointer-events-none opacity-20">
-        <div
-          className="absolute inset-0 bg-cover bg-center filter blur-2xl scale-125"
-          style={{
-            backgroundImage:
-              "url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80')",
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[var(--bg)]" />
-      </div>
+      {/* Cinematic subtle ambient light (pure GPU radial gradient, zero blur filter cost) */}
+      <div className="absolute top-0 left-0 right-0 h-40 overflow-hidden pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.05),transparent_70%)]" />
 
       {/* Main Grid: Label on left, Quote & Avatar controls on right */}
       <div className="relative z-10 grid lg:grid-cols-12 gap-10 items-start max-w-6xl mx-auto w-full my-auto">
@@ -131,12 +122,12 @@ export function TestimonialsSection() {
           </div>
         </div>
 
-        {/* Right Column: Quote + Author + Avatars in Frosted Glass Container */}
+        {/* Right Column: Quote + Author + Avatars in Opaque Composite Container */}
         <div className="lg:col-span-9">
           <div
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="backdrop-blur-2xl bg-white/[0.025] border border-white/10 p-8 md:p-12 rounded-2xl shadow-2xl relative"
+            className="bg-[#101010] border border-white/10 p-8 md:p-12 rounded-2xl shadow-2xl relative transform-gpu"
           >
             <AnimatePresence mode="wait">
               <m.div
