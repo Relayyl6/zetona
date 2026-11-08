@@ -112,39 +112,41 @@ export default async function HomePage() {
         {/* 2. Kristin Watson Split-Name Hero Section (Image 4: ZETONA ... _E + Center Crop Frame) */}
         <SplitNameHeroSection photos={featuredPhotos} />
 
-        {/* 3. Statement / Scroll-Lit Text (Pattern P3) */}
-        {settings.bio && (
-          <section
-            className="relative border-t border-[var(--line)]"
-            style={{ minHeight: "160vh" }}
-            aria-label="About statement"
+        {/* 3. Statement / Scroll-Lit Text (Pattern P3) — always shown with fallback bio */}
+        <section
+          className="relative border-t border-[var(--line)]"
+          style={{ minHeight: "160vh" }}
+          aria-label="About statement"
+        >
+          <div
+            className="sticky flex flex-col justify-center px-6 md:px-16 lg:px-24"
+            style={{ top: "25vh", paddingTop: "15vh", paddingBottom: "15vh" }}
           >
-            <div
-              className="sticky flex flex-col justify-center px-6 md:px-16 lg:px-24"
-              style={{ top: "25vh", paddingTop: "15vh", paddingBottom: "15vh" }}
-            >
-              <Reveal className="mb-4">
-                <span className="font-mono text-[var(--fg-dim)] text-xs uppercase tracking-widest">
-                  • Philosophy
-                </span>
-              </Reveal>
-              <ScrollLitText
-                text={settings.bio.split("\n\n")[0] || settings.bio}
-                className="font-serif text-[var(--fg)] max-w-4xl"
-                style={{ fontSize: "var(--fs-lead)" }}
-              />
-              <Reveal delay={0.25} className="mt-10">
-                <Link
-                  href="/about"
-                  className="text-[var(--accent-text)] text-sm font-sans hover:text-[var(--accent)] transition-colors inline-flex items-center gap-2"
-                >
-                  Read full bio
-                  <span>→</span>
-                </Link>
-              </Reveal>
-            </div>
-          </section>
-        )}
+            <Reveal className="mb-4">
+              <span className="font-mono text-[var(--fg-dim)] text-xs uppercase tracking-widest">
+                • Philosophy
+              </span>
+            </Reveal>
+            <ScrollLitText
+              text={
+                settings.bio
+                  ? settings.bio.split("\n\n")[0] || settings.bio
+                  : "Every frame is a conversation between light and life. We photograph what words cannot hold — the split-second glance, the warmth between two people, the quiet beauty of an ordinary afternoon."
+              }
+              className="font-serif text-[var(--fg)] max-w-4xl"
+              style={{ fontSize: "var(--fs-lead)" }}
+            />
+            <Reveal delay={0.25} className="mt-10">
+              <Link
+                href="/about"
+                className="text-[var(--accent-text)] text-sm font-sans hover:text-[var(--accent)] transition-colors inline-flex items-center gap-2"
+              >
+                Read full bio
+                <span>→</span>
+              </Link>
+            </Reveal>
+          </div>
+        </section>
 
         {/* 4. Interactive Hover-Reveal Sessions List (Conditioned on settings.showAwards) */}
         {settings.showAwards && <FeaturedEditorialList items={sessionListItems} />}

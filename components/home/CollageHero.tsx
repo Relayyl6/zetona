@@ -264,8 +264,8 @@ function HeroText({
     <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 z-30 pointer-events-auto">
       {/* Serif Headline with high visual contrast – strictly two lines, larger and commanding */}
       <h1
-        className="font-serif text-[var(--fg)] leading-[0.98] sm:leading-[0.95] drop-shadow-2xl select-none text-center tracking-tighter sm:tracking-tight"
-        style={{ fontSize: "clamp(1.35rem, min(6.2vw, 8.5vh), 9.2rem)" }}
+        className="font-serif text-[var(--fg)] leading-[0.92] drop-shadow-2xl select-none text-center tracking-tight"
+        style={{ fontSize: "clamp(1.95rem, 7.8vw, 9.4rem)" }}
       >
         <span className="block overflow-hidden py-0.5 sm:py-1">
           <m.span
