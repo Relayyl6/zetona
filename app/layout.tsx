@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import "lenis/dist/lenis.css";
 import "./globals.css";
 import { Providers } from "./providers";
 import { siteConfig } from "@/lib/site-config";
