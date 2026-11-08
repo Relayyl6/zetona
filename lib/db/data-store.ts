@@ -249,12 +249,22 @@ export async function getPhotoById(id: string): Promise<PhotoDTO | null> {
 }
 
 export async function savePhoto(id: string, updates: Partial<PhotoDTO>): Promise<PhotoDTO | null> {
+  const colMap: Record<string, { id: string; slug: string; title: string }> = {
+    col_portraits_01: { id: "col_portraits_01", slug: "portraits", title: "Portraits" },
+    col_studio_02: { id: "col_studio_02", slug: "studio", title: "Studio Sessions" },
+    col_editorial_03: { id: "col_editorial_03", slug: "editorial", title: "Editorial & Mood" },
+  };
+
   const sql = getNeonSql();
   if (sql) {
     try {
       const existing = await getPhotoById(id);
       if (existing) {
         const merged = { ...existing, ...updates };
+        const targetColId = updates.collectionId !== undefined
+          ? updates.collectionId
+          : (updates.collection?.id || existing.collectionId || existing.collection?.id || null);
+
         await sql`
           UPDATE photos SET
             title = ${merged.title || null},
@@ -263,6 +273,8 @@ export async function savePhoto(id: string, updates: Partial<PhotoDTO>): Promise
             display_key = ${merged.displayKey},
             focal_x = ${merged.focal?.x ?? 0.5},
             focal_y = ${merged.focal?.y ?? 0.35},
+            collection_id = ${targetColId},
+            status = ${merged.status || 'published'},
             featured_home = ${merged.featuredHome ?? false},
             featured_about = ${merged.featuredAbout ?? false},
             updated_at = NOW()
@@ -278,10 +290,25 @@ export async function savePhoto(id: string, updates: Partial<PhotoDTO>): Promise
   const index = data.photos.findIndex((p) => p.id === id);
   if (index === -1) return null;
 
+  const targetColId = updates.collectionId !== undefined
+    ? updates.collectionId
+    : (updates.collection?.id || data.photos[index].collectionId || data.photos[index].collection?.id);
+
   data.photos[index] = {
     ...data.photos[index],
     ...updates,
+    collectionId: targetColId || undefined,
+    collection: targetColId && colMap[targetColId] ? colMap[targetColId] : data.photos[index].collection,
   };
+
+  // Recalculate collection photo counts
+  if (data.collections) {
+    data.collections = data.collections.map((c) => ({
+      ...c,
+      photoCount: data.photos.filter((p) => p.collectionId === c.id || p.collection?.id === c.id).length,
+    }));
+  }
+
   persistFile(data);
   return data.photos[index];
 }

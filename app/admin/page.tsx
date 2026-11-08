@@ -14,6 +14,12 @@ export default function AdminPhotosPage() {
   const [showUpload, setShowUpload] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState("");
+  const [uploadCollectionId, setUploadCollectionId] = useState("col_portraits_01");
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadAlt, setUploadAlt] = useState("");
+  const [uploadCaption, setUploadCaption] = useState("");
+  const [uploadFeaturedHome, setUploadFeaturedHome] = useState(false);
+  const [uploadFeaturedAbout, setUploadFeaturedAbout] = useState(false);
 
   // Load live photos on mount
   useEffect(() => {
@@ -61,11 +67,18 @@ export default function AdminPhotosPage() {
       const file = files[i];
       setUploadStatus(`Uploading ${i + 1}/${files.length}: ${file.name}...`);
 
+      const cleanFileName = file.name.replace(/\.[^/.]+$/, "");
+      const titleToUse = uploadTitle.trim() || cleanFileName;
+      const altToUse = uploadAlt.trim() || `${titleToUse} - Studio and portrait photography by Zetona_E`;
+
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("title", file.name.replace(/\.[^/.]+$/, ""));
-      formData.append("alt", `Portrait session photography by Zetona_E - ${file.name}`);
-      formData.append("featuredHome", "true");
+      formData.append("title", titleToUse);
+      formData.append("alt", altToUse);
+      formData.append("caption", uploadCaption.trim());
+      formData.append("collectionId", uploadCollectionId);
+      formData.append("featuredHome", uploadFeaturedHome ? "true" : "false");
+      formData.append("featuredAbout", uploadFeaturedAbout ? "true" : "false");
 
       try {
         const res = await fetch("/api/admin/uploads/cloudinary", {
@@ -124,10 +137,82 @@ export default function AdminPhotosPage() {
         </div>
       )}
 
-      {/* Upload Dropzone */}
+      {/* Upload Dropzone with Custom Section & Details */}
       {showUpload && (
-        <div className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)]">
-          <UploadDropzone onFilesSelected={handleFilesSelected} />
+        <div className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-5">
+          <div className="border-b border-[var(--line)] pb-3">
+            <h2 className="text-sm font-medium text-[var(--fg)]">Upload New Photos to Cloudinary</h2>
+            <p className="text-xs text-[var(--fg-muted)] font-mono mt-1">
+              Select the destination section and details before choosing photos
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div>
+              <label className="text-xs font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1.5">
+                Target Section / Collection *
+              </label>
+              <select
+                value={uploadCollectionId}
+                onChange={(e) => setUploadCollectionId(e.target.value)}
+                className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] cursor-pointer"
+              >
+                <option value="col_portraits_01">Portraits</option>
+                <option value="col_studio_02">Studio Sessions</option>
+                <option value="col_editorial_03">Editorial & Mood</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1.5">
+                Custom Title (Optional)
+              </label>
+              <input
+                type="text"
+                placeholder="Leave blank to use filename"
+                value={uploadTitle}
+                onChange={(e) => setUploadTitle(e.target.value)}
+                className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1.5">
+                Alt Text (Optional)
+              </label>
+              <input
+                type="text"
+                placeholder="Auto-generated if left empty"
+                value={uploadAlt}
+                onChange={(e) => setUploadAlt(e.target.value)}
+                className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-6 pt-1">
+            <label className="flex items-center gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={uploadFeaturedHome}
+                onChange={(e) => setUploadFeaturedHome(e.target.checked)}
+                className="w-4 h-4 accent-[var(--accent)] cursor-pointer"
+              />
+              <span className="text-xs text-[var(--fg)]">Feature on Homepage (Collage Hero Slot)</span>
+            </label>
+
+            <label className="flex items-center gap-2.5 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={uploadFeaturedAbout}
+                onChange={(e) => setUploadFeaturedAbout(e.target.checked)}
+                className="w-4 h-4 accent-[var(--accent)] cursor-pointer"
+              />
+              <span className="text-xs text-[var(--fg)]">Feature on About Page</span>
+            </label>
+          </div>
+
+          <UploadDropzone onFilesSelected={handleFilesSelected} isUploading={uploading} />
         </div>
       )}
 

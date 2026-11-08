@@ -115,7 +115,7 @@
     {
       "id": "ph_client_1__MG_7564_jpg",
       "title": "Aura",
-      "alt": "Aura - Studio and portrait photography by Zetona_E in Benin City (_MG_7564.jpg)",
+      "alt": "Aura - Studio and portrait photography by Zetona_E in Benin City",
       "caption": "Original client session photography by Zetona_E, captured in Benin City.",
       "width": 4034,
       "height": 6051,
@@ -211,7 +211,7 @@
     {
       "id": "ph_client_5_b352d585_7f93_4",
       "title": "Golden Hour Study",
-      "alt": "Golden Hour Study - Studio and portrait photography by Zetona_E in Benin City (b352d585-7f93-4184-9b93-8d3ea99347a7.jpg)",
+      "alt": "Editorial studio portrait session - Zetona_E",
       "caption": "Original client session photography by Zetona_E, captured in Benin City.",
       "width": 720,
       "height": 1080,
@@ -221,7 +221,7 @@
         "x": 0.5,
         "y": 0.35
       },
-      "featuredHome": true,
+      "featuredHome": false,
       "featuredAbout": false,
       "status": "published",
       "collectionId": "col_studio_02",
@@ -1291,7 +1291,7 @@
     {
       "id": "ph_client_50__MG_8714_jpg",
       "title": "Radiance",
-      "alt": "Radiance - Studio and portrait photography by Zetona_E in Benin City (_MG_8714.jpg)",
+      "alt": "Radiance - Studio portrait photography by Zetona_E",
       "caption": "Original client session photography by Zetona_E, captured in Benin City.",
       "width": 4034,
       "height": 6051,
@@ -1301,7 +1301,7 @@
         "x": 0.5,
         "y": 0.35
       },
-      "featuredHome": false,
+      "featuredHome": true,
       "featuredAbout": false,
       "status": "published",
       "collectionId": "col_studio_02",

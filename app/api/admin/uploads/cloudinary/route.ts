@@ -25,6 +25,13 @@ export async function POST(req: NextRequest) {
       folder: "zetona",
     });
 
+    const colMap: Record<string, { id: string; slug: string; title: string }> = {
+      col_portraits_01: { id: "col_portraits_01", slug: "portraits", title: "Portraits" },
+      col_studio_02: { id: "col_studio_02", slug: "studio", title: "Studio Sessions" },
+      col_editorial_03: { id: "col_editorial_03", slug: "editorial", title: "Editorial & Mood" },
+    };
+    const resolvedCollection = collectionId && colMap[collectionId] ? colMap[collectionId] : null;
+
     // Save into persistent site data
     const newPhoto = await createPhoto({
       title,
@@ -36,7 +43,8 @@ export async function POST(req: NextRequest) {
       focal: { x: 0.5, y: 0.35 },
       featuredHome,
       featuredAbout,
-      collection: collectionId ? { id: collectionId, slug: collectionId, title: collectionId } : null,
+      collectionId: resolvedCollection ? resolvedCollection.id : undefined,
+      collection: resolvedCollection,
     });
 
     return NextResponse.json({ ok: true, photo: newPhoto });

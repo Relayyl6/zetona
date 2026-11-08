@@ -74,11 +74,10 @@ export default function EditPhotoPage() {
           caption,
           focalX: focal.x,
           focalY: focal.y,
-          focal,
           featuredHome,
           featuredAbout,
           status,
-          collection: collectionId ? { id: collectionId, slug: collectionId, title: collectionId } : null,
+          collectionId: collectionId || null,
         }),
       });
 
@@ -192,6 +191,24 @@ export default function EditPhotoPage() {
               onChange={(e) => setTitle(e.target.value)}
               className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-4 py-2.5 text-sm text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
             />
+          </div>
+
+          <div>
+            <label className="text-xs font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-2">
+              Collection / Section
+            </label>
+            <select
+              value={collectionId}
+              onChange={(e) => setCollectionId(e.target.value)}
+              className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-4 py-2.5 text-sm text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] cursor-pointer"
+            >
+              <option value="col_portraits_01">Portraits</option>
+              <option value="col_studio_02">Studio Sessions</option>
+              <option value="col_editorial_03">Editorial & Mood</option>
+            </select>
+            <p className="text-[11px] text-[var(--fg-dim)] font-mono mt-1">
+              Choose which of the 3 main public sections this photograph belongs to
+            </p>
           </div>
 
           <div>
