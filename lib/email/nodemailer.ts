@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { siteConfig } from "@/lib/site-config";
-import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { buildOwnerReplyWhatsAppUrl } from "@/lib/whatsapp";
 
 export interface EmailEnquiryPayload {
   name: string;
@@ -43,10 +43,12 @@ function getTransporter() {
  */
 export function generateOwnerEnquiryHtml(payload: EmailEnquiryPayload): string {
   const clientWhatsAppUrl = payload.phone
-    ? buildWhatsAppUrl(
-        `Hello ${payload.name}, thanks for reaching out to Zetona_E regarding your enquiry!`,
-        { phoneDigits: payload.phone }
-      )
+    ? buildOwnerReplyWhatsAppUrl({
+        name: payload.name,
+        phone: payload.phone,
+        sessionType: payload.sessionType,
+        message: payload.message,
+      })
     : "";
 
   return `

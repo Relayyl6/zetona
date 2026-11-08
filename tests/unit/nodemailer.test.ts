@@ -34,6 +34,7 @@ describe("Nodemailer service", () => {
     // Directly chats with the client's normalized WhatsApp number
     expect(html).toContain("https://wa.me/2349064982841");
     expect(html).toContain("Leonard%20Oseghale");
+    expect(html).toContain(encodeURIComponent('"something that im testing"'));
 
     // Bulletproof inline white text for email button contrast
     expect(html).toContain("color: #FFFFFF !important;");

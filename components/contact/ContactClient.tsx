@@ -128,7 +128,11 @@ export function ContactClient({ portraitSrc }: ContactClientProps) {
                 </p>
                 <div className="pt-4 flex flex-col sm:flex-row gap-4">
                   <a
-                    href={buildWhatsAppUrl()}
+                    href={buildWhatsAppUrl(
+                      formData.name
+                        ? `Hello Zetona, my name is ${formData.name}. I just submitted an enquiry on your website regarding a ${formData.sessionType || "photoshoot"}.`
+                        : undefined
+                    )}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 bg-[var(--accent)] text-white font-sans text-sm font-medium px-6 py-3 rounded-full hover:bg-[var(--accent-deep)] transition-colors duration-200"
@@ -281,7 +285,17 @@ export function ContactClient({ portraitSrc }: ContactClientProps) {
                   </button>
 
                   <a
-                    href={buildWhatsAppUrl()}
+                    href={
+                      formData.name || formData.message || formData.sessionType
+                        ? buildWhatsAppUrl(
+                            `Hello Zetona, ${[
+                              formData.name ? `my name is ${formData.name}.` : "",
+                              formData.sessionType ? `I'm interested in a ${formData.sessionType} session.` : "",
+                              formData.message ? `Regarding: "${formData.message}"` : "",
+                            ].filter(Boolean).join(" ")}`
+                          )
+                        : buildWhatsAppUrl()
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 text-center bg-[var(--accent)] text-white font-sans text-sm font-medium px-6 py-3 rounded-full hover:bg-[var(--accent-deep)] transition-colors duration-200 cursor-pointer"

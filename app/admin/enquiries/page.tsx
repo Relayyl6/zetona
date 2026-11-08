@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { buildOwnerReplyWhatsAppUrl } from "@/lib/whatsapp";
 
 interface EnquiryItem {
   id: string;
@@ -116,10 +116,12 @@ export default function AdminEnquiriesPage() {
                     </a>
                     {enq.phone && (
                       <a
-                        href={buildWhatsAppUrl(
-                          `Hello ${enq.name}, thanks for reaching out to Zetona_E regarding your enquiry!`,
-                          { phoneDigits: enq.phone }
-                        )}
+                        href={buildOwnerReplyWhatsAppUrl({
+                          name: enq.name,
+                          phone: enq.phone,
+                          sessionType: enq.sessionType,
+                          message: enq.message,
+                        })}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[var(--accent-text)] hover:underline inline-flex items-center gap-1"
