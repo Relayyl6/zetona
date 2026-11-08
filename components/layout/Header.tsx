@@ -301,46 +301,46 @@ export function Header({
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[70] bg-[#0A0A0A] text-[#F6F2E6] overflow-y-auto overscroll-contain flex flex-col"
           >
-            <div className="min-h-[100dvh] w-full max-w-xl mx-auto px-6 py-6 sm:px-10 flex flex-col justify-between gap-6">
+            <div className="min-h-[100dvh] w-full max-w-4xl lg:max-w-5xl mx-auto px-6 py-6 sm:px-10 md:px-16 flex flex-col justify-between gap-6 md:gap-8">
               {/* Top Bar with Wordmark & Close Button inside Overlay */}
-              <div className="flex items-center justify-between pb-4 border-b border-white/10 flex-shrink-0">
+              <div className="flex items-center justify-between pb-4 md:pb-6 border-b border-white/10 flex-shrink-0">
                 <Link
                   href="/"
                   onClick={closeMenu}
-                  className="font-serif text-[#F6F2E6] text-xl tracking-tight hover:opacity-70 transition-opacity"
+                  className="font-serif text-[#F6F2E6] text-xl md:text-2xl tracking-tight hover:opacity-70 transition-opacity"
                 >
                   {siteConfig.brandName}
                 </Link>
                 <button
                   onClick={closeMenu}
                   aria-label="Close navigation menu"
-                  className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-[#F6F2E6] hover:text-white transition-colors cursor-pointer shadow-lg"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-[#F6F2E6] hover:text-white transition-colors cursor-pointer shadow-lg"
                 >
-                  <span className="text-lg leading-none select-none">✕</span>
+                  <span className="text-lg md:text-xl leading-none select-none">✕</span>
                 </button>
               </div>
 
               {/* Nav links right in clear view */}
-              <nav className="py-4 space-y-3 flex-1 flex flex-col justify-center" aria-label="Full-screen navigation">
+              <nav className="py-4 md:py-8 space-y-3 md:space-y-4 flex-1 flex flex-col justify-center" aria-label="Full-screen navigation">
                 {NAV_ITEMS.map((item, i) => (
-                  <div key={item.href} className="border-b border-white/10 pb-3">
+                  <div key={item.href} className="border-b border-white/10 pb-3 md:pb-4">
                     <Link
                       href={item.href}
                       onClick={closeMenu}
                       className="flex items-center justify-between py-2 text-[#F6F2E6] hover:text-[var(--accent-text)] transition-colors group"
                     >
-                      <div className="flex items-baseline gap-4 font-condensed uppercase tracking-tight text-3xl sm:text-4xl md:text-5xl">
-                        <span className="text-[var(--fg-dim)] font-mono text-xs sm:text-sm tracking-widest group-hover:text-[var(--accent-text)]">
+                      <div className="flex items-baseline gap-4 md:gap-6 font-condensed uppercase tracking-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
+                        <span className="text-[var(--fg-dim)] font-mono text-xs sm:text-sm md:text-base tracking-widest group-hover:text-[var(--accent-text)]">
                           0{i + 1}
                         </span>
                         <span>{item.label}</span>
                         {item.href === "/work" && photoCount > 0 && (
-                          <sup className="text-[var(--fg-muted)] text-xs font-mono ml-1">
+                          <sup className="text-[var(--fg-muted)] text-xs md:text-sm font-mono ml-1">
                             ({photoCount})
                           </sup>
                         )}
                       </div>
-                      <span className="font-mono text-base text-[var(--fg-dim)] group-hover:text-[var(--accent-text)] group-hover:translate-x-1.5 transition-transform">
+                      <span className="font-mono text-base md:text-xl text-[var(--fg-dim)] group-hover:text-[var(--accent-text)] group-hover:translate-x-2 transition-transform">
                         →
                       </span>
                     </Link>
@@ -349,7 +349,7 @@ export function Header({
               </nav>
 
               {/* Bottom info in menu */}
-              <div className="border-t border-white/10 pt-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-sans text-[var(--fg-muted)] pb-6 flex-shrink-0">
+              <div className="border-t border-white/10 pt-5 md:pt-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs md:text-sm font-sans text-[var(--fg-muted)] pb-6 md:pb-8 flex-shrink-0">
                 <div>
                   <p className="text-[#F6F2E6] font-medium">{siteConfig.descriptor}</p>
                   <p className="text-[var(--fg-dim)] font-mono">{siteConfig.city}, {siteConfig.country}</p>
