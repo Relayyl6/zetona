@@ -6,6 +6,7 @@ import Link from "next/link";
 import { m, useMotionValue, useSpring, useReducedMotion } from "motion/react";
 import { PhotoDTO } from "@/lib/db/queries";
 import { spring, dur, ease } from "@/lib/motion/tokens";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 interface SessionItem {
   id: string;
@@ -103,10 +104,13 @@ export function FeaturedEditorialList({ items }: FeaturedEditorialListProps) {
                 >
                   <div className="aspect-[4/5] w-full max-w-sm rounded overflow-hidden relative shadow-xl">
                     <Image
-                      src={item.photo.displayKey}
+                      src={getOptimizedSrc(item.photo.displayKey, 800)}
                       alt={item.photo.alt}
                       fill
                       className="object-cover"
+                      style={{
+                        objectPosition: `${(item.photo.focal?.x ?? 0.5) * 100}% ${(item.photo.focal?.y != null ? Math.min(item.photo.focal.y, 0.15) : 0.12) * 100}%`,
+                      }}
                       sizes="(max-width: 1024px) 90vw, 400px"
                     />
                   </div>
@@ -141,12 +145,12 @@ export function FeaturedEditorialList({ items }: FeaturedEditorialListProps) {
                     }`}
                   >
                     <Image
-                      src={item.photo.displayKey}
+                      src={getOptimizedSrc(item.photo.displayKey, 800)}
                       alt={item.photo.alt}
                       fill
                       className="object-cover"
                       style={{
-                        objectPosition: `${(item.photo.focal?.x ?? 0.5) * 100}% ${(item.photo.focal?.y ?? 0.35) * 100}%`,
+                        objectPosition: `${(item.photo.focal?.x ?? 0.5) * 100}% ${(item.photo.focal?.y != null ? Math.min(item.photo.focal.y, 0.15) : 0.12) * 100}%`,
                       }}
                       sizes="400px"
                       priority={idx < 4}

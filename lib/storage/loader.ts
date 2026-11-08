@@ -11,8 +11,12 @@ export interface LoaderProps {
 }
 
 export default function cloudflareLoader({ src, width, quality }: LoaderProps): string {
-  // 1. If absolute external URL (e.g. Unsplash or placeholder), return as-is
+  // 1. If absolute external URL (e.g. Cloudinary, Unsplash or placeholder)
   if (src.startsWith("http://") || src.startsWith("https://")) {
+    if (src.includes("res.cloudinary.com")) {
+      const q = quality ?? 82;
+      return src.replace("/upload/", `/upload/w_${width},q_${q},f_auto,c_limit/`);
+    }
     if (src.includes("images.unsplash.com")) {
       const sep = src.includes("?") ? "&" : "?";
       return `${src}${sep}w=${width}&q=${quality ?? 82}&auto=format`;

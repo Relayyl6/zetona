@@ -24,7 +24,7 @@ export function Photo({
   }
 
   const focalX = (photo.focal?.x ?? 0.5) * 100;
-  const focalY = (photo.focal?.y ?? 0.35) * 100;
+  const focalY = (photo.focal?.y != null ? Math.min(photo.focal.y, 0.15) : 0.12) * 100;
 
   return (
     <div

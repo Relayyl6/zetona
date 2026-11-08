@@ -9,6 +9,8 @@ import { collagePresets, CollageSlot } from "@/lib/collage-presets";
 import { stagger, dur, ease, spring } from "@/lib/motion/tokens";
 import { Magnetic } from "@/components/motion/Magnetic";
 
+import { getOptimizedSrc } from "@/lib/storage/image-url";
+
 interface CollageHeroProps {
   photos: PhotoDTO[];
   headline?: string;
@@ -19,9 +21,9 @@ interface CollageHeroProps {
 
 const IDLE_AMPLITUDE = 7; // px
 
-function buildImageSrc(photo: PhotoDTO): string {
-  if (photo.displayKey.startsWith("http")) return photo.displayKey;
-  return photo.displayKey;
+function buildImageSrc(photo: PhotoDTO, width = 600): string {
+  if (!photo?.displayKey) return "";
+  return getOptimizedSrc(photo.displayKey, width);
 }
 
 export function CollageHero({
@@ -109,12 +111,12 @@ export function CollageHero({
               className="w-[74vw] max-w-[290px] flex-shrink-0 snap-center aspect-[4/5] relative overflow-hidden rounded-md bg-[var(--bg-elevated)] shadow-2xl ring-1 ring-white/10"
             >
               <Image
-                src={buildImageSrc(photo)}
+                src={buildImageSrc(photo, 600)}
                 alt={photo.alt}
                 fill
                 className="object-cover"
                 style={{
-                  objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y ?? 0.35) * 100}%`,
+                  objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y != null ? Math.min(photo.focal.y, 0.15) : 0.12) * 100}%`,
                 }}
                 sizes="75vw"
                 priority={i === 0}
@@ -206,12 +208,12 @@ function CollageCard({
     >
       <div className={`${aspectClass} overflow-hidden relative shadow-2xl bg-[var(--bg-elevated)] ring-1 ring-white/5`}>
         <Image
-          src={buildImageSrc(photo)}
+          src={buildImageSrc(photo, 600)}
           alt={slot.isLcp ? photo.alt : ""}
           fill
           className={`object-cover transition-transform duration-500 ${hovered ? "scale-105" : "scale-100"}`}
           style={{
-            objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y ?? 0.35) * 100}%`,
+            objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y != null ? Math.min(photo.focal.y, 0.15) : 0.12) * 100}%`,
           }}
           priority={slot.isLcp}
           sizes="(min-width:1024px) 25vw, (min-width:768px) 35vw, 85vw"

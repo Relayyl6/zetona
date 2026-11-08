@@ -5,6 +5,7 @@ import Image from "next/image";
 import { m, AnimatePresence, useReducedMotion, useMotionValue, useSpring } from "motion/react";
 import { PhotoDTO } from "@/lib/db/queries";
 import { spring, dur, ease } from "@/lib/motion/tokens";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 interface CropFrameProps {
   photos: PhotoDTO[];
@@ -61,12 +62,12 @@ export function CropFrame({ photos, className = "" }: CropFrameProps) {
               transition={{ duration: 0.8, ease: ease.outExpo }}
             >
               <Image
-                src={activePhoto.displayKey}
+                src={getOptimizedSrc(activePhoto.displayKey, 600)}
                 alt={activePhoto.alt}
                 fill
                 className="object-cover"
                 style={{
-                  objectPosition: `${(activePhoto.focal?.x ?? 0.5) * 100}% ${(activePhoto.focal?.y ?? 0.35) * 100}%`,
+                  objectPosition: `${(activePhoto.focal?.x ?? 0.5) * 100}% ${(activePhoto.focal?.y != null ? Math.min(activePhoto.focal.y, 0.15) : 0.12) * 100}%`,
                 }}
                 sizes="300px"
               />

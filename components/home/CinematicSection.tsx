@@ -7,6 +7,7 @@ import { CollectionDTO } from "@/lib/db/queries";
 import { BlurBackdrop } from "@/components/ui/BlurBackdrop";
 import { ImageReveal } from "@/components/motion/ImageReveal";
 import { MaskLines } from "@/components/motion/MaskLines";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 interface CinematicSectionProps {
   collection: CollectionDTO;
@@ -45,12 +46,12 @@ export function CinematicSection({
           <ImageReveal>
             <div className="w-[72vw] sm:w-[50vw] md:w-[35vw] max-w-md aspect-[3/4] relative overflow-hidden shadow-2xl bg-[var(--bg-elevated)] ring-1 ring-white/10">
               <Image
-                src={photo.displayKey}
+                src={getOptimizedSrc(photo.displayKey, 1000)}
                 alt={photo.alt}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
                 style={{
-                  objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y ?? 0.35) * 100}%`,
+                  objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y != null ? Math.min(photo.focal.y, 0.15) : 0.12) * 100}%`,
                 }}
                 sizes="(min-width:1024px) 35vw, 70vw"
               />

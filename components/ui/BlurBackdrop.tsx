@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { PhotoDTO } from "@/lib/db/queries";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 export interface BlurBackdropProps {
   photo: PhotoDTO;
@@ -12,6 +13,7 @@ export function BlurBackdrop({
   brightness = 0.65,
   className = "",
 }: BlurBackdropProps) {
+  const bgSrc = getOptimizedSrc(photo.displayKey, 400);
   return (
     <div
       aria-hidden="true"
@@ -20,7 +22,7 @@ export function BlurBackdrop({
       <div
         className="absolute -inset-10 bg-cover bg-center filter blur-3xl scale-125 transition-opacity duration-700"
         style={{
-          backgroundImage: `url(${photo.displayKey})`,
+          backgroundImage: `url(${bgSrc})`,
           filter: `blur(40px) brightness(${brightness})`,
         }}
       />

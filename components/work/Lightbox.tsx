@@ -6,6 +6,7 @@ import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { PhotoDTO } from "@/lib/db/queries";
 import { useLenisScroll } from "@/components/layout/SmoothScroll";
 import { dur, ease } from "@/lib/motion/tokens";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 interface LightboxProps {
   photos: PhotoDTO[];
@@ -79,7 +80,7 @@ export function Lightbox({
           <div className="relative flex-1 flex items-center justify-center my-4 overflow-hidden">
             <div className="relative w-full h-full max-w-5xl max-h-[75vh]">
               <Image
-                src={currentPhoto.displayKey}
+                src={getOptimizedSrc(currentPhoto.displayKey, 1800)}
                 alt={currentPhoto.alt}
                 fill
                 className="object-contain"

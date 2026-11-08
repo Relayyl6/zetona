@@ -3,6 +3,7 @@ import { ScrollLitText } from "@/components/motion/ScrollLitText";
 import { getSiteSettings, getAllPhotos } from "@/lib/db/data-store";
 import { siteConfig } from "@/lib/site-config";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -139,12 +140,12 @@ export default async function AboutPage() {
               <Reveal delay={0.2} className="pt-4 max-w-md">
                 <div className="aspect-[4/3] relative overflow-hidden rounded-md bg-[var(--bg-elevated)] ring-1 ring-white/10 shadow-xl -rotate-1 hover:rotate-0 transition-transform duration-500 group">
                   <Image
-                    src={bioPhoto1.displayKey}
+                    src={getOptimizedSrc(bioPhoto1.displayKey, 800)}
                     alt={bioPhoto1.alt}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                     style={{
-                      objectPosition: `${(bioPhoto1.focal?.x ?? 0.5) * 100}% ${(bioPhoto1.focal?.y ?? 0.35) * 100}%`,
+                      objectPosition: `${(bioPhoto1.focal?.x ?? 0.5) * 100}% ${(bioPhoto1.focal?.y != null ? Math.min(bioPhoto1.focal.y, 0.15) : 0.12) * 100}%`,
                     }}
                     sizes="(min-width:1024px) 35vw, 90vw"
                   />
@@ -219,12 +220,12 @@ export default async function AboutPage() {
               <Reveal delay={0.3}>
                 <div className="aspect-[4/5] relative overflow-hidden rounded-md bg-[var(--bg-elevated)] ring-1 ring-white/10 shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500 group">
                   <Image
-                    src={bioPhoto2.displayKey}
+                    src={getOptimizedSrc(bioPhoto2.displayKey, 800)}
                     alt={bioPhoto2.alt}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
                     style={{
-                      objectPosition: `${(bioPhoto2.focal?.x ?? 0.5) * 100}% ${(bioPhoto2.focal?.y ?? 0.35) * 100}%`,
+                      objectPosition: `${(bioPhoto2.focal?.x ?? 0.5) * 100}% ${(bioPhoto2.focal?.y != null ? Math.min(bioPhoto2.focal.y, 0.15) : 0.12) * 100}%`,
                     }}
                     sizes="(min-width:1024px) 30vw, 85vw"
                   />
@@ -264,12 +265,12 @@ export default async function AboutPage() {
                 className={`relative overflow-hidden rounded-md bg-[var(--bg-elevated)] ring-1 ring-white/10 shadow-2xl transition-all duration-500 hover:scale-[1.03] hover:z-20 hover:rotate-0 group ${item.rotate} ${item.aspect}`}
               >
                 <Image
-                  src={item.photo.displayKey}
+                  src={getOptimizedSrc(item.photo.displayKey, 800)}
                   alt={item.photo.alt}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   style={{
-                    objectPosition: `${(item.photo.focal?.x ?? 0.5) * 100}% ${(item.photo.focal?.y ?? 0.35) * 100}%`,
+                    objectPosition: `${(item.photo.focal?.x ?? 0.5) * 100}% ${(item.photo.focal?.y != null ? Math.min(item.photo.focal.y, 0.15) : 0.12) * 100}%`,
                   }}
                   sizes="(min-width:1024px) 25vw, (min-width:640px) 45vw, 90vw"
                 />

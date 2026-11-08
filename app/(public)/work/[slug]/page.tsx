@@ -7,6 +7,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/site-config";
 import { buildCollectionJsonLd } from "@/lib/seo/jsonld";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 export const dynamic = "force-dynamic";
 
@@ -25,17 +26,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       collection.description ||
       `${collection.title} portraits by ${siteConfig.brandName}, studio and portrait photographer in Benin City.`,
   };
-}
-
-function getOptimizedSrc(src: string, width = 1200) {
-  if (src.includes("images.unsplash.com")) {
-    const sep = src.includes("?") ? "&" : "?";
-    return `${src}${sep}w=${width}&q=84&auto=format`;
-  }
-  if (src.includes("res.cloudinary.com")) {
-    return src.replace("/upload/", `/upload/w_${width},q_auto,f_auto,c_limit/`);
-  }
-  return src;
 }
 
 export default async function CollectionPage({ params }: PageProps) {
@@ -133,7 +123,7 @@ export default async function CollectionPage({ params }: PageProps) {
                   height={photo.height}
                   className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   style={{
-                    objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y ?? 0.35) * 100}%`,
+                    objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y != null ? Math.min(photo.focal.y, 0.15) : 0.12) * 100}%`,
                   }}
                   sizes="(min-width:1024px) 32vw, (min-width:480px) 48vw, 100vw"
                   loading={i < 3 ? "eager" : "lazy"}

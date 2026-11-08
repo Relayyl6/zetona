@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { mockPhotos, mockCollections, PhotoDTO } from "@/lib/db/queries";
 import { UploadDropzone } from "@/components/admin/UploadDropzone";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 export default function AdminPhotosPage() {
   const [photos, setPhotos] = useState<PhotoDTO[]>(mockPhotos);
@@ -270,7 +271,7 @@ export default function AdminPhotosPage() {
           >
             <div className="aspect-[3/4] relative bg-black/40 overflow-hidden">
               <Image
-                src={photo.displayKey}
+                src={getOptimizedSrc(photo.displayKey, 400)}
                 alt={photo.alt || "Portfolio photo"}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"

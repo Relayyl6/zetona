@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { mockSettings, PhotoDTO } from "@/lib/db/queries";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 function normalizeSocialUrl(
   platform: "instagram" | "facebook" | "tiktok" | "x",
@@ -412,7 +413,7 @@ export default function AdminSettingsPage() {
                 >
                   <div className="aspect-[3/4] relative bg-black/40 overflow-hidden">
                     <Image
-                      src={photo.displayKey}
+                      src={getOptimizedSrc(photo.displayKey, 400)}
                       alt={photo.alt || photo.title || "Featured photo"}
                       fill
                       className="object-cover"
@@ -467,7 +468,7 @@ export default function AdminSettingsPage() {
                   title={photo.title || photo.id}
                 >
                   <Image
-                    src={photo.displayKey}
+                    src={getOptimizedSrc(photo.displayKey, 240)}
                     alt={photo.alt || photo.title || "Photo thumbnail"}
                     fill
                     className="object-cover"

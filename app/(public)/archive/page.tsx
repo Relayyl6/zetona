@@ -1,6 +1,7 @@
 import { Reveal } from "@/components/motion/Reveal";
 import { getAllPhotos } from "@/lib/db/data-store";
 import { mockPhotos } from "@/lib/db/queries";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 import Image from "next/image";
 import type { Metadata } from "next";
 
@@ -11,17 +12,6 @@ export const metadata: Metadata = {
   description:
     "Complete archive of published photographs by Zetona_E — portraits, studio sessions, and editorial work.",
 };
-
-function getOptimizedSrc(src: string, width = 800) {
-  if (src.includes("images.unsplash.com")) {
-    const sep = src.includes("?") ? "&" : "?";
-    return `${src}${sep}w=${width}&q=80&auto=format`;
-  }
-  if (src.includes("res.cloudinary.com")) {
-    return src.replace("/upload/", `/upload/w_${width},q_auto,f_auto,c_limit/`);
-  }
-  return src;
-}
 
 export default async function ArchivePage() {
   const photosData = await getAllPhotos();
@@ -65,7 +55,7 @@ export default async function ArchivePage() {
                 height={photo.height}
                 className="w-full h-auto object-cover transition-all duration-500 group-hover:scale-[1.03] grayscale-0 group-hover:brightness-90"
                 style={{
-                  objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y ?? 0.35) * 100}%`,
+                  objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y != null ? Math.min(photo.focal.y, 0.15) : 0.12) * 100}%`,
                 }}
                 sizes="(min-width:1024px) 25vw, (min-width:480px) 33vw, 50vw"
                 loading={i < 4 ? "eager" : "lazy"}

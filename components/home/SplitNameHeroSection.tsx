@@ -6,6 +6,7 @@ import Link from "next/link";
 import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { PhotoDTO, mockPhotos } from "@/lib/db/queries";
 import { dur, ease } from "@/lib/motion/tokens";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 interface SplitNameHeroSectionProps {
   photos: PhotoDTO[];
@@ -86,12 +87,12 @@ export function SplitNameHeroSection({ photos }: SplitNameHeroSectionProps) {
                     transition={{ duration: 0.6, ease: ease.outExpo }}
                   >
                     <Image
-                      src={activePhoto.displayKey}
+                      src={getOptimizedSrc(activePhoto.displayKey, 800)}
                       alt={activePhoto.alt}
                       fill
                       className="object-cover"
                       style={{
-                        objectPosition: `${(activePhoto.focal?.x ?? 0.5) * 100}% ${(activePhoto.focal?.y ?? 0.35) * 100}%`,
+                        objectPosition: `${(activePhoto.focal?.x ?? 0.5) * 100}% ${(activePhoto.focal?.y != null ? Math.min(activePhoto.focal.y, 0.15) : 0.12) * 100}%`,
                       }}
                       sizes="(min-width:1024px) 25vw, 60vw"
                       priority

@@ -2,6 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 interface FocalPointPickerProps {
   imageUrl: string;
@@ -39,7 +40,7 @@ export function FocalPointPicker({
         className="relative aspect-[3/4] max-w-sm overflow-hidden bg-[var(--bg-elevated)] border border-[var(--line)] cursor-crosshair group rounded-md"
       >
         <Image
-          src={imageUrl}
+          src={getOptimizedSrc(imageUrl, 800)}
           alt="Set focal point"
           fill
           className="object-cover select-none pointer-events-none"

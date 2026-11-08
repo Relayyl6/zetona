@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { CollectionDTO, mockCollections } from "@/lib/db/queries";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 export default function AdminCollectionsPage() {
   const [collections, setCollections] = useState<CollectionDTO[]>(mockCollections);
@@ -337,7 +338,7 @@ export default function AdminCollectionsPage() {
                     <div className="w-16 h-20 relative overflow-hidden bg-[var(--bg)] rounded-md border border-[var(--line)] flex-shrink-0">
                       {col.coverPhoto ? (
                         <Image
-                          src={col.coverPhoto.displayKey}
+                          src={getOptimizedSrc(col.coverPhoto.displayKey, 200)}
                           alt=""
                           fill
                           className="object-cover"

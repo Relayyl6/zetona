@@ -2,6 +2,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { getAllCollections, getAllPhotos } from "@/lib/db/data-store";
 import { mockCollections, mockPhotos } from "@/lib/db/queries";
 import { siteConfig } from "@/lib/site-config";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -74,12 +75,12 @@ export default async function WorkPage() {
                 <div className="aspect-[4/5] relative overflow-hidden bg-[var(--bg-elevated)] mb-4">
                   {coverPhoto && (
                     <Image
-                      src={coverPhoto.displayKey}
+                      src={getOptimizedSrc(coverPhoto.displayKey, 1000)}
                       alt={coverPhoto.alt || col.title}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                       style={{
-                        objectPosition: `${(coverPhoto.focal?.x ?? 0.5) * 100}% ${(coverPhoto.focal?.y ?? 0.35) * 100}%`,
+                        objectPosition: `${(coverPhoto.focal?.x ?? 0.5) * 100}% ${(coverPhoto.focal?.y != null ? Math.min(coverPhoto.focal.y, 0.15) : 0.12) * 100}%`,
                       }}
                       sizes="(min-width:1024px) 32vw, (min-width:768px) 48vw, 100vw"
                     />

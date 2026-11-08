@@ -6,6 +6,7 @@ import Link from "next/link";
 import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { CollectionDTO, PhotoDTO } from "@/lib/db/queries";
 import { dur, ease } from "@/lib/motion/tokens";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 interface FilmstripItem {
   id: string;
@@ -133,12 +134,12 @@ export function FilmstripSelector({
                   transition={{ duration: shouldReduce ? 0.15 : 0.35, ease: ease.outExpo }}
                 >
                   <Image
-                    src={current.displayKey}
+                    src={getOptimizedSrc(current.displayKey, 1000)}
                     alt={current.alt}
                     fill
                     className="object-cover"
                     style={{
-                      objectPosition: `${(current.focal?.x ?? 0.5) * 100}% ${(current.focal?.y ?? 0.35) * 100}%`,
+                      objectPosition: `${(current.focal?.x ?? 0.5) * 100}% ${(current.focal?.y != null ? Math.min(current.focal.y, 0.15) : 0.12) * 100}%`,
                     }}
                     sizes="(min-width:1024px) 45vw, 90vw"
                     priority
@@ -214,7 +215,7 @@ export function FilmstripSelector({
                   >
                     {item.displayKey && (
                       <Image
-                        src={item.displayKey}
+                        src={getOptimizedSrc(item.displayKey, 160)}
                         alt=""
                         fill
                         className="object-cover"
