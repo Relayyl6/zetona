@@ -174,7 +174,7 @@ function CollageCard({
       style={{
         left: `${slot.x}%`,
         top: `${slot.y}%`,
-        width: `${slot.widthVw}vw`,
+        width: `clamp(${Math.round(slot.widthVw * 11.5)}px, ${slot.widthVw * 1.55}vw, ${Math.round(slot.widthVw * 19.5)}px)`,
         zIndex: slot.z,
         x: shouldReduce ? 0 : (springX as unknown as any),
         rotate: shouldReduce ? 0 : `${slot.rotate ?? 0}deg`,
@@ -214,7 +214,7 @@ function CollageCard({
             objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y ?? 0.35) * 100}%`,
           }}
           priority={slot.isLcp}
-          sizes="(min-width:1024px) 20vw, 30vw"
+          sizes="(min-width:1024px) 25vw, (min-width:768px) 35vw, 85vw"
         />
       </div>
     </m.div>
