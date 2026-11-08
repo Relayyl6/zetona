@@ -38,6 +38,7 @@ export function Header({
   // are NEVER reset when the menu opens/closes. The effect only re-runs when lenis initialises.
   const menuOpenRef = React.useRef(menuOpen);
   React.useEffect(() => { menuOpenRef.current = menuOpen; }, [menuOpen]);
+  const isHoveredRef = React.useRef(false);
 
   React.useEffect(() => {
     let idleTimer: NodeJS.Timeout | null = null;
@@ -52,16 +53,16 @@ export function Header({
       accumulatedDown = 0;
       setIsVisible(true);
       if (idleTimer) clearTimeout(idleTimer);
-      // Keep visible for 6 seconds of stationary reading
+      // Keep visible for a few seconds (3s) of stationary reading before fading back up
       idleTimer = setTimeout(() => {
-        if (!menuOpenRef.current && getScrollY() > 60) {
+        if (!menuOpenRef.current && !isHoveredRef.current && getScrollY() > 60) {
           setIsVisible(false);
         }
-      }, 6000);
+      }, 3000);
     };
 
     const hideNav = () => {
-      if (getScrollY() > 60 && !menuOpenRef.current) {
+      if (getScrollY() > 60 && !menuOpenRef.current && !isHoveredRef.current) {
         if (idleTimer) clearTimeout(idleTimer);
         setIsVisible(false);
       }
@@ -70,8 +71,8 @@ export function Header({
     // 1. Direct hardware wheel / trackpad listener (immediate desktop intent)
     const onWheel = (e: WheelEvent) => {
       if (getScrollY() <= 60 || menuOpenRef.current) { showNav(); return; }
-      if (e.deltaY < -3) showNav();
-      else if (e.deltaY > 15) hideNav();
+      if (e.deltaY < -2) showNav();
+      else if (e.deltaY > 20) hideNav();
     };
 
     // 2. Mobile touch screen gestures (immediate finger drag response)
@@ -84,9 +85,9 @@ export function Header({
       const touchY = e.touches[0]?.clientY || 0;
       const diff = touchY - touchStartY;
       // Dragging finger DOWN means scrolling UP
-      if (diff > 6) { showNav(); touchStartY = touchY; }
+      if (diff > 8) { showNav(); touchStartY = touchY; }
       // Dragging finger UP means scrolling DOWN
-      else if (diff < -15) { hideNav(); touchStartY = touchY; }
+      else if (diff < -22) { hideNav(); touchStartY = touchY; }
     };
 
     // 3. Native window scroll listener (guaranteed on 100% of devices, iOS, Android, Desktop)
@@ -110,7 +111,7 @@ export function Header({
       // Scrolling DOWN: accumulate delta so settling jitter never accidentally hides the navbar
       else if (delta > 0) {
         accumulatedDown += delta;
-        if (accumulatedDown > 15) {
+        if (accumulatedDown > 25) {
           hideNav();
           accumulatedDown = 0;
         }
@@ -137,7 +138,7 @@ export function Header({
           showNav();
         } else if (delta > 0) {
           accumulatedDown += delta;
-          if (accumulatedDown > 15) {
+          if (accumulatedDown > 25) {
             hideNav();
             accumulatedDown = 0;
           }
@@ -217,6 +218,12 @@ export function Header({
         }}
         style={{
           pointerEvents: isVisible ? "auto" : "none",
+        }}
+        onMouseEnter={() => {
+          isHoveredRef.current = true;
+        }}
+        onMouseLeave={() => {
+          isHoveredRef.current = false;
         }}
         className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 transition-[background-color,border-color,padding] duration-200 flex items-center justify-between ${
           isScrolled
