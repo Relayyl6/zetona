@@ -12,11 +12,16 @@ export default async function PublicLayout({ children }: { children: React.React
 
   const activePhotoCount = photos.filter((p) => p.status === "published" || p.featuredHome !== undefined).length;
 
+  const footerPhoto = settings.footerPhotoId
+    ? photos.find((p) => p.id === settings.footerPhotoId)
+    : null;
+  const footerPhotoSrc = footerPhoto?.displayKey;
+
   return (
     <>
       <Header photoCount={activePhotoCount} />
       {children}
-      <Footer settings={settings} />
+      <Footer settings={settings} footerPhotoSrc={footerPhotoSrc} />
     </>
   );
 }

@@ -33,68 +33,51 @@ export default async function HomePage() {
     getAllCollections(),
     getAllTestimonials(),
   ]);
-  const featuredPhotos = photos.filter((p) => p.featuredHome);
-  const jsonLd = buildLocalBusinessJsonLd();
 
-  // Sessions & Awards for the interactive hover-reveal list
-  const sessionListItems = [
-    {
-      id: "ses_01",
-      title: "HONORABLE MENTION",
-      year: "2026",
-      href: "/work",
-      photo: photos[0] || mockPhotos[0],
-    },
-    {
-      id: "ses_02",
-      title: "SHORTLISTED PORTRAITURE",
-      year: "2025",
-      href: "/work",
-      photo: photos[1] || mockPhotos[1],
-    },
-    {
-      id: "ses_03",
-      title: "FEATURED EDITORIAL",
-      year: "2025",
-      href: "/work",
-      photo: photos[2] || mockPhotos[2],
-    },
-    {
-      id: "ses_04",
-      title: "COMMUNICATION ARTS",
-      year: "2024",
-      href: "/work",
-      photo: photos[3] || mockPhotos[3],
-    },
-    {
-      id: "ses_05",
-      title: "THE QUIET CITY",
-      year: "2024",
-      href: "/work",
-      photo: photos[4] || mockPhotos[4],
-    },
-    {
-      id: "ses_06",
-      title: "PROFESSIONAL COMPETITION",
-      year: "2023",
-      href: "/work",
-      photo: photos[5] || mockPhotos[5],
-    },
-    {
-      id: "ses_07",
-      title: "FINE ART PHOTOGRAPHY",
-      year: "2022",
-      href: "/work",
-      photo: photos[6] || mockPhotos[6],
-    },
-    {
-      id: "ses_08",
-      title: "GOLD AWARD NIGERIA",
-      year: "2021",
-      href: "/work",
-      photo: photos[7] || photos[0] || mockPhotos[7],
-    },
+  const allPublishedPhotos = photos.length > 0 ? photos : mockPhotos;
+
+  // 1. Hero Floating Collage Photos (Dedicated Section 1)
+  const heroPhotos = (settings.homeHeroPhotoIds && settings.homeHeroPhotoIds.length > 0)
+    ? settings.homeHeroPhotoIds.map((id) => allPublishedPhotos.find((p) => p.id === id)).filter(Boolean) as typeof photos
+    : allPublishedPhotos.filter((p) => p.featuredHome);
+  const effectiveHeroPhotos = heroPhotos.length > 0 ? heroPhotos : allPublishedPhotos.slice(0, 10);
+
+  // 2. Split-Name Hero Center Focal Portraits (Dedicated Section 2: ZETONA ... _E)
+  const splitPhotos = (settings.homeSplitPhotoIds && settings.homeSplitPhotoIds.length > 0)
+    ? settings.homeSplitPhotoIds.map((id) => allPublishedPhotos.find((p) => p.id === id)).filter(Boolean) as typeof photos
+    : effectiveHeroPhotos;
+
+  // 3. Sessions & Awards for the interactive hover-reveal list (Dedicated Section 3)
+  const defaultAwards = [
+    { id: "ses_01", title: "HONORABLE MENTION", year: "2026", href: "/work", photo: allPublishedPhotos[0] || mockPhotos[0] },
+    { id: "ses_02", title: "SHORTLISTED PORTRAITURE", year: "2025", href: "/work", photo: allPublishedPhotos[1] || mockPhotos[1] },
+    { id: "ses_03", title: "FEATURED EDITORIAL", year: "2025", href: "/work", photo: allPublishedPhotos[2] || mockPhotos[2] },
+    { id: "ses_04", title: "COMMUNICATION ARTS", year: "2024", href: "/work", photo: allPublishedPhotos[3] || mockPhotos[3] },
+    { id: "ses_05", title: "THE QUIET CITY", year: "2024", href: "/work", photo: allPublishedPhotos[4] || mockPhotos[4] },
+    { id: "ses_06", title: "PROFESSIONAL COMPETITION", year: "2023", href: "/work", photo: allPublishedPhotos[5] || mockPhotos[5] },
+    { id: "ses_07", title: "FINE ART PHOTOGRAPHY", year: "2022", href: "/work", photo: allPublishedPhotos[6] || mockPhotos[6] },
+    { id: "ses_08", title: "GOLD AWARD NIGERIA", year: "2021", href: "/work", photo: allPublishedPhotos[7] || allPublishedPhotos[0] || mockPhotos[7] },
   ];
+
+  const sessionListItems = (settings.homeAwardsList && settings.homeAwardsList.length > 0)
+    ? settings.homeAwardsList.map((item, idx) => {
+        const photo = item.photoId ? allPublishedPhotos.find((p) => p.id === item.photoId) : null;
+        return {
+          id: item.id || `ses_${idx}`,
+          title: item.title,
+          year: item.year,
+          href: item.href || "/work",
+          photo: photo || allPublishedPhotos[idx % allPublishedPhotos.length] || mockPhotos[0],
+        };
+      })
+    : defaultAwards;
+
+  // 4. Selected Work Filmstrip Photos (Dedicated Section 4)
+  const filmstripPhotos = (settings.homeFilmstripPhotoIds && settings.homeFilmstripPhotoIds.length > 0)
+    ? settings.homeFilmstripPhotoIds.map((id) => allPublishedPhotos.find((p) => p.id === id)).filter(Boolean) as typeof photos
+    : effectiveHeroPhotos;
+
+  const jsonLd = buildLocalBusinessJsonLd();
 
   return (
     <>
@@ -106,7 +89,7 @@ export default async function HomePage() {
       <main id="main-content">
         {/* 1. Rabah Floating Collage Hero (Clean center, big mobile cards, soft bottom fade) */}
         <CollageHero
-          photos={featuredPhotos}
+          photos={effectiveHeroPhotos}
           headline={settings.headline || "Beautiful moments of\nbeautiful people."}
           subline={settings.subline || undefined}
           cta="View the work"
@@ -114,7 +97,7 @@ export default async function HomePage() {
         />
 
         {/* 2. Kristin Watson Split-Name Hero Section (Image 4: ZETONA ... _E + Center Crop Frame) */}
-        <SplitNameHeroSection photos={featuredPhotos} />
+        <SplitNameHeroSection photos={splitPhotos} />
 
         {/* 3. Statement / Scroll-Lit Text (Pattern P3) — always shown with fallback bio */}
         <section
@@ -161,7 +144,7 @@ export default async function HomePage() {
         {/* 6. Last Section: Selected Work Incorporating the Filmstrip Carousel (Image 3) */}
         <FilmstripSelector
           collections={collections.length > 0 ? collections : mockCollections}
-          photos={featuredPhotos}
+          photos={filmstripPhotos}
           title="Selected Work"
           badge="• Selected Work"
         />

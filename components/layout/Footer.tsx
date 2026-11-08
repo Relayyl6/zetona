@@ -9,7 +9,8 @@ import { SiteSettingsDTO } from "@/lib/db/queries";
 import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 interface FooterProps {
-  settings?: Pick<SiteSettingsDTO, "instagramUrl" | "facebookUrl" | "tiktokUrl" | "xUrl">;
+  settings?: Pick<SiteSettingsDTO, "instagramUrl" | "facebookUrl" | "tiktokUrl" | "xUrl" | "footerPhotoId">;
+  footerPhotoSrc?: string | null;
 }
 
 const footerQuickLinks = [
@@ -25,7 +26,7 @@ const footerQuickLinks = [
  * On desktop (lg:), it strictly spans 100vh (h-screen / min-h-screen) covering the entire screen.
  * Automatically hides the duplicate CTA on /contact screen.
  */
-export function Footer({ settings }: FooterProps) {
+export function Footer({ settings, footerPhotoSrc }: FooterProps) {
   const pathname = usePathname();
   const isContactPage = pathname === "/contact";
 
@@ -190,7 +191,7 @@ export function Footer({ settings }: FooterProps) {
         {/* Right Column: Full-Height Edge-to-Edge Editorial Portrait on Desktop */}
         <div className="lg:col-span-5 relative w-full h-[280px] sm:h-[350px] lg:h-full overflow-hidden bg-[var(--bg-elevated)]">
           <Image
-            src={getOptimizedSrc("https://res.cloudinary.com/drgwnkllv/image/upload/v1794171645/zetona/ilzulvfc226tqfjr5jyr.jpg", 1200)}
+            src={getOptimizedSrc(footerPhotoSrc || "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171645/zetona/ilzulvfc226tqfjr5jyr.jpg", 1200)}
             alt="Zetona_E Portrait Studio"
             fill
             className="object-cover"

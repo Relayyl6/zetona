@@ -90,6 +90,11 @@ export async function getSiteSettings(): Promise<SiteSettingsDTO> {
           facebookUrl: row.facebook_url,
           tiktokUrl: row.tiktok_url,
           xUrl: row.x_url,
+          homeHeroPhotoIds: Array.isArray(row.home_hero_photo_ids) ? row.home_hero_photo_ids : [],
+          homeSplitPhotoIds: Array.isArray(row.home_split_photo_ids) ? row.home_split_photo_ids : [],
+          homeAwardsList: Array.isArray(row.home_awards_list) ? row.home_awards_list : [],
+          homeFilmstripPhotoIds: Array.isArray(row.home_filmstrip_photo_ids) ? row.home_filmstrip_photo_ids : [],
+          footerPhotoId: row.footer_photo_id || null,
         };
         return settings;
       }
@@ -114,7 +119,9 @@ export async function updateSiteSettings(updates: Partial<SiteSettingsDTO>): Pro
       await sql`
         INSERT INTO site_settings (
           id, headline, subline, bio, show_stats, show_awards, show_testimonials,
-          home_selector_mode, home_variant, instagram_url, facebook_url, tiktok_url, x_url, updated_at
+          home_selector_mode, home_variant, instagram_url, facebook_url, tiktok_url, x_url,
+          home_hero_photo_ids, home_split_photo_ids, home_awards_list, home_filmstrip_photo_ids, footer_photo_id,
+          updated_at
         ) VALUES (
           1,
           ${merged.headline || null},
@@ -129,6 +136,11 @@ export async function updateSiteSettings(updates: Partial<SiteSettingsDTO>): Pro
           ${merged.facebookUrl || null},
           ${merged.tiktokUrl || null},
           ${merged.xUrl || null},
+          ${JSON.stringify(merged.homeHeroPhotoIds || [])}::jsonb,
+          ${JSON.stringify(merged.homeSplitPhotoIds || [])}::jsonb,
+          ${JSON.stringify(merged.homeAwardsList || [])}::jsonb,
+          ${JSON.stringify(merged.homeFilmstripPhotoIds || [])}::jsonb,
+          ${merged.footerPhotoId || null},
           NOW()
         )
         ON CONFLICT (id) DO UPDATE SET
@@ -144,6 +156,11 @@ export async function updateSiteSettings(updates: Partial<SiteSettingsDTO>): Pro
           facebook_url = EXCLUDED.facebook_url,
           tiktok_url = EXCLUDED.tiktok_url,
           x_url = EXCLUDED.x_url,
+          home_hero_photo_ids = EXCLUDED.home_hero_photo_ids,
+          home_split_photo_ids = EXCLUDED.home_split_photo_ids,
+          home_awards_list = EXCLUDED.home_awards_list,
+          home_filmstrip_photo_ids = EXCLUDED.home_filmstrip_photo_ids,
+          footer_photo_id = EXCLUDED.footer_photo_id,
           updated_at = NOW();
       `;
       updatedSettings = merged;

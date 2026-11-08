@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { mockSettings, PhotoDTO, TestimonialDTO } from "@/lib/db/queries";
+import { mockSettings, PhotoDTO, TestimonialDTO, AwardItemDTO } from "@/lib/db/queries";
 import { getOptimizedSrc } from "@/lib/storage/image-url";
 import { getInitials } from "@/components/home/TestimonialsSection";
 
@@ -49,6 +49,69 @@ export default function AdminSettingsPage() {
   const [photos, setPhotos] = useState<PhotoDTO[]>([]);
   const [togglingPhotoId, setTogglingPhotoId] = useState<string | null>(null);
   const [selectedHomeCardId, setSelectedHomeCardId] = useState<string | null>(null);
+
+  // Per-section home picture configurations
+  const [homeHeroPhotoIds, setHomeHeroPhotoIds] = useState<string[]>([]);
+  const [homeSplitPhotoIds, setHomeSplitPhotoIds] = useState<string[]>([]);
+  const [homeAwardsList, setHomeAwardsList] = useState<AwardItemDTO[]>([]);
+  const [homeFilmstripPhotoIds, setHomeFilmstripPhotoIds] = useState<string[]>([]);
+  const [footerPhotoId, setFooterPhotoId] = useState<string | null>(null);
+
+  // Active award index currently choosing a photo in modal
+  const [selectingPhotoForAwardIndex, setSelectingPhotoForAwardIndex] = useState<number | null>(null);
+
+  const toggleHeroPhoto = (photoId: string) => {
+    setHomeHeroPhotoIds((prev) =>
+      prev.includes(photoId) ? prev.filter((id) => id !== photoId) : [...prev, photoId]
+    );
+  };
+
+  const toggleSplitPhoto = (photoId: string) => {
+    setHomeSplitPhotoIds((prev) =>
+      prev.includes(photoId) ? prev.filter((id) => id !== photoId) : [...prev, photoId]
+    );
+  };
+
+  const toggleFilmstripPhoto = (photoId: string) => {
+    setHomeFilmstripPhotoIds((prev) =>
+      prev.includes(photoId) ? prev.filter((id) => id !== photoId) : [...prev, photoId]
+    );
+  };
+
+  const handleSetFooterPhoto = (photoId: string) => {
+    setFooterPhotoId(photoId);
+  };
+
+  const handleUpdateAward = (index: number, field: "title" | "year", value: string) => {
+    setHomeAwardsList((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  };
+
+  const handleSetAwardPhoto = (index: number, photoId: string) => {
+    setHomeAwardsList((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], photoId };
+      return copy;
+    });
+    setSelectingPhotoForAwardIndex(null);
+  };
+
+  const handleAddAward = () => {
+    const newAward: AwardItemDTO = {
+      id: `ses_${Date.now()}`,
+      title: "NEW RECOGNITION",
+      year: new Date().getFullYear().toString(),
+      photoId: photos[0]?.id || null,
+    };
+    setHomeAwardsList((prev) => [...prev, newAward]);
+  };
+
+  const handleDeleteAward = (index: number) => {
+    setHomeAwardsList((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -213,6 +276,11 @@ export default function AdminSettingsPage() {
           const data = await res.json();
           if (data.photos && Array.isArray(data.photos)) {
             setPhotos(data.photos);
+            // Initialize section defaults if not already populated from settings
+            setHomeHeroPhotoIds((prev) => (prev.length > 0 ? prev : data.photos.filter((p: any) => p.featuredHome).map((p: any) => p.id)));
+            setHomeSplitPhotoIds((prev) => (prev.length > 0 ? prev : data.photos.filter((p: any) => p.featuredHome).slice(0, 3).map((p: any) => p.id)));
+            setHomeFilmstripPhotoIds((prev) => (prev.length > 0 ? prev : data.photos.filter((p: any) => p.featuredHome).map((p: any) => p.id)));
+            setFooterPhotoId((prev) => prev || data.photos[0]?.id || null);
           }
         }
       } catch (err) {
@@ -287,6 +355,42 @@ export default function AdminSettingsPage() {
             setFacebook(data.settings.facebookUrl ?? "");
             setTiktok(data.settings.tiktokUrl ?? "");
             setXUrl(data.settings.xUrl ?? "");
+
+            // 1. Hero photos
+            if (Array.isArray(data.settings.homeHeroPhotoIds) && data.settings.homeHeroPhotoIds.length > 0) {
+              setHomeHeroPhotoIds(data.settings.homeHeroPhotoIds);
+            }
+
+            // 2. Split hero photos
+            if (Array.isArray(data.settings.homeSplitPhotoIds) && data.settings.homeSplitPhotoIds.length > 0) {
+              setHomeSplitPhotoIds(data.settings.homeSplitPhotoIds);
+            }
+
+            // 3. Awards list
+            if (Array.isArray(data.settings.homeAwardsList) && data.settings.homeAwardsList.length > 0) {
+              setHomeAwardsList(data.settings.homeAwardsList);
+            } else {
+              setHomeAwardsList([
+                { id: "ses_01", title: "HONORABLE MENTION", year: "2026", photoId: null },
+                { id: "ses_02", title: "SHORTLISTED PORTRAITURE", year: "2025", photoId: null },
+                { id: "ses_03", title: "FEATURED EDITORIAL", year: "2025", photoId: null },
+                { id: "ses_04", title: "COMMUNICATION ARTS", year: "2024", photoId: null },
+                { id: "ses_05", title: "THE QUIET CITY", year: "2024", photoId: null },
+                { id: "ses_06", title: "PROFESSIONAL COMPETITION", year: "2023", photoId: null },
+                { id: "ses_07", title: "FINE ART PHOTOGRAPHY", year: "2022", photoId: null },
+                { id: "ses_08", title: "GOLD AWARD NIGERIA", year: "2021", photoId: null },
+              ]);
+            }
+
+            // 4. Filmstrip photos
+            if (Array.isArray(data.settings.homeFilmstripPhotoIds) && data.settings.homeFilmstripPhotoIds.length > 0) {
+              setHomeFilmstripPhotoIds(data.settings.homeFilmstripPhotoIds);
+            }
+
+            // 5. Footer photo
+            if (data.settings.footerPhotoId) {
+              setFooterPhotoId(data.settings.footerPhotoId);
+            }
           }
         }
       } catch (err) {
@@ -329,6 +433,11 @@ export default function AdminSettingsPage() {
           facebookUrl: normalizedFacebook,
           tiktokUrl: normalizedTiktok,
           xUrl: normalizedX,
+          homeHeroPhotoIds,
+          homeSplitPhotoIds,
+          homeAwardsList,
+          homeFilmstripPhotoIds,
+          footerPhotoId,
         }),
       });
 
@@ -360,7 +469,7 @@ export default function AdminSettingsPage() {
         <div>
           <h1 className="text-2xl font-serif text-[var(--fg)] tracking-tight">Site Settings</h1>
           <p className="text-xs text-[var(--fg-muted)] font-mono mt-1">
-            Edit live site copy, headline lines, social channels, and section visibility
+            Edit per-section home pictures, headline lines, reviews, bio, and social channels
           </p>
         </div>
 
@@ -372,6 +481,37 @@ export default function AdminSettingsPage() {
           {saving && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
           <span>{saved ? "Saved to Site ✓" : "Save Settings"}</span>
         </button>
+      </div>
+
+      {/* Quick Jump Navigation Pill Bar */}
+      <div className="bg-[var(--bg-elevated)] border border-[var(--line)] rounded-xl p-2.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs font-mono">
+        <span className="text-[var(--fg-dim)] uppercase text-[10px] pl-1 pr-1 font-bold whitespace-nowrap">
+          Jump to:
+        </span>
+        <a href="#hero-collage" className="px-2.5 py-1 rounded bg-[var(--bg)] border border-[var(--line)] hover:border-[var(--accent)] text-[var(--fg-muted)] hover:text-white whitespace-nowrap transition-colors">
+          1. Hero Collage
+        </a>
+        <a href="#split-hero" className="px-2.5 py-1 rounded bg-[var(--bg)] border border-[var(--line)] hover:border-purple-500 text-[var(--fg-muted)] hover:text-white whitespace-nowrap transition-colors">
+          2. Split-Name Hero
+        </a>
+        <a href="#awards-section" className="px-2.5 py-1 rounded bg-[var(--bg)] border border-[var(--line)] hover:border-amber-500 text-[var(--fg-muted)] hover:text-white whitespace-nowrap transition-colors">
+          3. Awards Showcase
+        </a>
+        <a href="#filmstrip-section" className="px-2.5 py-1 rounded bg-[var(--bg)] border border-[var(--line)] hover:border-emerald-500 text-[var(--fg-muted)] hover:text-white whitespace-nowrap transition-colors">
+          4. Selected Work Filmstrip
+        </a>
+        <a href="#footer-portrait-section" className="px-2.5 py-1 rounded bg-[var(--bg)] border border-[var(--line)] hover:border-blue-500 text-[var(--fg-muted)] hover:text-white whitespace-nowrap transition-colors">
+          5. Footer Portrait
+        </a>
+        <a href="#testimonials" className="px-2.5 py-1 rounded bg-[var(--bg)] border border-[var(--line)] hover:border-[var(--accent)] text-[var(--fg-muted)] hover:text-white whitespace-nowrap transition-colors">
+          6. Testimonials
+        </a>
+        <a href="#copy-section" className="px-2.5 py-1 rounded bg-[var(--bg)] border border-[var(--line)] hover:border-[var(--accent)] text-[var(--fg-muted)] hover:text-white whitespace-nowrap transition-colors">
+          7. Headlines &amp; Text
+        </a>
+        <a href="#social-section" className="px-2.5 py-1 rounded bg-[var(--bg)] border border-[var(--line)] hover:border-[var(--accent)] text-[var(--fg-muted)] hover:text-white whitespace-nowrap transition-colors">
+          8. Socials
+        </a>
       </div>
 
       {saved && (
@@ -535,129 +675,70 @@ export default function AdminSettingsPage() {
         </div>
       </div>
 
-      {/* ──────────────── 4. FEATURED HOMEPAGE PICTURES SELECTION ──────────────── */}
-      <div className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-6">
+      {/* ──────────────── SECTION 1: HERO FLOATING COLLAGE PICTURES ──────────────── */}
+      <div id="hero-collage" className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-6 scroll-mt-20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--line)] pb-3">
           <div>
-            <h2 className="text-sm font-medium text-[var(--fg)]">Featured Homepage Pictures Selection</h2>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] bg-[var(--accent)]/15 text-[var(--accent-text)] px-2 py-0.5 rounded font-semibold uppercase">
+                Section 1 • Hero
+              </span>
+              <h2 className="text-sm font-medium text-[var(--fg)]">Floating Collage Pictures</h2>
+            </div>
             <p className="text-[11px] text-[var(--fg-muted)] font-mono mt-0.5">
-              Choose which client photos appear in the Rabah Floating Collage Hero, Split-Name Hero, and Selected Work Filmstrip
+              Photographs that float dynamically around the headline on desktop &amp; form the touch swipe carousel on mobile (6–12 recommended)
             </p>
           </div>
           <span className="font-mono text-xs bg-[var(--accent)]/15 text-[var(--accent-text)] px-3 py-1 rounded-full border border-[var(--accent)]/30 w-fit">
-            {photos.filter((p) => p.featuredHome).length} Featured on Home
+            {homeHeroPhotoIds.length} in Hero Collage
           </span>
         </div>
 
-        {/* Selected Photos Reel */}
+        {/* Selected Photos Reel for Hero Collage */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block">
-              Currently Featured on Homepage (Active {photos.filter((p) => p.featuredHome).length})
-            </span>
-            <span className="text-[10px] font-mono text-[var(--fg-dim)] hidden sm:inline">
-              Tap any photo to view actions or tap Remove ✕
-            </span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-            {photos
-              .filter((p) => p.featuredHome)
-              .map((photo) => {
-                const isSelected = selectedHomeCardId === photo.id;
-                const isToggling = togglingPhotoId === photo.id;
-
+          <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-3">
+            Currently in Hero Collage ({homeHeroPhotoIds.length})
+          </span>
+          {homeHeroPhotoIds.length === 0 ? (
+            <p className="text-xs text-[var(--fg-dim)] font-mono italic p-4 bg-[var(--bg)]/50 rounded-lg border border-[var(--line)]">
+              No photos assigned yet. Click photos in the gallery below to add them to the Hero Collage.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {homeHeroPhotoIds.map((photoId, idx) => {
+                const photo = photos.find((p) => p.id === photoId);
+                if (!photo) return null;
                 return (
                   <div
                     key={photo.id}
-                    onClick={() => setSelectedHomeCardId((prev) => (prev === photo.id ? null : photo.id))}
-                    className={`relative group bg-[var(--bg)] border rounded-lg overflow-hidden shadow-sm transition-all cursor-pointer ${
-                      isSelected
-                        ? "border-[var(--accent)] ring-2 ring-[var(--accent)]/50 scale-[1.01]"
-                        : "border-[var(--accent)]/40 hover:border-[var(--accent)]"
-                    }`}
+                    className="relative group bg-[var(--bg)] border border-[var(--accent)]/40 hover:border-[var(--accent)] rounded-lg overflow-hidden shadow-sm transition-all"
                   >
                     <div className="aspect-[3/4] relative bg-black/40 overflow-hidden">
                       <Image
                         src={getOptimizedSrc(photo.displayKey, 400)}
-                        alt={photo.alt || photo.title || "Featured photo"}
+                        alt={photo.alt || photo.title || "Hero photo"}
                         fill
                         className="object-cover"
                         sizes="(min-width:768px) 20vw, 33vw"
                       />
-
-                      {/* Persistent Overlay on tap / click or on desktop hover */}
-                      <div
-                        className={`absolute inset-0 bg-black/75 backdrop-blur-[2px] transition-opacity flex flex-col justify-between p-2.5 z-10 ${
-                          isSelected
-                            ? "opacity-100 pointer-events-auto"
-                            : "opacity-0 md:group-hover:opacity-100 pointer-events-none md:group-hover:pointer-events-auto"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="text-[9px] font-mono text-emerald-400 bg-black/80 border border-emerald-500/30 px-1.5 py-0.5 rounded">
-                            Active on Home
-                          </span>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedHomeCardId(null);
-                            }}
-                            className="text-white/60 hover:text-white text-xs px-1.5 py-0.5 rounded bg-white/10"
-                            title="Dismiss overlay"
-                          >
-                            ✕
-                          </button>
-                        </div>
-
-                        <div className="flex flex-col gap-1.5 w-full">
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              toggleFeaturedHome(photo.id, true);
-                              if (isSelected) setSelectedHomeCardId(null);
-                            }}
-                            disabled={isToggling}
-                            className="w-full bg-red-600 hover:bg-red-500 text-white text-[11px] font-mono py-1.5 px-2 rounded cursor-pointer transition-colors flex items-center justify-center gap-1 shadow-md disabled:opacity-50"
-                          >
-                            {isToggling ? (
-                              <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                              <span>Remove from Home ✕</span>
-                            )}
-                          </button>
-                          <a
-                            href={`/admin/photos/${photo.id}`}
-                            onClick={(e) => e.stopPropagation()}
-                            className="w-full bg-white/10 hover:bg-white/20 text-[var(--fg)] text-[10px] font-mono py-1 px-2 rounded text-center border border-white/10 transition-colors"
-                          >
-                            Edit Photo Details →
-                          </a>
-                        </div>
+                      <div className="absolute top-1.5 left-1.5 font-mono text-[10px] bg-black/80 text-white px-1.5 py-0.5 rounded border border-white/10">
+                        #{idx + 1}
                       </div>
                     </div>
-
-                    {/* Metadata footer with permanent mobile & desktop Remove button */}
                     <div className="p-2 flex items-center justify-between gap-1 border-t border-[var(--line)]">
                       <div className="min-w-0 flex-1">
                         <p className="text-[11px] font-medium text-[var(--fg)] truncate">
                           {photo.title || "Untitled"}
                         </p>
                         <p className="text-[9px] font-mono text-[var(--fg-dim)] truncate">
-                          {photo.collection?.title || "No section"}
+                          {photo.collection?.title || "Hero Slot"}
                         </p>
                       </div>
                       <button
                         type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFeaturedHome(photo.id, true);
-                          if (isSelected) setSelectedHomeCardId(null);
-                        }}
-                        disabled={isToggling}
-                        className="shrink-0 text-[10px] font-mono text-red-400 hover:text-white bg-red-950/40 hover:bg-red-600 border border-red-500/30 px-2 py-0.5 rounded cursor-pointer transition-colors disabled:opacity-50"
-                        title="Remove from Homepage"
+                        onClick={() => toggleHeroPhoto(photo.id)}
+                        className="shrink-0 text-[10px] font-mono text-red-400 hover:text-white bg-red-950/40 hover:bg-red-600 border border-red-500/30 px-2 py-0.5 rounded cursor-pointer transition-colors"
+                        title="Remove from Hero Collage"
                       >
                         Remove ✕
                       </button>
@@ -665,27 +746,25 @@ export default function AdminSettingsPage() {
                   </div>
                 );
               })}
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* Gallery Picker (Click any photo to toggle) */}
+        {/* Gallery Picker for Hero Collage */}
         <div className="pt-2 border-t border-[var(--line)]">
           <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-2">
-            Click Any Photo Below to Add or Remove from Homepage:
+            Click Any Photo Below to Add or Remove from Hero Floating Collage:
           </span>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 max-h-96 overflow-y-auto p-1 bg-[var(--bg)]/40 rounded-lg border border-[var(--line)]">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 max-h-80 overflow-y-auto p-1 bg-[var(--bg)]/40 rounded-lg border border-[var(--line)]">
             {photos.map((photo) => {
-              const isFeatured = Boolean(photo.featuredHome);
-              const isToggling = togglingPhotoId === photo.id;
-
+              const isSelected = homeHeroPhotoIds.includes(photo.id);
               return (
                 <button
                   type="button"
                   key={photo.id}
-                  onClick={() => toggleFeaturedHome(photo.id, isFeatured)}
-                  disabled={isToggling}
+                  onClick={() => toggleHeroPhoto(photo.id)}
                   className={`group relative aspect-[3/4] rounded-md overflow-hidden border-2 transition-all cursor-pointer ${
-                    isFeatured
+                    isSelected
                       ? "border-[var(--accent)] ring-2 ring-[var(--accent)]/30 scale-[0.98]"
                       : "border-transparent opacity-75 hover:opacity-100 hover:border-white/30"
                   }`}
@@ -693,17 +772,13 @@ export default function AdminSettingsPage() {
                 >
                   <Image
                     src={getOptimizedSrc(photo.displayKey, 240)}
-                    alt={photo.alt || photo.title || "Photo thumbnail"}
+                    alt={photo.alt || photo.title || "Photo"}
                     fill
                     className="object-cover"
                     sizes="120px"
                   />
                   <div className="absolute top-1 right-1">
-                    {isToggling ? (
-                      <span className="w-5 h-5 bg-black/80 text-white rounded-full flex items-center justify-center">
-                        <span className="w-2.5 h-2.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      </span>
-                    ) : isFeatured ? (
+                    {isSelected ? (
                       <span className="w-5 h-5 bg-[var(--accent)] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow">
                         ✓
                       </span>
@@ -713,6 +788,474 @@ export default function AdminSettingsPage() {
                       </span>
                     )}
                   </div>
+                  <div className="absolute bottom-0 inset-x-0 bg-black/75 p-1 text-[9px] text-white truncate text-left font-mono">
+                    {photo.title || "Untitled"}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ──────────────── SECTION 2: SPLIT-NAME HERO CENTER PORTRAIT(S) ──────────────── */}
+      <div id="split-hero" className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-6 scroll-mt-20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--line)] pb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] bg-purple-500/15 text-purple-300 px-2 py-0.5 rounded font-semibold uppercase">
+                Section 2 • Split-Name
+              </span>
+              <h2 className="text-sm font-medium text-[var(--fg)]">ZETONA ... _E Center Focal Portrait(s)</h2>
+            </div>
+            <p className="text-[11px] text-[var(--fg-muted)] font-mono mt-0.5">
+              The focal portrait(s) positioned between giant &apos;ZETONA&apos; and &apos;_E&apos;. If multiple are chosen, the central crop frame cycles between them.
+            </p>
+          </div>
+          <span className="font-mono text-xs bg-purple-500/15 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30 w-fit">
+            {homeSplitPhotoIds.length} Focal Portraits
+          </span>
+        </div>
+
+        {/* Selected Photos for Split-Name Hero */}
+        <div>
+          <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-3">
+            Center Crop Focal Portrait(s) ({homeSplitPhotoIds.length})
+          </span>
+          {homeSplitPhotoIds.length === 0 ? (
+            <p className="text-xs text-[var(--fg-dim)] font-mono italic p-4 bg-[var(--bg)]/50 rounded-lg border border-[var(--line)]">
+              No focal portrait assigned yet. Click photos below to assign them to the ZETONA central crop window.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {homeSplitPhotoIds.map((photoId, idx) => {
+                const photo = photos.find((p) => p.id === photoId);
+                if (!photo) return null;
+                return (
+                  <div
+                    key={photo.id}
+                    className="relative group bg-[var(--bg)] border border-purple-500/40 hover:border-purple-400 rounded-lg overflow-hidden shadow-sm transition-all"
+                  >
+                    <div className="aspect-[4/5] relative bg-black/40 overflow-hidden">
+                      <Image
+                        src={getOptimizedSrc(photo.displayKey, 400)}
+                        alt={photo.alt || photo.title || "Split-name focal photo"}
+                        fill
+                        className="object-cover"
+                        sizes="(min-width:768px) 20vw, 33vw"
+                      />
+                      <div className="absolute top-1.5 left-1.5 font-mono text-[10px] bg-black/80 text-purple-300 px-1.5 py-0.5 rounded border border-purple-500/20">
+                        Focal #{idx + 1}
+                      </div>
+                    </div>
+                    <div className="p-2 flex items-center justify-between gap-1 border-t border-[var(--line)]">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-medium text-[var(--fg)] truncate">
+                          {photo.title || "Untitled"}
+                        </p>
+                        <p className="text-[9px] font-mono text-[var(--fg-dim)] truncate">
+                          Focal Frame
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleSplitPhoto(photo.id)}
+                        className="shrink-0 text-[10px] font-mono text-red-400 hover:text-white bg-red-950/40 hover:bg-red-600 border border-red-500/30 px-2 py-0.5 rounded cursor-pointer transition-colors"
+                        title="Remove from Center Frame"
+                      >
+                        Remove ✕
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Gallery Picker for Split-Name Hero */}
+        <div className="pt-2 border-t border-[var(--line)]">
+          <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-2">
+            Click Any Photo Below to Add or Remove as a Center Focal Portrait:
+          </span>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 max-h-80 overflow-y-auto p-1 bg-[var(--bg)]/40 rounded-lg border border-[var(--line)]">
+            {photos.map((photo) => {
+              const isSelected = homeSplitPhotoIds.includes(photo.id);
+              return (
+                <button
+                  type="button"
+                  key={photo.id}
+                  onClick={() => toggleSplitPhoto(photo.id)}
+                  className={`group relative aspect-[3/4] rounded-md overflow-hidden border-2 transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-purple-500 ring-2 ring-purple-500/30 scale-[0.98]"
+                      : "border-transparent opacity-75 hover:opacity-100 hover:border-white/30"
+                  }`}
+                  title={photo.title || photo.id}
+                >
+                  <Image
+                    src={getOptimizedSrc(photo.displayKey, 240)}
+                    alt={photo.alt || photo.title || "Photo"}
+                    fill
+                    className="object-cover"
+                    sizes="120px"
+                  />
+                  <div className="absolute top-1 right-1">
+                    {isSelected ? (
+                      <span className="w-5 h-5 bg-purple-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow">
+                        ✓
+                      </span>
+                    ) : (
+                      <span className="w-5 h-5 bg-black/60 text-white/80 border border-white/20 text-[10px] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        +
+                      </span>
+                    )}
+                  </div>
+                  <div className="absolute bottom-0 inset-x-0 bg-black/75 p-1 text-[9px] text-white truncate text-left font-mono">
+                    {photo.title || "Untitled"}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ──────────────── SECTION 3: AWARDS & EDITORIAL SHOWCASE (HOVER-REVEAL) ──────────────── */}
+      <div id="awards-section" className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-6 scroll-mt-20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] bg-amber-500/15 text-amber-300 px-2 py-0.5 rounded font-semibold uppercase">
+                Section 3 • Awards List
+              </span>
+              <h2 className="text-sm font-medium text-[var(--fg)]">Awards &amp; Editorial Showcase (&quot;MY AWARDS&quot;)</h2>
+            </div>
+            <p className="text-[11px] text-[var(--fg-muted)] font-mono mt-0.5">
+              Edit each award title, year, and select the EXACT photograph that reveals when hovered on desktop or tapped on mobile
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs bg-amber-500/15 text-amber-300 px-3 py-1 rounded-full border border-amber-500/30 w-fit">
+              {homeAwardsList.length} Awards
+            </span>
+            <button
+              type="button"
+              onClick={handleAddAward}
+              className="text-xs font-mono text-[var(--accent-text)] bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+            >
+              + Add Award
+            </button>
+          </div>
+        </div>
+
+        {/* Awards Items List */}
+        <div className="space-y-3">
+          {homeAwardsList.map((award, idx) => {
+            const assignedPhoto = award.photoId ? photos.find((p) => p.id === award.photoId) : null;
+
+            return (
+              <div
+                key={award.id || idx}
+                className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-white/20 transition-colors"
+              >
+                <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                  {/* Photo Thumbnail Button / Trigger */}
+                  <button
+                    type="button"
+                    onClick={() => setSelectingPhotoForAwardIndex(idx)}
+                    className="relative w-14 h-18 sm:w-16 sm:h-20 aspect-[3/4] rounded-lg overflow-hidden border border-white/20 bg-black/50 shrink-0 group cursor-pointer"
+                    title="Click to change photo"
+                  >
+                    {assignedPhoto ? (
+                      <>
+                        <Image
+                          src={getOptimizedSrc(assignedPhoto.displayKey, 200)}
+                          alt={assignedPhoto.title || "Award image"}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform"
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[10px] text-white font-mono text-center p-1">
+                          Change 📷
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-[9px] font-mono text-[var(--accent-text)] p-1 text-center bg-[var(--accent)]/10">
+                        <span>+ Pick</span>
+                        <span>Photo</span>
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Title & Year Inputs */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 flex-1 min-w-0">
+                    <div>
+                      <label className="text-[10px] font-mono text-[var(--fg-dim)] uppercase block mb-1">
+                        Award / Feature Title *
+                      </label>
+                      <input
+                        type="text"
+                        value={award.title}
+                        onChange={(e) => handleUpdateAward(idx, "title", e.target.value)}
+                        placeholder="e.g. HONORABLE MENTION"
+                        className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded px-3 py-1.5 text-xs text-[var(--fg)] font-medium focus:outline-none focus:border-[var(--accent)] uppercase"
+                      />
+                    </div>
+                    <div className="w-full sm:w-28">
+                      <label className="text-[10px] font-mono text-[var(--fg-dim)] uppercase block mb-1">
+                        Year *
+                      </label>
+                      <input
+                        type="text"
+                        value={award.year}
+                        onChange={(e) => handleUpdateAward(idx, "year", e.target.value)}
+                        placeholder="2026"
+                        className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded px-3 py-1.5 text-xs text-[var(--fg)] font-mono focus:outline-none focus:border-[var(--accent)]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setSelectingPhotoForAwardIndex(idx)}
+                    className="text-xs font-mono text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)] px-2.5 py-1.5 rounded cursor-pointer"
+                  >
+                    Change Photo 📷
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteAward(idx)}
+                    className="text-xs font-mono text-red-400 hover:text-red-300 bg-red-950/40 border border-red-500/30 px-2.5 py-1.5 rounded cursor-pointer"
+                    title="Delete award item"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ──────────────── SECTION 4: SELECTED WORK FILMSTRIP CAROUSEL ──────────────── */}
+      <div id="filmstrip-section" className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-6 scroll-mt-20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--line)] pb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] bg-emerald-500/15 text-emerald-300 px-2 py-0.5 rounded font-semibold uppercase">
+                Section 4 • Filmstrip
+              </span>
+              <h2 className="text-sm font-medium text-[var(--fg)]">Selected Work Filmstrip Carousel</h2>
+            </div>
+            <p className="text-[11px] text-[var(--fg-muted)] font-mono mt-0.5">
+              Photographs featured in the interactive horizontal filmstrip carousel at the base of the homepage before the footer
+            </p>
+          </div>
+          <span className="font-mono text-xs bg-emerald-500/15 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30 w-fit">
+            {homeFilmstripPhotoIds.length} in Filmstrip
+          </span>
+        </div>
+
+        {/* Selected Photos Reel for Filmstrip */}
+        <div>
+          <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-3">
+            Currently in Filmstrip Reel ({homeFilmstripPhotoIds.length})
+          </span>
+          {homeFilmstripPhotoIds.length === 0 ? (
+            <p className="text-xs text-[var(--fg-dim)] font-mono italic p-4 bg-[var(--bg)]/50 rounded-lg border border-[var(--line)]">
+              No photos assigned yet. Click photos in the gallery below to add them to the Selected Work filmstrip.
+            </p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {homeFilmstripPhotoIds.map((photoId, idx) => {
+                const photo = photos.find((p) => p.id === photoId);
+                if (!photo) return null;
+                return (
+                  <div
+                    key={photo.id}
+                    className="relative group bg-[var(--bg)] border border-emerald-500/40 hover:border-emerald-400 rounded-lg overflow-hidden shadow-sm transition-all"
+                  >
+                    <div className="aspect-[3/4] relative bg-black/40 overflow-hidden">
+                      <Image
+                        src={getOptimizedSrc(photo.displayKey, 400)}
+                        alt={photo.alt || photo.title || "Filmstrip photo"}
+                        fill
+                        className="object-cover"
+                        sizes="(min-width:768px) 20vw, 33vw"
+                      />
+                      <div className="absolute top-1.5 left-1.5 font-mono text-[10px] bg-black/80 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                        Reel #{idx + 1}
+                      </div>
+                    </div>
+                    <div className="p-2 flex items-center justify-between gap-1 border-t border-[var(--line)]">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-medium text-[var(--fg)] truncate">
+                          {photo.title || "Untitled"}
+                        </p>
+                        <p className="text-[9px] font-mono text-[var(--fg-dim)] truncate">
+                          {photo.collection?.title || "Selected Work"}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleFilmstripPhoto(photo.id)}
+                        className="shrink-0 text-[10px] font-mono text-red-400 hover:text-white bg-red-950/40 hover:bg-red-600 border border-red-500/30 px-2 py-0.5 rounded cursor-pointer transition-colors"
+                        title="Remove from Filmstrip"
+                      >
+                        Remove ✕
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Gallery Picker for Filmstrip */}
+        <div className="pt-2 border-t border-[var(--line)]">
+          <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-2">
+            Click Any Photo Below to Add or Remove from the Filmstrip Reel:
+          </span>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 max-h-80 overflow-y-auto p-1 bg-[var(--bg)]/40 rounded-lg border border-[var(--line)]">
+            {photos.map((photo) => {
+              const isSelected = homeFilmstripPhotoIds.includes(photo.id);
+              return (
+                <button
+                  type="button"
+                  key={photo.id}
+                  onClick={() => toggleFilmstripPhoto(photo.id)}
+                  className={`group relative aspect-[3/4] rounded-md overflow-hidden border-2 transition-all cursor-pointer ${
+                    isSelected
+                      ? "border-emerald-500 ring-2 ring-emerald-500/30 scale-[0.98]"
+                      : "border-transparent opacity-75 hover:opacity-100 hover:border-white/30"
+                  }`}
+                  title={photo.title || photo.id}
+                >
+                  <Image
+                    src={getOptimizedSrc(photo.displayKey, 240)}
+                    alt={photo.alt || photo.title || "Photo"}
+                    fill
+                    className="object-cover"
+                    sizes="120px"
+                  />
+                  <div className="absolute top-1 right-1">
+                    {isSelected ? (
+                      <span className="w-5 h-5 bg-emerald-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow">
+                        ✓
+                      </span>
+                    ) : (
+                      <span className="w-5 h-5 bg-black/60 text-white/80 border border-white/20 text-[10px] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        +
+                      </span>
+                    )}
+                  </div>
+                  <div className="absolute bottom-0 inset-x-0 bg-black/75 p-1 text-[9px] text-white truncate text-left font-mono">
+                    {photo.title || "Untitled"}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ──────────────── SECTION 5: FOOTER EDITORIAL PORTRAIT ──────────────── */}
+      <div id="footer-portrait-section" className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-6 scroll-mt-20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--line)] pb-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] bg-blue-500/15 text-blue-300 px-2 py-0.5 rounded font-semibold uppercase">
+                Section 5 • Footer
+              </span>
+              <h2 className="text-sm font-medium text-[var(--fg)]">Footer Editorial Portrait (&quot;LET&apos;S TALK.&quot;)</h2>
+            </div>
+            <p className="text-[11px] text-[var(--fg-muted)] font-mono mt-0.5">
+              Choose the full-height portrait showcased on the right side of the full-screen footer across the website
+            </p>
+          </div>
+          <span className="font-mono text-xs bg-blue-500/15 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30 w-fit">
+            1 Active Portrait
+          </span>
+        </div>
+
+        {/* Active Footer Portrait Preview */}
+        {(() => {
+          const activeFooterPhoto = footerPhotoId ? photos.find((p) => p.id === footerPhotoId) : photos[0];
+          return (
+            <div className="bg-[var(--bg)] border border-[var(--line)] rounded-xl p-4 sm:p-6 flex flex-col md:flex-row items-center gap-6">
+              <div className="relative w-44 sm:w-52 aspect-[3/4] rounded-lg overflow-hidden bg-black/60 border-2 border-[var(--accent)] shadow-2xl shrink-0">
+                {activeFooterPhoto ? (
+                  <Image
+                    src={getOptimizedSrc(activeFooterPhoto.displayKey, 600)}
+                    alt="Footer Portrait"
+                    fill
+                    className="object-cover"
+                    sizes="240px"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-xs font-mono text-[var(--fg-dim)]">
+                    No photo selected
+                  </div>
+                )}
+                <div className="absolute top-2 left-2 bg-[var(--accent)] text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded shadow">
+                  Active in Footer ✓
+                </div>
+              </div>
+
+              <div className="flex-1 space-y-2 text-center md:text-left">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--fg-dim)] block">
+                  Current Footer Portrait
+                </span>
+                <h3 className="text-lg font-serif text-[var(--fg)]">
+                  {activeFooterPhoto?.title || "Editorial Portrait"}
+                </h3>
+                <p className="text-xs text-[var(--fg-muted)] font-mono">
+                  {activeFooterPhoto?.collection?.title || "Zetona Portrait Session"}
+                </p>
+                <p className="text-[11px] text-[var(--fg-dim)] font-mono pt-2">
+                  Click any photo in the library below to switch the footer portrait instantly!
+                </p>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* Gallery Picker for Footer Portrait */}
+        <div className="pt-2 border-t border-[var(--line)]">
+          <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-2">
+            Click Any Photo Below to Set as the Active Footer Portrait:
+          </span>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 max-h-80 overflow-y-auto p-1 bg-[var(--bg)]/40 rounded-lg border border-[var(--line)]">
+            {photos.map((photo) => {
+              const isCurrent = footerPhotoId === photo.id;
+              return (
+                <button
+                  type="button"
+                  key={photo.id}
+                  onClick={() => handleSetFooterPhoto(photo.id)}
+                  className={`group relative aspect-[3/4] rounded-md overflow-hidden border-2 transition-all cursor-pointer ${
+                    isCurrent
+                      ? "border-[var(--accent)] ring-4 ring-[var(--accent)]/40 scale-[0.98]"
+                      : "border-transparent opacity-75 hover:opacity-100 hover:border-white/30"
+                  }`}
+                  title={`Set ${photo.title || photo.id} as Footer Portrait`}
+                >
+                  <Image
+                    src={getOptimizedSrc(photo.displayKey, 240)}
+                    alt={photo.alt || photo.title || "Photo"}
+                    fill
+                    className="object-cover"
+                    sizes="120px"
+                  />
+                  {isCurrent && (
+                    <div className="absolute top-1 right-1 w-5 h-5 bg-[var(--accent)] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow">
+                      ✓
+                    </div>
+                  )}
                   <div className="absolute bottom-0 inset-x-0 bg-black/75 p-1 text-[9px] text-white truncate text-left font-mono">
                     {photo.title || "Untitled"}
                   </div>
@@ -1057,6 +1600,65 @@ export default function AdminSettingsPage() {
           <span>{saved ? "Saved to Site ✓" : "Save All Settings"}</span>
         </button>
       </div>
+
+      {/* ──────────────── MODAL: PHOTO PICKER FOR AWARDS ──────────────── */}
+      {selectingPhotoForAwardIndex !== null && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[var(--bg-elevated)] border border-[var(--line-strong)] rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-4 border-b border-[var(--line)] flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-[var(--fg)]">
+                  Choose Photo for &quot;{homeAwardsList[selectingPhotoForAwardIndex]?.title}&quot;
+                </h3>
+                <p className="text-[11px] font-mono text-[var(--fg-muted)]">
+                  Click any photo below to assign it as the hover-reveal image
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectingPhotoForAwardIndex(null)}
+                className="text-xs font-mono text-[var(--fg-muted)] hover:text-white px-2 py-1 rounded border border-white/10 cursor-pointer"
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+              {photos.map((p) => {
+                const isCurrent = homeAwardsList[selectingPhotoForAwardIndex]?.photoId === p.id;
+                return (
+                  <button
+                    type="button"
+                    key={p.id}
+                    onClick={() => handleSetAwardPhoto(selectingPhotoForAwardIndex, p.id)}
+                    className={`relative aspect-[3/4] rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${
+                      isCurrent
+                        ? "border-[var(--accent)] ring-2 ring-[var(--accent)]/50 scale-[0.98]"
+                        : "border-transparent opacity-80 hover:opacity-100 hover:border-white/30"
+                    }`}
+                  >
+                    <Image
+                      src={getOptimizedSrc(p.displayKey, 300)}
+                      alt={p.alt || p.title || "Photo"}
+                      fill
+                      className="object-cover"
+                      sizes="150px"
+                    />
+                    {isCurrent && (
+                      <div className="absolute top-1 right-1 w-5 h-5 bg-[var(--accent)] text-white text-[11px] font-bold rounded-full flex items-center justify-center shadow">
+                        ✓
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 inset-x-0 bg-black/70 p-1 text-[9px] text-white truncate text-left font-mono">
+                      {p.title || "Untitled"}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }

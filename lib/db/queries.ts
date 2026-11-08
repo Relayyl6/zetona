@@ -34,6 +34,14 @@ export interface CollectionDTO {
   sortOrder: number;
 }
 
+export interface AwardItemDTO {
+  id: string;
+  title: string;
+  year: string;
+  photoId?: string | null;
+  href?: string | null;
+}
+
 export interface SiteSettingsDTO {
   headline?: string | null;
   subline?: string | null;
@@ -47,6 +55,12 @@ export interface SiteSettingsDTO {
   facebookUrl?: string | null;
   tiktokUrl?: string | null;
   xUrl?: string | null;
+  // Per-section home picture configurations
+  homeHeroPhotoIds?: string[] | null;
+  homeSplitPhotoIds?: string[] | null;
+  homeAwardsList?: AwardItemDTO[] | null;
+  homeFilmstripPhotoIds?: string[] | null;
+  footerPhotoId?: string | null;
 }
 
 export interface TestimonialDTO {
