@@ -6,7 +6,7 @@ import { TestimonialsSection } from "@/components/home/TestimonialsSection";
 import { ScrollLitText } from "@/components/motion/ScrollLitText";
 import { Reveal } from "@/components/motion/Reveal";
 import { mockPhotos, mockCollections } from "@/lib/db/queries";
-import { getSiteSettings, getAllPhotos } from "@/lib/db/data-store";
+import { getSiteSettings, getAllPhotos, getAllCollections } from "@/lib/db/data-store";
 import { siteConfig } from "@/lib/site-config";
 import { buildLocalBusinessJsonLd } from "@/lib/seo/jsonld";
 import type { Metadata } from "next";
@@ -27,68 +27,71 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const settings = await getSiteSettings();
-  const photos = await getAllPhotos();
+  const [settings, photos, collections] = await Promise.all([
+    getSiteSettings(),
+    getAllPhotos(),
+    getAllCollections(),
+  ]);
   const featuredPhotos = photos.filter((p) => p.featuredHome);
   const jsonLd = buildLocalBusinessJsonLd();
 
-  // Sessions & Awards for the interactive hover-reveal list (matching Kristin reference exactly)
+  // Sessions & Awards for the interactive hover-reveal list
   const sessionListItems = [
     {
       id: "ses_01",
       title: "HONORABLE MENTION",
       year: "2026",
       href: "/work",
-      photo: mockPhotos[0],
+      photo: photos[0] || mockPhotos[0],
     },
     {
       id: "ses_02",
       title: "SHORTLISTED PORTRAITURE",
       year: "2025",
       href: "/work",
-      photo: mockPhotos[1],
+      photo: photos[1] || mockPhotos[1],
     },
     {
       id: "ses_03",
       title: "FEATURED EDITORIAL",
       year: "2025",
       href: "/work",
-      photo: mockPhotos[2],
+      photo: photos[2] || mockPhotos[2],
     },
     {
       id: "ses_04",
       title: "COMMUNICATION ARTS",
       year: "2024",
       href: "/work",
-      photo: mockPhotos[3],
+      photo: photos[3] || mockPhotos[3],
     },
     {
       id: "ses_05",
       title: "THE QUIET CITY",
       year: "2024",
       href: "/work",
-      photo: mockPhotos[4],
+      photo: photos[4] || mockPhotos[4],
     },
     {
       id: "ses_06",
       title: "PROFESSIONAL COMPETITION",
       year: "2023",
       href: "/work",
-      photo: mockPhotos[5],
+      photo: photos[5] || mockPhotos[5],
     },
     {
       id: "ses_07",
       title: "FINE ART PHOTOGRAPHY",
       year: "2022",
       href: "/work",
-      photo: mockPhotos[6],
+      photo: photos[6] || mockPhotos[6],
     },
     {
       id: "ses_08",
       title: "GOLD AWARD NIGERIA",
       year: "2021",
       href: "/work",
-      photo: mockPhotos[7] || mockPhotos[0],
+      photo: photos[7] || photos[0] || mockPhotos[7],
     },
   ];
 
@@ -156,7 +159,7 @@ export default async function HomePage() {
 
         {/* 6. Last Section: Selected Work Incorporating the Filmstrip Carousel (Image 3) */}
         <FilmstripSelector
-          collections={mockCollections}
+          collections={collections.length > 0 ? collections : mockCollections}
           photos={featuredPhotos}
           title="Selected Work"
           badge="• Selected Work"

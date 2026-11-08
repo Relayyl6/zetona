@@ -27,6 +27,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+function getOptimizedSrc(src: string, width = 1200) {
+  if (src.includes("images.unsplash.com")) {
+    const sep = src.includes("?") ? "&" : "?";
+    return `${src}${sep}w=${width}&q=84&auto=format`;
+  }
+  if (src.includes("res.cloudinary.com")) {
+    return src.replace("/upload/", `/upload/w_${width},q_auto,f_auto,c_limit/`);
+  }
+  return src;
+}
+
 export default async function CollectionPage({ params }: PageProps) {
   const { slug } = await params;
   const [collectionsData, photosData] = await Promise.all([
@@ -116,11 +127,7 @@ export default async function CollectionPage({ params }: PageProps) {
             >
               <div className="relative overflow-hidden group cursor-pointer bg-[var(--bg-elevated)]">
                 <Image
-                  src={
-                    photo.displayKey.startsWith("http")
-                      ? `${photo.displayKey}&w=1200&q=84&auto=format`
-                      : photo.displayKey
-                  }
+                  src={getOptimizedSrc(photo.displayKey, 1200)}
                   alt={photo.alt}
                   width={photo.width}
                   height={photo.height}

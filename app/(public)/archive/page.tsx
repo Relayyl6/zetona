@@ -12,6 +12,17 @@ export const metadata: Metadata = {
     "Complete archive of published photographs by Zetona_E — portraits, studio sessions, and editorial work.",
 };
 
+function getOptimizedSrc(src: string, width = 800) {
+  if (src.includes("images.unsplash.com")) {
+    const sep = src.includes("?") ? "&" : "?";
+    return `${src}${sep}w=${width}&q=80&auto=format`;
+  }
+  if (src.includes("res.cloudinary.com")) {
+    return src.replace("/upload/", `/upload/w_${width},q_auto,f_auto,c_limit/`);
+  }
+  return src;
+}
+
 export default async function ArchivePage() {
   const photosData = await getAllPhotos();
   const allPhotos = photosData.length > 0 ? photosData : mockPhotos;
@@ -48,11 +59,7 @@ export default async function ArchivePage() {
           >
             <div className="relative overflow-hidden group bg-[var(--bg-elevated)]">
               <Image
-                src={
-                  photo.displayKey.startsWith("http")
-                    ? `${photo.displayKey}&w=800&q=80&auto=format`
-                    : photo.displayKey
-                }
+                src={getOptimizedSrc(photo.displayKey, 800)}
                 alt={photo.alt}
                 width={photo.width}
                 height={photo.height}

@@ -24,10 +24,10 @@ export default async function AboutPage() {
   const bioPhoto1 = photos[2] || photos[0]; // Soft focus
   const bioPhoto2 = photos[7] || photos[1] || photos[0]; // Studio man
   const scatteredGallery = [
-    { photo: photos[0], aspect: "aspect-[3/4]", offset: "md:translate-y-8", rotate: "-rotate-2", label: "01 / RADIANCE" },
-    { photo: photos[7] || photos[1] || photos[0], aspect: "aspect-[4/5]", offset: "md:-translate-y-6", rotate: "rotate-1", label: "02 / SCULPTED LIGHT" },
-    { photo: photos[2] || photos[0], aspect: "aspect-square", offset: "md:translate-y-12", rotate: "-rotate-1", label: "03 / SOFT FOCUS" },
-    { photo: photos[8] || photos[3] || photos[0], aspect: "aspect-[3/4]", offset: "md:-translate-y-4", rotate: "rotate-2", label: "04 / SILHOUETTE IN INDIGO" },
+    { photo: photos[0], aspect: "aspect-[3/4]", offset: "md:translate-y-8", rotate: "-rotate-2", label: photos[0]?.title ? `01 / ${photos[0].title.toUpperCase()}` : "01 / PORTRAIT" },
+    { photo: photos[7] || photos[1] || photos[0], aspect: "aspect-[4/5]", offset: "md:-translate-y-6", rotate: "rotate-1", label: (photos[7] || photos[1])?.title ? `02 / ${(photos[7] || photos[1])?.title?.toUpperCase()}` : "02 / STUDIO" },
+    { photo: photos[2] || photos[0], aspect: "aspect-square", offset: "md:translate-y-12", rotate: "-rotate-1", label: photos[2]?.title ? `03 / ${photos[2].title.toUpperCase()}` : "03 / EDITORIAL" },
+    { photo: photos[8] || photos[3] || photos[0], aspect: "aspect-[3/4]", offset: "md:-translate-y-4", rotate: "rotate-2", label: (photos[8] || photos[3])?.title ? `04 / ${(photos[8] || photos[3])?.title?.toUpperCase()}` : "04 / MOOD" },
   ];
 
   return (

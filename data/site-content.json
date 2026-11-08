@@ -13,22 +13,123 @@
     "tiktokUrl": null,
     "xUrl": null
   },
+  "collections": [
+    {
+      "id": "col_portraits_01",
+      "slug": "portraits",
+      "title": "Portraits",
+      "description": "Intimate studio and environmental portraiture capturing authentic character, depth, and human emotion.",
+      "coverPhotoId": "ph_client_1__MG_7564_jpg",
+      "coverPhoto": {
+        "id": "ph_client_1__MG_7564_jpg",
+        "title": "Aura",
+        "alt": "Aura - Studio and portrait photography by Zetona_E in Benin City (_MG_7564.jpg)",
+        "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+        "width": 4034,
+        "height": 6051,
+        "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171645/zetona/ilzulvfc226tqfjr5jyr.jpg",
+        "dominantColor": "#121212",
+        "focal": {
+          "x": 0.5,
+          "y": 0.35
+        },
+        "featuredHome": true,
+        "featuredAbout": false,
+        "status": "published",
+        "collectionId": "col_portraits_01",
+        "sortOrder": 1,
+        "collection": {
+          "id": "col_portraits_01",
+          "slug": "portraits",
+          "title": "Portraits"
+        }
+      },
+      "photoCount": 17
+    },
+    {
+      "id": "col_studio_02",
+      "slug": "studio",
+      "title": "Studio Sessions",
+      "description": "High-end studio sessions featuring structured light, vivid contrast, and refined composition.",
+      "coverPhotoId": "ph_client_2_AJM_2166_jpg",
+      "coverPhoto": {
+        "id": "ph_client_2_AJM_2166_jpg",
+        "title": "Presence",
+        "alt": "Presence - Studio and portrait photography by Zetona_E in Benin City (AJM_2166.jpg)",
+        "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+        "width": 4000,
+        "height": 6000,
+        "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171712/zetona/zkhxrgyxfppaxhdma1qx.jpg",
+        "dominantColor": "#121212",
+        "focal": {
+          "x": 0.5,
+          "y": 0.35
+        },
+        "featuredHome": true,
+        "featuredAbout": false,
+        "status": "published",
+        "collectionId": "col_studio_02",
+        "sortOrder": 2,
+        "collection": {
+          "id": "col_studio_02",
+          "slug": "studio",
+          "title": "Studio Sessions"
+        }
+      },
+      "photoCount": 17
+    },
+    {
+      "id": "col_editorial_03",
+      "slug": "editorial",
+      "title": "Editorial & Mood",
+      "description": "Narrative-driven editorial and mood photography blending styling, fashion, and contemporary artistry.",
+      "coverPhotoId": "ph_client_3_AJM_2206_jpg",
+      "coverPhoto": {
+        "id": "ph_client_3_AJM_2206_jpg",
+        "title": "Silhouettes of Grace",
+        "alt": "Silhouettes of Grace - Studio and portrait photography by Zetona_E in Benin City (AJM_2206.jpg)",
+        "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+        "width": 4000,
+        "height": 6000,
+        "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171716/zetona/i1gmpf959gswed32kvml.jpg",
+        "dominantColor": "#121212",
+        "focal": {
+          "x": 0.5,
+          "y": 0.35
+        },
+        "featuredHome": true,
+        "featuredAbout": false,
+        "status": "published",
+        "collectionId": "col_editorial_03",
+        "sortOrder": 3,
+        "collection": {
+          "id": "col_editorial_03",
+          "slug": "editorial",
+          "title": "Editorial & Mood"
+        }
+      },
+      "photoCount": 16
+    }
+  ],
   "photos": [
     {
-      "id": "ph_rabah_portrait",
-      "title": "Radiance",
-      "alt": "Woman with voluminous wavy hair and statement white earring in white top",
-      "caption": "Editorial studio portrait with delicate natural catchlights.",
-      "width": 1200,
-      "height": 1500,
-      "displayKey": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
-      "dominantColor": "#161616",
+      "id": "ph_client_1__MG_7564_jpg",
+      "title": "Aura",
+      "alt": "Aura - Studio and portrait photography by Zetona_E in Benin City (_MG_7564.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4034,
+      "height": 6051,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171645/zetona/ilzulvfc226tqfjr5jyr.jpg",
+      "dominantColor": "#121212",
       "focal": {
         "x": 0.5,
         "y": 0.35
       },
       "featuredHome": true,
-      "featuredAbout": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 1,
       "collection": {
         "id": "col_portraits_01",
         "slug": "portraits",
@@ -36,141 +137,23 @@
       }
     },
     {
-      "id": "ph_rabah_vase",
-      "title": "Suspended Bloom",
-      "alt": "Clear glass conical laboratory flask filled with water and fresh red floral stems",
-      "caption": "Organic stillness and transparency.",
-      "width": 800,
-      "height": 1100,
-      "displayKey": "https://images.unsplash.com/photo-1518895949257-7621c3c786d7",
-      "dominantColor": "#242424",
-      "focal": {
-        "x": 0.5,
-        "y": 0.45
-      },
-      "featuredHome": true,
-      "collection": {
-        "id": "col_editorial_03",
-        "slug": "editorial",
-        "title": "Editorial & Mood"
-      }
-    },
-    {
-      "id": "ph_rabah_face_petal",
-      "title": "Soft Focus",
-      "alt": "Extreme close-up of a freckled face behind translucent white floral blossoms",
-      "caption": "Intimate portrait framing.",
-      "width": 900,
-      "height": 1100,
-      "displayKey": "https://images.unsplash.com/photo-1509967419530-da38b4704bc6",
-      "dominantColor": "#201c18",
-      "focal": {
-        "x": 0.5,
-        "y": 0.4
-      },
-      "featuredHome": true,
-      "featuredAbout": true,
-      "collection": {
-        "id": "col_portraits_01",
-        "slug": "portraits",
-        "title": "Portraits"
-      }
-    },
-    {
-      "id": "ph_rabah_dessert",
-      "title": "Pâtisserie",
-      "alt": "Elegantly plated delicate white pastry with glazed berries on a dark rimmed plate",
-      "caption": "Culinary still life study.",
-      "width": 1000,
-      "height": 1000,
-      "displayKey": "https://images.unsplash.com/photo-1551024709-8f23befc6f87",
-      "dominantColor": "#1a1917",
-      "focal": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "featuredHome": true,
-      "collection": {
-        "id": "col_editorial_03",
-        "slug": "editorial",
-        "title": "Editorial & Mood"
-      }
-    },
-    {
-      "id": "ph_rabah_floral_model",
-      "title": "Floral Movement",
-      "alt": "Fashion model outdoors in white collared blouse and bold floral patterned full skirt against clear blue sky",
-      "caption": "Outdoor editorial sunlight.",
-      "width": 900,
-      "height": 1350,
-      "displayKey": "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f",
-      "dominantColor": "#1d2a3a",
-      "focal": {
-        "x": 0.5,
-        "y": 0.3
-      },
-      "featuredHome": true,
-      "collection": {
-        "id": "col_editorial_03",
-        "slug": "editorial",
-        "title": "Editorial & Mood"
-      }
-    },
-    {
-      "id": "ph_rabah_glass",
-      "title": "Crystal Reflection",
-      "alt": "Carved crystal goblet base casting intricate refractions on warm raw concrete surface",
-      "caption": "Refraction and shadow geometry.",
-      "width": 1200,
-      "height": 800,
-      "displayKey": "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b",
-      "dominantColor": "#202020",
-      "focal": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "featuredHome": true,
-      "collection": {
-        "id": "col_editorial_03",
-        "slug": "editorial",
-        "title": "Editorial & Mood"
-      }
-    },
-    {
-      "id": "ph_rabah_red_petals",
-      "title": "Crimson Hue",
-      "alt": "Macro photograph of deep vermilion poppy petals bathed in directional light",
-      "caption": "Color contrast exploration.",
-      "width": 900,
-      "height": 1300,
-      "displayKey": "https://images.unsplash.com/photo-1490750967868-88aa4486c946",
-      "dominantColor": "#3a0e0e",
-      "focal": {
-        "x": 0.5,
-        "y": 0.5
-      },
-      "featuredHome": true,
-      "collection": {
-        "id": "col_editorial_03",
-        "slug": "editorial",
-        "title": "Editorial & Mood"
-      }
-    },
-    {
-      "id": "ph_studio_man",
-      "title": "Contemplation",
-      "alt": "Monochrome portrait of a serene man looking away from the camera in soft shadow",
-      "caption": "Black and white studio study.",
-      "width": 1100,
-      "height": 1400,
-      "displayKey": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
-      "dominantColor": "#151515",
+      "id": "ph_client_2_AJM_2166_jpg",
+      "title": "Presence",
+      "alt": "Presence - Studio and portrait photography by Zetona_E in Benin City (AJM_2166.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4000,
+      "height": 6000,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171712/zetona/zkhxrgyxfppaxhdma1qx.jpg",
+      "dominantColor": "#121212",
       "focal": {
         "x": 0.5,
         "y": 0.35
       },
       "featuredHome": true,
-      "featuredAbout": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 2,
       "collection": {
         "id": "col_studio_02",
         "slug": "studio",
@@ -178,163 +161,1156 @@
       }
     },
     {
-      "id": "ph_fashion_woman",
-      "title": "Silhouette in Blue",
-      "alt": "Woman wearing deep indigo jacket posing in a moody studio setting with cobalt undertones",
-      "caption": "Zetona cobalt lighting concept.",
-      "width": 1000,
-      "height": 1300,
-      "displayKey": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
-      "dominantColor": "#111827",
-      "focal": {
-        "x": 0.5,
-        "y": 0.3
-      },
-      "featuredHome": true,
-      "featuredAbout": true,
-      "collection": {
-        "id": "col_portraits_01",
-        "slug": "portraits",
-        "title": "Portraits"
-      }
-    },
-    {
-      "id": "ph_golden_hour",
-      "title": "Golden Hour Glow",
-      "alt": "Warm portrait illuminated by golden sunset sidelight highlighting skin texture",
-      "caption": "Natural warm evening shoot.",
-      "width": 1000,
-      "height": 1300,
-      "displayKey": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04",
-      "dominantColor": "#271b12",
+      "id": "ph_client_3_AJM_2206_jpg",
+      "title": "Silhouettes of Grace",
+      "alt": "Silhouettes of Grace - Studio and portrait photography by Zetona_E in Benin City (AJM_2206.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4000,
+      "height": 6000,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171716/zetona/i1gmpf959gswed32kvml.jpg",
+      "dominantColor": "#121212",
       "focal": {
         "x": 0.5,
         "y": 0.35
       },
       "featuredHome": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 3,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_4_AJM_2220_jpg",
+      "title": "Vesper",
+      "alt": "Vesper - Studio and portrait photography by Zetona_E in Benin City (AJM_2220.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4460,
+      "height": 6000,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171715/zetona/ipyy6g9qlwdpvfuvav7d.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 4,
       "collection": {
         "id": "col_portraits_01",
         "slug": "portraits",
         "title": "Portraits"
       }
-    }
-  ],
-  "collections": [
+    },
     {
-      "id": "col_portraits_01",
-      "slug": "portraits",
-      "title": "Portraits",
-      "description": "Personality, vulnerability, and presence captured in quiet studio light.",
-      "photoCount": 6,
-      "sortOrder": 1,
-      "coverPhoto": {
-        "id": "ph_portrait_hero",
-        "title": "Presence in Linen",
-        "alt": "Editorial portrait of a woman with curly hair wearing white linen against a deep black backdrop",
-        "caption": "Natural studio light study, Benin City.",
-        "width": 1200,
-        "height": 1500,
-        "displayKey": "https://images.unsplash.com/photo-1534528741775-53994a69daeb",
-        "dominantColor": "#1a1a1a",
-        "focal": {
-          "x": 0.5,
-          "y": 0.35
-        },
-        "collection": {
-          "id": "col_portraits_01",
-          "slug": "portraits",
-          "title": "Portraits"
-        }
+      "id": "ph_client_5_b352d585_7f93_4",
+      "title": "Golden Hour Study",
+      "alt": "Golden Hour Study - Studio and portrait photography by Zetona_E in Benin City (b352d585-7f93-4184-9b93-8d3ea99347a7.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 720,
+      "height": 1080,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171725/zetona/fcyqv4eyg58itleobuct.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 5,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
       }
     },
     {
-      "id": "col_studio_02",
-      "slug": "studio",
-      "title": "Studio Sessions",
-      "description": "Controlled shadow, honest expressions, and timeless monochrome tones.",
-      "photoCount": 4,
-      "sortOrder": 2,
-      "coverPhoto": {
-        "id": "ph_studio_01",
-        "title": "Sculpted Light",
-        "alt": "Portrait of a man in deep shadow and high contrast rim light",
-        "caption": "High key studio lighting experiment.",
-        "width": 1200,
-        "height": 1500,
-        "displayKey": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
-        "dominantColor": "#121212",
-        "focal": {
-          "x": 0.5,
-          "y": 0.3
-        },
-        "collection": {
-          "id": "col_studio_02",
-          "slug": "studio",
-          "title": "Studio Sessions"
-        }
+      "id": "ph_client_6_AJM_2239_jpg",
+      "title": "Solitude",
+      "alt": "Solitude - Studio and portrait photography by Zetona_E in Benin City (AJM_2239.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4078,
+      "height": 6000,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171729/zetona/kfoayfiyk9o8bbmrb81k.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 6,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
       }
     },
     {
-      "id": "col_editorial_03",
-      "slug": "editorial",
-      "title": "Editorial & Mood",
-      "description": "Botanicals, textures, glassware, and cinematic storytelling.",
-      "photoCount": 4,
-      "sortOrder": 3,
-      "coverPhoto": {
-        "id": "ph_flower_flask",
-        "title": "Botanical Still Life",
-        "alt": "Glass conical vase with floating red and white flowers on minimal background",
-        "caption": "Still life exploration.",
-        "width": 1000,
-        "height": 1300,
-        "displayKey": "https://images.unsplash.com/photo-1518895949257-7621c3c786d7",
-        "dominantColor": "#222222",
-        "focal": {
-          "x": 0.5,
-          "y": 0.4
-        },
-        "collection": {
-          "id": "col_editorial_03",
-          "slug": "editorial",
-          "title": "Editorial & Mood"
-        }
+      "id": "ph_client_7_AJM_3139_jpg",
+      "title": "Lumina",
+      "alt": "Lumina - Studio and portrait photography by Zetona_E in Benin City (AJM_3139.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4000,
+      "height": 6000,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171743/zetona/fhqopirhopq2kftimeyg.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 7,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
       }
-    }
-  ],
-  "enquiries": [
-    {
-      "id": "enq_1794149936018_cby06",
-      "name": "Adora Okafor",
-      "email": "yemuelinc@gmail.com",
-      "phone": "+2348012345678",
-      "sessionType": "portrait",
-      "message": "Hello Zetona, testing the new Nodemailer SMTP dispatch from your live portfolio!",
-      "emailStatus": "pending",
-      "createdAt": "2026-11-08T14:58:56.018Z",
-      "handledAt": null
     },
     {
-      "id": "enq_1794068088117_h3fgy",
-      "name": "Eseosa Osaro",
-      "email": "eseosa@example.com",
-      "phone": "08023456789",
-      "sessionType": "studio",
-      "message": "Hello Zetona, booking studio session for anniversary portrait in Benin City.",
-      "emailStatus": "pending",
-      "createdAt": "2026-11-07T16:14:48.117Z",
-      "handledAt": null
+      "id": "ph_client_8_DSC_2580_jpg",
+      "title": "Charcoal & Velvet",
+      "alt": "Charcoal & Velvet - Studio and portrait photography by Zetona_E in Benin City (DSC_2580.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171754/zetona/fctzvz6bwy2pjmnvho9x.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 8,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
     },
     {
-      "id": "enq_1794059755377_5kx01",
-      "name": "Testing Client",
-      "email": "test@example.com",
-      "phone": "08099887766",
-      "sessionType": "portrait",
-      "message": "Hello from Benin City client enquiry test.",
-      "emailStatus": "pending",
-      "createdAt": "2026-11-07T13:55:55.377Z",
-      "handledAt": null
+      "id": "ph_client_9_DSC_1561_jpg",
+      "title": "Echoes",
+      "alt": "Echoes - Studio and portrait photography by Zetona_E in Benin City (DSC_1561.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171759/zetona/zvmvw0ii7aqj8zrxhpre.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 9,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_10_DSC_1505_jpg",
+      "title": "Gaze",
+      "alt": "Gaze - Studio and portrait photography by Zetona_E in Benin City (DSC_1505.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171760/zetona/vnwahhox85c1qenfrfsk.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": true,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 10,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_11_DSC_2615b_jpg",
+      "title": "Nocturne",
+      "alt": "Nocturne - Studio and portrait photography by Zetona_E in Benin City (DSC_2615b.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 3600,
+      "height": 5094,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171772/zetona/r7rwrawfwrvnd2njqv7i.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": true,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 11,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_12_DSC_2610_jpg",
+      "title": "Form & Light",
+      "alt": "Form & Light - Studio and portrait photography by Zetona_E in Benin City (DSC_2610.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 5877,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171774/zetona/bu8a87tvstukohssfks1.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": true,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 12,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_13_DSC_3815_jpg",
+      "title": "Serenade",
+      "alt": "Serenade - Studio and portrait photography by Zetona_E in Benin City (DSC_3815.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 3000,
+      "height": 4494,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171775/zetona/lmy2twdf1veduvgtfuat.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": true,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 13,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_14_DSC_3917_jpg",
+      "title": "Stillness",
+      "alt": "Stillness - Studio and portrait photography by Zetona_E in Benin City (DSC_3917.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 3000,
+      "height": 4494,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171792/zetona/rq3soc22z7fm1ysfz60f.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": true,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 14,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_15_DSC_4468_jpg",
+      "title": "Resonance",
+      "alt": "Resonance - Studio and portrait photography by Zetona_E in Benin City (DSC_4468.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 3000,
+      "height": 4494,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171793/zetona/bpxhkgkygarbovg8x5kg.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 15,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_16_DSC_3917a_jpg",
+      "title": "Portraits of Benin",
+      "alt": "Portraits of Benin - Studio and portrait photography by Zetona_E in Benin City (DSC_3917a.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 3000,
+      "height": 4494,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171794/zetona/rljdhih2mzmcixggf6os.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 16,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_17_DSC_4468n_jpg",
+      "title": "Illusion",
+      "alt": "Illusion - Studio and portrait photography by Zetona_E in Benin City (DSC_4468n.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 3000,
+      "height": 4494,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171802/zetona/lakwoskqmaxbard4slxe.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 17,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_18_DSC_4644_jpg",
+      "title": "Ethereal",
+      "alt": "Ethereal - Studio and portrait photography by Zetona_E in Benin City (DSC_4644.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 2700,
+      "height": 4045,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171803/zetona/tocolunotnblpruvn4fp.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 18,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_19_DSC_4476_jpg",
+      "title": "Contour",
+      "alt": "Contour - Studio and portrait photography by Zetona_E in Benin City (DSC_4476.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171803/zetona/s0v1l4ydcww3mhpaxg6a.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 19,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_20_DSC_4720_jpg",
+      "title": "Elegance",
+      "alt": "Elegance - Studio and portrait photography by Zetona_E in Benin City (DSC_4720.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 2700,
+      "height": 4045,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171810/zetona/xp3myszbgtizqnlyi8ar.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 20,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_21_DSC_5108_jpg",
+      "title": "Halcyon",
+      "alt": "Halcyon - Studio and portrait photography by Zetona_E in Benin City (DSC_5108.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171815/zetona/exze76kq3wryuwr8wtsw.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 21,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_22_DSC_5103_jpg",
+      "title": "Monolith",
+      "alt": "Monolith - Studio and portrait photography by Zetona_E in Benin City (DSC_5103.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4472,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171821/zetona/iz6uea0ktycvh2jfqzju.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 22,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_23_DSC_5890_jpg",
+      "title": "Shadowplay",
+      "alt": "Shadowplay - Studio and portrait photography by Zetona_E in Benin City (DSC_5890.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 3000,
+      "height": 4494,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171827/zetona/xalun6zbgh9mqlft2exr.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 23,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_24_DSC_5571_jpg",
+      "title": "Reflections",
+      "alt": "Reflections - Studio and portrait photography by Zetona_E in Benin City (DSC_5571.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4328,
+      "height": 5669,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171829/zetona/wzfpyntsvar3dlfarwnq.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 24,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_25_DSC_5590_jpg",
+      "title": "Sovereign",
+      "alt": "Sovereign - Studio and portrait photography by Zetona_E in Benin City (DSC_5590.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4480,
+      "height": 5674,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171829/zetona/jrtid8su28cuehup11d4.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 25,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_26_DSC_7356_jpg",
+      "title": "Chiaroscuro",
+      "alt": "Chiaroscuro - Studio and portrait photography by Zetona_E in Benin City (DSC_7356.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171839/zetona/yyc3q0s2fkwcmencrhvr.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 26,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_27_DSC_8648_jpg",
+      "title": "The Quiet Frame",
+      "alt": "The Quiet Frame - Studio and portrait photography by Zetona_E in Benin City (DSC_8648.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4334,
+      "height": 5878,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171841/zetona/guemdcivht9ynz1a6ea3.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 27,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_28_DSC_8655_jpg",
+      "title": "Dusk",
+      "alt": "Dusk - Studio and portrait photography by Zetona_E in Benin City (DSC_8655.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171845/zetona/skrrrhbsugmbykvsvava.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 28,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_29_DSC_8697_jpg",
+      "title": "Solace",
+      "alt": "Solace - Studio and portrait photography by Zetona_E in Benin City (DSC_8697.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 5540,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171856/zetona/rtjzops88kbzf9cjxb87.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 29,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_30_DSC_9986_jpg",
+      "title": "Oasis",
+      "alt": "Oasis - Studio and portrait photography by Zetona_E in Benin City (DSC_9986.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 3000,
+      "height": 4447,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171858/zetona/rd8xmmpihot1rkn6dpe6.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 30,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_31_DSC_8655s_jpg",
+      "title": "Velvet Tone",
+      "alt": "Velvet Tone - Studio and portrait photography by Zetona_E in Benin City (DSC_8655s.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171859/zetona/rlu7ydmvqiiojvpuiduj.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 31,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_32_IMG_0620_JPG",
+      "title": "Harmattan Light",
+      "alt": "Harmattan Light - Studio and portrait photography by Zetona_E in Benin City (IMG_0620.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4058,
+      "height": 5876,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171863/zetona/khiz98lyzdkkbzuqdhgq.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 32,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_33_IMG_0621_JPG",
+      "title": "Poise",
+      "alt": "Poise - Studio and portrait photography by Zetona_E in Benin City (IMG_0621.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171864/zetona/tsd9x1oxirlz2rknp2od.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 33,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_34_IMG_0606_JPG",
+      "title": "Amber",
+      "alt": "Amber - Studio and portrait photography by Zetona_E in Benin City (IMG_0606.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171865/zetona/sjop7xgumptlfaq56afq.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 34,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_35_IMG_1033_JPG",
+      "title": "Reverie",
+      "alt": "Reverie - Studio and portrait photography by Zetona_E in Benin City (IMG_1033.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4208,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171868/zetona/i78xb1exldoqyibqx7vl.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 35,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_36_IMG_1032_JPG",
+      "title": "Symmetry",
+      "alt": "Symmetry - Studio and portrait photography by Zetona_E in Benin City (IMG_1032.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171868/zetona/sgxxgqsqcq7amlsmcafx.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 36,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_37_IMG_0666_JPG",
+      "title": "Eminence",
+      "alt": "Eminence - Studio and portrait photography by Zetona_E in Benin City (IMG_0666.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4644,
+      "height": 5805,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171872/zetona/bubwybt8eq42kusdszjj.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 37,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_38_IMG_1034_JPG",
+      "title": "Zephyr",
+      "alt": "Zephyr - Studio and portrait photography by Zetona_E in Benin City (IMG_1034.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4143,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171876/zetona/u8oko9uw79igpe28ca40.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 38,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_39_IMG_2373_JPG",
+      "title": "Cadence",
+      "alt": "Cadence - Studio and portrait photography by Zetona_E in Benin City (IMG_2373.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4196,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171878/zetona/t59nbbsqvqexucaxy3xu.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 39,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_40_IMG_1509_JPG",
+      "title": "Verve",
+      "alt": "Verve - Studio and portrait photography by Zetona_E in Benin City (IMG_1509.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6144,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171878/zetona/wlmxhkzzhehfxzrt27up.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 40,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_41_IMG_3906_JPG",
+      "title": "Ivory & Obsidian",
+      "alt": "Ivory & Obsidian - Studio and portrait photography by Zetona_E in Benin City (IMG_3906.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 5543,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171882/zetona/obl6kzwwhdpyy7nosww8.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 41,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_42_IMG_3907_JPG",
+      "title": "Timeless",
+      "alt": "Timeless - Studio and portrait photography by Zetona_E in Benin City (IMG_3907.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4217,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171882/zetona/ebr8apkykrig3uvaqjyq.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 42,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_43_IMG_3909_JPG",
+      "title": "Aperture",
+      "alt": "Aperture - Studio and portrait photography by Zetona_E in Benin City (IMG_3909.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171884/zetona/czjly8apoyfogy5uvv0y.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 43,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_44_IMG_4261_JPG",
+      "title": "Spectra",
+      "alt": "Spectra - Studio and portrait photography by Zetona_E in Benin City (IMG_4261.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171889/zetona/rtmtg8iqj5kx5k173zct.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 44,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_45_IMG_4540_JPG",
+      "title": "Luminescence",
+      "alt": "Luminescence - Studio and portrait photography by Zetona_E in Benin City (IMG_4540.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171890/zetona/gshsqgimc5s1ujtyypdy.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 45,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_46_IMG_4535_JPG",
+      "title": "Starlight",
+      "alt": "Starlight - Studio and portrait photography by Zetona_E in Benin City (IMG_4535.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171891/zetona/uujkystuutrgucm5rdae.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 46,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_47_IMG_4724_JPG",
+      "title": "Sublime",
+      "alt": "Sublime - Studio and portrait photography by Zetona_E in Benin City (IMG_4724.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171893/zetona/zbydfuchmifvo1iyhick.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 47,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
+    },
+    {
+      "id": "ph_client_48_IMG_4556_JPG",
+      "title": "Grace Note",
+      "alt": "Grace Note - Studio and portrait photography by Zetona_E in Benin City (IMG_4556.JPG)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4016,
+      "height": 6016,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171894/zetona/xjv57glxznjakrouxihe.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_editorial_03",
+      "sortOrder": 48,
+      "collection": {
+        "id": "col_editorial_03",
+        "slug": "editorial",
+        "title": "Editorial & Mood"
+      }
+    },
+    {
+      "id": "ph_client_49_5df4ea7c_8ed7_4",
+      "title": "Kinship",
+      "alt": "Kinship - Studio and portrait photography by Zetona_E in Benin City (5df4ea7c-8ed7-4182-b785-7d63702fece9.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 748,
+      "height": 1080,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171938/zetona/apwqamdm44n3teyckjbx.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_portraits_01",
+      "sortOrder": 49,
+      "collection": {
+        "id": "col_portraits_01",
+        "slug": "portraits",
+        "title": "Portraits"
+      }
+    },
+    {
+      "id": "ph_client_50__MG_8714_jpg",
+      "title": "Radiance",
+      "alt": "Radiance - Studio and portrait photography by Zetona_E in Benin City (_MG_8714.jpg)",
+      "caption": "Original client session photography by Zetona_E, captured in Benin City.",
+      "width": 4034,
+      "height": 6051,
+      "displayKey": "https://res.cloudinary.com/drgwnkllv/image/upload/v1794171945/zetona/fqupukjgx6svge4nabvc.jpg",
+      "dominantColor": "#121212",
+      "focal": {
+        "x": 0.5,
+        "y": 0.35
+      },
+      "featuredHome": false,
+      "featuredAbout": false,
+      "status": "published",
+      "collectionId": "col_studio_02",
+      "sortOrder": 50,
+      "collection": {
+        "id": "col_studio_02",
+        "slug": "studio",
+        "title": "Studio Sessions"
+      }
     }
   ]
 }
