@@ -106,8 +106,8 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                 transition={{ duration: 0.45, ease: ease.outExpo }}
               >
                 {/* Author Monogram Badge & Headline */}
-                <div className="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#242424] to-[#121212] border border-[var(--accent)]/40 flex items-center justify-center font-serif text-2xl sm:text-3xl font-bold text-[var(--accent-text)] shadow-xl ring-1 ring-white/10 flex-shrink-0">
+                <div className="flex items-center gap-3.5 sm:gap-4 mb-6 sm:mb-8">
+                  <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-[#242424] to-[#121212] border border-[var(--accent)]/40 flex items-center justify-center font-serif text-base sm:text-lg font-bold text-[var(--accent-text)] shadow-md ring-1 ring-white/10 flex-shrink-0">
                     {getInitials(current.author)}
                   </div>
                   <div>
@@ -128,8 +128,8 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
               </m.div>
             </AnimatePresence>
 
-            {/* Bottom Row: Big Initials Switcher with Progress Track */}
-            <div className="pt-6 sm:pt-8 border-t border-white/10 flex items-center gap-3 sm:gap-4 overflow-x-auto no-scrollbar pb-1">
+            {/* Bottom Row: Compact Initials Switcher with Progress Track */}
+            <div className="pt-5 sm:pt-6 border-t border-white/10 flex items-center gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar pb-1">
               {list.map((t, idx) => {
                 const isActive = idx === (activeIdx % list.length);
                 const isPassed = idx < (activeIdx % list.length);
@@ -139,28 +139,28 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                   <m.button
                     key={t.id}
                     onClick={() => handleSelect(idx)}
-                    whileHover={shouldReduce ? {} : { scale: 1.08, y: -2 }}
+                    whileHover={shouldReduce ? {} : { scale: 1.06, y: -1 }}
                     whileTap={shouldReduce ? {} : { scale: 0.95 }}
                     aria-label={`View testimonial from ${t.author}`}
-                    className="focus:outline-none cursor-pointer flex-shrink-0 flex flex-col items-center gap-2.5 group"
+                    className="focus:outline-none cursor-pointer flex-shrink-0 flex flex-col items-center gap-2 group"
                   >
-                    {/* Big Initials Badge */}
+                    {/* Compact Refined Initials Badge */}
                     <div
-                      className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center font-serif text-base sm:text-lg md:text-xl font-bold tracking-tight transition-all duration-300 ${
+                      className={`w-9 h-9 sm:w-10 sm:h-10 md:w-11 md:h-11 rounded-lg flex items-center justify-center font-serif text-xs sm:text-xs md:text-sm font-semibold tracking-wider transition-all duration-200 ${
                         isActive
-                          ? "bg-gradient-to-b from-[#252525] to-[#141414] text-[var(--accent-text)] ring-2 ring-[var(--accent)] shadow-[0_0_22px_rgba(201,169,110,0.35)] scale-105 border border-[var(--accent)]/50"
-                          : "bg-white/[0.04] text-white/50 border border-white/10 hover:border-white/30 hover:text-white hover:bg-white/[0.08]"
+                          ? "bg-gradient-to-b from-[#252525] to-[#141414] text-[var(--accent-text)] ring-1.5 ring-[var(--accent)] shadow-md scale-105 border border-[var(--accent)]/50"
+                          : "bg-white/[0.04] text-white/40 border border-white/10 hover:border-white/30 hover:text-white hover:bg-white/[0.08]"
                       }`}
                     >
                       {initials}
                     </div>
 
                     {/* Timer progress track going across one avatar to the other */}
-                    <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden relative">
+                    <div className="w-full h-[2px] bg-white/10 rounded-full overflow-hidden relative">
                       {isActive ? (
                         <m.div
                           key={`timer-${progressKey}-${activeIdx}`}
-                          className="h-full bg-[var(--accent)] rounded-full shadow-[0_0_8px_var(--accent)]"
+                          className="h-full bg-[var(--accent)] rounded-full shadow-[0_0_6px_var(--accent)]"
                           initial={{ width: "0%" }}
                           animate={{ width: isPaused ? undefined : "100%" }}
                           transition={{

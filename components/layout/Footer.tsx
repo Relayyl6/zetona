@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { siteConfig } from "@/lib/site-config";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { SiteSettingsDTO } from "@/lib/db/queries";
+import { getOptimizedSrc } from "@/lib/storage/image-url";
 
 interface FooterProps {
   settings?: Pick<SiteSettingsDTO, "instagramUrl" | "facebookUrl" | "tiktokUrl" | "xUrl">;
@@ -18,30 +19,15 @@ const footerQuickLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-const clientAvatars = [
-  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80",
-  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
-  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80",
-  "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80",
-  "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=120&q=80",
-  "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80",
-];
-
 /**
  * Footer: P9 pattern — Giant LET'S TALK. → + [Q][S][C] columns + Right Editorial Portrait
  * Source: Image 2 (Kristin Watson reference) & docs/DESIGN.md §5
+ * On desktop (lg:), it strictly spans 100vh (h-screen / min-h-screen) covering the entire screen.
  * Automatically hides the duplicate CTA on /contact screen.
  */
 export function Footer({ settings }: FooterProps) {
   const pathname = usePathname();
   const isContactPage = pathname === "/contact";
-
-  const socials = [
-    settings?.instagramUrl && { label: "Instagram", href: settings.instagramUrl },
-    settings?.facebookUrl && { label: "Facebook", href: settings.facebookUrl },
-    settings?.tiktokUrl && { label: "TikTok", href: settings.tiktokUrl },
-    settings?.xUrl && { label: "X", href: settings.xUrl },
-  ].filter(Boolean) as { label: string; href: string }[];
 
   // On contact page, remove the redundant giant "LET'S TALK." footer section
   if (isContactPage) {
@@ -59,31 +45,17 @@ export function Footer({ settings }: FooterProps) {
   }
 
   return (
-    <footer className="bg-[#0A0A0A] border-t border-[var(--line)] overflow-hidden w-full max-w-full">
-      {/* Top Client Avatars Bar matching Image 2 (Desktop & Tablet) */}
-      <div className="hidden sm:flex border-b border-white/5 py-3 md:py-4 px-6 md:px-12 justify-center items-center">
-        <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-          {clientAvatars.map((src, i) => (
-            <div
-              key={i}
-              className="w-8 h-8 md:w-10 md:h-10 rounded overflow-hidden relative opacity-70 hover:opacity-100 transition-opacity ring-1 ring-white/10"
-            >
-              <Image src={src} alt="Client avatar" fill className="object-cover" sizes="40px" />
-            </div>
-          ))}
-        </div>
-      </div>
-
+    <footer className="bg-[#0A0A0A] border-t border-[var(--line)] overflow-hidden w-full max-w-full lg:h-screen lg:min-h-screen flex flex-col justify-between">
       {/* Main Footer Body: Left Content + Right Full-Height Portrait */}
-      <div className="grid lg:grid-cols-12 min-h-0 lg:min-h-[70vh]">
-        {/* Left Column (CTA + [Q][S][C] columns) */}
-        <div className="lg:col-span-7 p-5 sm:p-8 md:p-12 lg:p-16 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10">
-          {/* Giant CTA headline */}
+      <div className="grid lg:grid-cols-12 flex-1 w-full h-full min-h-0">
+        {/* Left Column (CTA + [Q][S][C] columns + legal) */}
+        <div className="lg:col-span-7 p-6 sm:p-8 md:p-12 lg:p-16 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10 h-full">
+          {/* Top: Giant CTA headline */}
           <div>
             <Link href="/contact" className="group inline-block">
               <h2
                 className="font-condensed uppercase text-[#F6F2E6] leading-none tracking-tight group-hover:text-[var(--accent-text)] transition-colors flex items-center gap-2 sm:gap-4 flex-wrap"
-                style={{ fontSize: "clamp(2.1rem, 8.5vw, 7.5rem)" }}
+                style={{ fontSize: "clamp(2.5rem, 8.5vw, 8.5rem)" }}
               >
                 <span>LET&apos;S TALK.</span>
                 <span className="inline-block transition-transform duration-300 group-hover:translate-x-2 text-[var(--accent-text)]">
@@ -93,8 +65,8 @@ export function Footer({ settings }: FooterProps) {
             </Link>
           </div>
 
-          {/* [Q] [S] [C] columns (matching Image 2) */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 sm:gap-8 pt-5 sm:pt-8 md:pt-14 pb-5 sm:pb-8 border-t border-white/10 mt-5 sm:mt-8 md:mt-12">
+          {/* Middle: [Q] [S] [C] columns */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 border-t border-white/10 my-auto">
             {/* [Q] Quick links */}
             <div>
               <p className="font-mono text-[var(--fg-dim)] text-[11px] sm:text-xs uppercase tracking-widest mb-2.5 sm:mb-4">
@@ -122,7 +94,7 @@ export function Footer({ settings }: FooterProps) {
               <ul className="space-y-1.5 sm:space-y-2.5">
                 <li>
                   <a
-                    href="https://instagram.com"
+                    href={settings?.instagramUrl || "https://instagram.com/zetona_e"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[var(--fg-muted)] text-[13px] sm:text-sm font-sans hover:text-[#F6F2E6] transition-colors inline-flex items-center gap-1"
@@ -130,16 +102,30 @@ export function Footer({ settings }: FooterProps) {
                     Instagram
                   </a>
                 </li>
-                <li>
-                  <a
-                    href="https://facebook.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[var(--fg-muted)] text-[13px] sm:text-sm font-sans hover:text-[#F6F2E6] transition-colors inline-flex items-center gap-1"
-                  >
-                    Facebook
-                  </a>
-                </li>
+                {settings?.facebookUrl && (
+                  <li>
+                    <a
+                      href={settings.facebookUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[var(--fg-muted)] text-[13px] sm:text-sm font-sans hover:text-[#F6F2E6] transition-colors inline-flex items-center gap-1"
+                    >
+                      Facebook
+                    </a>
+                  </li>
+                )}
+                {settings?.tiktokUrl && (
+                  <li>
+                    <a
+                      href={settings.tiktokUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[var(--fg-muted)] text-[13px] sm:text-sm font-sans hover:text-[#F6F2E6] transition-colors inline-flex items-center gap-1"
+                    >
+                      TikTok
+                    </a>
+                  </li>
+                )}
                 <li>
                   <a
                     href={buildWhatsAppUrl()}
@@ -201,14 +187,16 @@ export function Footer({ settings }: FooterProps) {
           </div>
         </div>
 
-        {/* Right Column: Full-Height Editorial Portrait (Desktop) / Grounded Aspect (Mobile) */}
-        <div className="lg:col-span-5 relative h-[210px] sm:h-[280px] lg:h-auto lg:min-h-full overflow-hidden bg-[var(--bg-elevated)]">
+        {/* Right Column: Full-Height Edge-to-Edge Editorial Portrait on Desktop */}
+        <div className="lg:col-span-5 relative w-full h-[280px] sm:h-[350px] lg:h-full overflow-hidden bg-[var(--bg-elevated)]">
           <Image
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=80"
+            src={getOptimizedSrc("https://res.cloudinary.com/drgwnkllv/image/upload/v1794171645/zetona/ilzulvfc226tqfjr5jyr.jpg", 1200)}
             alt="Zetona_E Portrait Studio"
             fill
             className="object-cover"
-            sizes="(min-width:1024px) 42vw, 100vw"
+            style={{ objectPosition: "center 15%" }}
+            sizes="(min-width:1024px) 45vw, 100vw"
+            priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
         </div>

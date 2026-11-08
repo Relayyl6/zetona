@@ -869,8 +869,8 @@ export default function AdminSettingsPage() {
                 className="bg-[var(--bg)]/70 border border-[var(--line)] rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-white/20 transition-all group"
               >
                 <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                  {/* Monogram with Big Initials */}
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#242424] to-[#121212] border border-[var(--accent)]/40 flex items-center justify-center font-serif text-base font-bold text-[var(--accent-text)] shadow flex-shrink-0">
+                  {/* Monogram with Initials */}
+                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#242424] to-[#121212] border border-[var(--accent)]/40 flex items-center justify-center font-serif text-xs font-bold text-[var(--accent-text)] shadow flex-shrink-0">
                     {initials}
                   </div>
 

@@ -70,35 +70,12 @@ export default function ContactPage() {
     setState("success");
   };
 
-  const clientAvatars = [
-    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80",
-    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
-    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80",
-    "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80",
-    "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=120&q=80",
-  ];
-
   const inputClass =
     "w-full bg-white/[0.03] border-b border-white/20 text-[#F6F2E6] font-sans text-base px-3 py-3 rounded-t focus:outline-none focus:border-[var(--accent)] focus:bg-white/[0.06] placeholder:text-[var(--fg-dim)] transition-colors duration-200";
   const labelClass = "text-[var(--fg-muted)] text-xs font-sans uppercase tracking-widest mb-1.5 block";
 
   return (
-    <main id="main-content" className="min-h-screen bg-[var(--bg)] pt-16 pb-20">
-      {/* Top Client Avatars Bar matching Image 2 */}
-      <div className="px-6 md:px-12 pt-6 pb-2 flex items-center gap-3 overflow-x-auto no-scrollbar">
-        {clientAvatars.map((src, i) => (
-          <div
-            key={i}
-            className="w-9 h-9 md:w-10 md:h-10 rounded overflow-hidden relative opacity-75 ring-1 ring-white/10"
-          >
-            <img src={src} alt="" className="w-full h-full object-cover" />
-          </div>
-        ))}
-        <span className="font-mono text-xs text-[var(--fg-dim)] ml-2">
-          [ Selected Clients & Collaborations ]
-        </span>
-      </div>
-
+    <main id="main-content" className="min-h-screen bg-[var(--bg)] pt-20 pb-20">
       {/* Giant CTA headline — tight top spacing, no blank gap */}
       <div className="px-6 md:px-12 pt-4 pb-6">
         <h1
