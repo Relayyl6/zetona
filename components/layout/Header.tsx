@@ -24,144 +24,126 @@ export function Header({
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const idleTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const lastScrollYRef = React.useRef(0);
+  const menuOpenRef = React.useRef(menuOpen);
+  React.useEffect(() => {
+    menuOpenRef.current = menuOpen;
+  }, [menuOpen]);
+
+  const isHoveredRef = React.useRef(false);
+  const autoHideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const { lenis, stop, start } = useLenisScroll();
 
-  // Universal Bulletproof Sticky Headroom Navigation across all devices (Mobile, Tablet, Desktop):
-  // - Immediately slides/pops into view on ANY upward scroll (native scroll, touch swipe, or wheel)
-  // - Stays reliably visible while reading (6s idle timeout)
-  // - Disappears ONLY on intentional downward scroll (> 15px downward delta)
-  // - Always visible at top of page (<= 60px) or when mobile drawer menu is open
-  //
-  // IMPORTANT: menuOpen is read via ref (not in dep array) so that lastY and accumulatedDown
-  // are NEVER reset when the menu opens/closes. The effect only re-runs when lenis initialises.
-  const menuOpenRef = React.useRef(menuOpen);
-  React.useEffect(() => { menuOpenRef.current = menuOpen; }, [menuOpen]);
-
+  // Bulletproof Headroom Navigation:
+  // - Top of page (<= 60px): ALWAYS visible
+  // - Scrolling DOWN: Immediately hides (default state down the page is hidden)
+  // - Scrolling UP from ANY point (including footer): Momentarily fades down into view (2.8s auto-hide)
+  // - Hovering on desktop keeps it visible while interacting
   React.useEffect(() => {
-    let idleTimer: NodeJS.Timeout | null = null;
-    // lastY is initialised ONCE on mount and never reset by menu state changes
-    let lastY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
-    let accumulatedDown = 0;
-
     const getScrollY = () =>
       window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
 
-    const showNav = () => {
-      accumulatedDown = 0;
+    // Check initial position on mount: if already scrolled down, default to hidden
+    const initialY = getScrollY();
+    if (initialY > 60) {
+      setIsVisible(false);
+      setIsScrolled(true);
+    } else {
       setIsVisible(true);
-      if (idleTimer) clearTimeout(idleTimer);
-      // Keep visible for 6 seconds of stationary reading
-      idleTimer = setTimeout(() => {
-        if (!menuOpenRef.current && getScrollY() > 60) {
-          setIsVisible(false);
-        }
-      }, 6000);
-    };
+      setIsScrolled(initialY > 20);
+    }
 
-    const hideNav = () => {
-      if (getScrollY() > 60 && !menuOpenRef.current) {
-        if (idleTimer) clearTimeout(idleTimer);
-        setIsVisible(false);
+    let lastY = initialY;
+    let accumulatedDown = 0;
+    let accumulatedUp = 0;
+
+    const clearTimer = () => {
+      if (autoHideTimerRef.current) {
+        clearTimeout(autoHideTimerRef.current);
+        autoHideTimerRef.current = null;
       }
     };
 
-    // 1. Direct hardware wheel / trackpad listener (immediate desktop intent)
-    const onWheel = (e: WheelEvent) => {
-      if (getScrollY() <= 60 || menuOpenRef.current) { showNav(); return; }
-      if (e.deltaY < -3) showNav();
-      else if (e.deltaY > 15) hideNav();
+    const triggerMomentaryShow = () => {
+      setIsVisible(true);
+      clearTimer();
+      // Auto-hide after 2.8s of stationary reading when not at top and menu not open
+      autoHideTimerRef.current = setTimeout(() => {
+        const y = getScrollY();
+        if (y > 60 && !menuOpenRef.current && !isHoveredRef.current) {
+          setIsVisible(false);
+        }
+      }, 2800);
     };
 
-    // 2. Mobile touch screen gestures (immediate finger drag response)
-    let touchStartY = 0;
-    const onTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0]?.clientY || 0;
-    };
-    const onTouchMove = (e: TouchEvent) => {
-      if (getScrollY() <= 60 || menuOpenRef.current) { showNav(); return; }
-      const touchY = e.touches[0]?.clientY || 0;
-      const diff = touchY - touchStartY;
-      // Dragging finger DOWN means scrolling UP
-      if (diff > 6) { showNav(); touchStartY = touchY; }
-      // Dragging finger UP means scrolling DOWN
-      else if (diff < -15) { hideNav(); touchStartY = touchY; }
-    };
-
-    // 3. Native window scroll listener (guaranteed on 100% of devices, iOS, Android, Desktop)
-    const onScroll = () => {
+    const handleScrollUpdate = () => {
       const currentY = getScrollY();
       setIsScrolled(currentY > 20);
 
-      if (currentY <= 60 || menuOpenRef.current) {
-        showNav();
-        lastY = currentY;
+      // 1. At top of page (<= 60px): ALWAYS visible, no auto-hide
+      if (currentY <= 60) {
+        clearTimer();
+        setIsVisible(true);
         accumulatedDown = 0;
+        accumulatedUp = 0;
+        lastY = currentY;
+        return;
+      }
+
+      // 2. Mobile drawer menu open: keep visible
+      if (menuOpenRef.current) {
+        setIsVisible(true);
+        lastY = currentY;
         return;
       }
 
       const delta = currentY - lastY;
 
-      // Scrolling UP (delta is negative)
-      if (delta < -2) {
-        showNav();
-      }
-      // Scrolling DOWN: accumulate delta so settling jitter never accidentally hides the navbar
-      else if (delta > 0) {
+      // 3. Scrolling DOWN (delta > 0):
+      // HIDE immediately on intentional downward scroll.
+      // Default state while browsing down the page is hidden.
+      if (delta > 0) {
+        accumulatedUp = 0;
         accumulatedDown += delta;
-        if (accumulatedDown > 15) {
-          hideNav();
+        if (accumulatedDown >= 8) {
+          clearTimer();
+          if (!isHoveredRef.current) {
+            setIsVisible(false);
+          }
           accumulatedDown = 0;
+        }
+      }
+      // 4. Scrolling UP (delta < 0):
+      // ANY motion of scrolling up brings it back momentarily (fades down into view)!
+      else if (delta < 0) {
+        accumulatedDown = 0;
+        accumulatedUp += Math.abs(delta);
+        if (accumulatedUp >= 10) {
+          triggerMomentaryShow();
+          accumulatedUp = 0;
         }
       }
 
       lastY = currentY;
     };
 
-    // 4. Lenis virtual scroll subscription (desktop Lenis-intercepted scroll events)
-    //    This covers the gap where Lenis handles smooth scroll but native window.scroll
-    //    fires less frequently or with a slight lag.
-    let lenisScrollHandler: ((e: { scroll: number }) => void) | null = null;
-    if (lenis) {
-      lenisScrollHandler = ({ scroll }: { scroll: number }) => {
-        setIsScrolled(scroll > 20);
-        if (scroll <= 60 || menuOpenRef.current) {
-          showNav();
-          lastY = scroll;
-          accumulatedDown = 0;
-          return;
-        }
-        const delta = scroll - lastY;
-        if (delta < -2) {
-          showNav();
-        } else if (delta > 0) {
-          accumulatedDown += delta;
-          if (accumulatedDown > 15) {
-            hideNav();
-            accumulatedDown = 0;
-          }
-        }
-        lastY = scroll;
-      };
-      lenis.on("scroll", lenisScrollHandler);
-    }
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScrollUpdate();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("wheel", onWheel, { passive: true });
-    window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      if (lenisScrollHandler && lenis) lenis.off("scroll", lenisScrollHandler);
-      if (idleTimer) clearTimeout(idleTimer);
+      clearTimer();
     };
-    // Re-run only when lenis instance becomes available; menuOpen is tracked via ref
-  }, [lenis]);
+  }, []);
 
   // Lock body scroll when full-screen menu is open
   React.useEffect(() => {
@@ -202,6 +184,28 @@ export function Header({
     start();
   };
 
+  const handleMouseEnter = () => {
+    isHoveredRef.current = true;
+    if (autoHideTimerRef.current) {
+      clearTimeout(autoHideTimerRef.current);
+      autoHideTimerRef.current = null;
+    }
+  };
+
+  const handleMouseLeave = () => {
+    isHoveredRef.current = false;
+    const y = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
+    if (y > 60 && !menuOpenRef.current) {
+      if (autoHideTimerRef.current) clearTimeout(autoHideTimerRef.current);
+      autoHideTimerRef.current = setTimeout(() => {
+        const currentY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
+        if (currentY > 60 && !menuOpenRef.current && !isHoveredRef.current) {
+          setIsVisible(false);
+        }
+      }, 2500);
+    }
+  };
+
   return (
     <>
       {/* ──────────────── TOP BAR (STICKY ATOP WITH ELEGANT FADING & FAST HEADROOM) ──────────────── */}
@@ -212,12 +216,14 @@ export function Header({
           y: isVisible ? 0 : -35,
         }}
         transition={{
-          duration: 0.2,
+          duration: 0.25,
           ease: [0.16, 1, 0.3, 1],
         }}
         style={{
           pointerEvents: isVisible ? "auto" : "none",
         }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 transition-[background-color,border-color,padding] duration-200 flex items-center justify-between ${
           isScrolled
             ? "py-3 bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/10 shadow-2xl"
