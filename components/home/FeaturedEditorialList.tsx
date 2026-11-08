@@ -112,8 +112,8 @@ export function FeaturedEditorialList({ items }: FeaturedEditorialListProps) {
 
         {/* Right Column: Pre-rendered GPU-Composited Image Stack (Zero decode latency, zero hover lag) */}
         <div className="hidden lg:block lg:col-span-5 relative pointer-events-none">
-          <div className="sticky top-32">
-            <div className="aspect-[3/4] w-80 xl:w-96 overflow-hidden shadow-2xl bg-[var(--bg-elevated)] ring-1 ring-white/10 rounded-sm relative will-change-transform">
+          <div className="sticky top-32 transform-gpu">
+            <div className="aspect-[3/4] w-80 xl:w-96 overflow-hidden shadow-2xl bg-[var(--bg-elevated)] ring-1 ring-white/10 rounded-sm relative will-change-transform transform-gpu">
               {items.map((item, idx) => {
                 const isActive = hoveredIdx === idx;
                 return (
@@ -132,14 +132,14 @@ export function FeaturedEditorialList({ items }: FeaturedEditorialListProps) {
                         objectPosition: `${(item.photo.focal?.x ?? 0.5) * 100}% ${(item.photo.focal?.y ?? 0.35) * 100}%`,
                       }}
                       sizes="400px"
-                      priority={idx < 2}
+                      priority={idx < 4}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <div className="absolute bottom-4 left-4 right-4 text-xs font-mono text-white flex justify-between">
-                      <span className="backdrop-blur-md bg-black/60 px-2 py-0.5 rounded border border-white/10">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute bottom-4 left-4 right-4 text-xs font-mono text-white flex justify-between pointer-events-none">
+                      <span className="bg-black/85 px-2 py-0.5 rounded border border-white/15 shadow-md">
                         {item.title}
                       </span>
-                      <span className="backdrop-blur-md bg-black/60 px-2 py-0.5 rounded border border-white/10">
+                      <span className="bg-black/85 px-2 py-0.5 rounded border border-white/15 shadow-md">
                         [ {item.year} ]
                       </span>
                     </div>
