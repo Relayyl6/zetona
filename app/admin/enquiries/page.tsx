@@ -116,7 +116,10 @@ export default function AdminEnquiriesPage() {
                     </a>
                     {enq.phone && (
                       <a
-                        href={buildWhatsAppUrl(undefined, { phoneDigits: enq.phone })}
+                        href={buildWhatsAppUrl(
+                          `Hello ${enq.name}, thanks for reaching out to Zetona_E regarding your enquiry!`,
+                          { phoneDigits: enq.phone }
+                        )}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[var(--accent-text)] hover:underline inline-flex items-center gap-1"

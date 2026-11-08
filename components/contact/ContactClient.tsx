@@ -238,12 +238,13 @@ export function ContactClient({ portraitSrc }: ContactClientProps) {
                     name="sessionType"
                     value={formData.sessionType}
                     onChange={handleChange}
-                    className={`${inputClass} cursor-pointer`}
+                    style={{ colorScheme: "dark" }}
+                    className={`${inputClass} cursor-pointer bg-[#141414] text-[#F6F2E6]`}
                   >
-                    <option value="">Select...</option>
-                    <option value="portrait">Portrait</option>
-                    <option value="studio">Studio</option>
-                    <option value="other">Other</option>
+                    <option value="" className="bg-[#141414] text-[#F6F2E6] py-2">Select...</option>
+                    <option value="portrait" className="bg-[#141414] text-[#F6F2E6] py-2">Portrait</option>
+                    <option value="studio" className="bg-[#141414] text-[#F6F2E6] py-2">Studio</option>
+                    <option value="other" className="bg-[#141414] text-[#F6F2E6] py-2">Other</option>
                   </select>
                 </div>
 

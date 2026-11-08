@@ -20,4 +20,9 @@ describe("buildWhatsAppUrl", () => {
     const query = new URL(url).searchParams.get("text");
     expect(query?.length).toBeLessThanOrEqual(103); // 100 + '...'
   });
+
+  it("normalizes local Nigerian 11-digit phone numbers with 234 country code", () => {
+    const url = buildWhatsAppUrl("Hello", { phoneDigits: "09064982841" });
+    expect(url).toContain("https://wa.me/2349064982841?text=Hello");
+  });
 });

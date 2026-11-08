@@ -156,6 +156,7 @@ export default function AdminPhotosPage() {
               <select
                 value={uploadCollectionId}
                 onChange={(e) => setUploadCollectionId(e.target.value)}
+                style={{ colorScheme: "dark" }}
                 className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] cursor-pointer"
               >
                 <option value="col_portraits_01">Portraits</option>
@@ -241,6 +242,7 @@ export default function AdminPhotosPage() {
           <select
             value={filterCollection}
             onChange={(e) => setFilterCollection(e.target.value)}
+            style={{ colorScheme: "dark" }}
             className="bg-[var(--bg-elevated)] border border-[var(--line)] text-xs text-[var(--fg)] px-3 py-2 rounded-lg focus:outline-none focus:border-[var(--accent)]"
           >
             <option value="all">All Collections</option>

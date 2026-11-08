@@ -64,6 +64,12 @@ html {
   width: 100%;
 }
 
+select, option {
+  color-scheme: dark;
+  background-color: #141414;
+  color: #F6F2E6;
+}
+
 body {
   background-color: var(--bg);
   color: var(--fg);

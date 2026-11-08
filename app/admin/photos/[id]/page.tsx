@@ -200,6 +200,7 @@ export default function EditPhotoPage() {
             <select
               value={collectionId}
               onChange={(e) => setCollectionId(e.target.value)}
+              style={{ colorScheme: "dark" }}
               className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-4 py-2.5 text-sm text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] cursor-pointer"
             >
               <option value="col_portraits_01">Portraits</option>
