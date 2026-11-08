@@ -73,8 +73,8 @@ export function CollageHero({
       onMouseLeave={handleMouseLeave}
       aria-label="Photography portfolio hero"
     >
-      {/* ──────────────── DESKTOP COLLAGE (HIDDEN ON MOBILE) ──────────────── */}
-      <div className="hidden md:block absolute inset-0 pointer-events-none">
+      {/* ──────────────── DESKTOP & TABLET COLLAGE (HIDDEN ON MOBILE) ──────────────── */}
+      <div className="hidden md:block absolute inset-0 pointer-events-none [--card-scale:1.45] lg:[--card-scale:0.95] xl:[--card-scale:1] [--card-max:170px] lg:[--card-max:185px] xl:[--card-max:205px] [--card-min:120px] lg:[--card-min:95px]">
         {slots.map((slot, i) => {
           const photo = photos[i % photos.length];
           return (
@@ -174,7 +174,9 @@ function CollageCard({
       style={{
         left: `${slot.x}%`,
         top: `${slot.y}%`,
-        width: `clamp(${Math.round(slot.widthVw * 11.5)}px, ${slot.widthVw * 1.55}vw, ${Math.round(slot.widthVw * 19.5)}px)`,
+        width: `calc(var(--card-scale, 1) * ${slot.widthVw}vw)`,
+        maxWidth: `var(--card-max, 195px)`,
+        minWidth: `var(--card-min, 95px)`,
         zIndex: slot.z,
         x: shouldReduce ? 0 : (springX as unknown as any),
         rotate: shouldReduce ? 0 : `${slot.rotate ?? 0}deg`,
@@ -261,13 +263,13 @@ function HeroText({
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 z-30 pointer-events-auto">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 z-30 pointer-events-auto">
       {/* Serif Headline with high visual contrast – strictly two lines, larger and commanding */}
       <h1
-        className="font-serif text-[var(--fg)] leading-[0.96] drop-shadow-2xl select-none text-center tracking-tight"
-        style={{ fontSize: "clamp(1.95rem, 7.5vw, 9.5rem)" }}
+        className="font-serif text-[var(--fg)] leading-[0.98] sm:leading-[0.95] drop-shadow-2xl select-none text-center tracking-tighter sm:tracking-tight"
+        style={{ fontSize: "clamp(1.35rem, min(6.2vw, 8.5vh), 9.2rem)" }}
       >
-        <span className="block overflow-hidden py-1">
+        <span className="block overflow-hidden py-0.5 sm:py-1">
           <m.span
             className="block whitespace-nowrap"
             initial={{ y: shouldReduce ? 0 : "110%" }}
@@ -283,7 +285,7 @@ function HeroText({
         </span>
 
         {line2 && (
-          <span className="block overflow-hidden py-1">
+          <span className="block overflow-hidden py-0.5 sm:py-1">
             <m.span
               className="block whitespace-nowrap"
               initial={{ y: shouldReduce ? 0 : "110%" }}
