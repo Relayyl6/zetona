@@ -48,6 +48,7 @@ export default function AdminSettingsPage() {
 
   const [photos, setPhotos] = useState<PhotoDTO[]>([]);
   const [togglingPhotoId, setTogglingPhotoId] = useState<string | null>(null);
+  const [selectedHomeCardId, setSelectedHomeCardId] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -550,49 +551,120 @@ export default function AdminSettingsPage() {
 
         {/* Selected Photos Reel */}
         <div>
-          <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-3">
-            Currently Featured on Homepage (Active {photos.filter((p) => p.featuredHome).length})
-          </span>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block">
+              Currently Featured on Homepage (Active {photos.filter((p) => p.featuredHome).length})
+            </span>
+            <span className="text-[10px] font-mono text-[var(--fg-dim)] hidden sm:inline">
+              Tap any photo to view actions or tap Remove ✕
+            </span>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
             {photos
               .filter((p) => p.featuredHome)
-              .map((photo) => (
-                <div
-                  key={photo.id}
-                  className="relative group bg-[var(--bg)] border border-[var(--accent)]/50 rounded-lg overflow-hidden shadow-sm"
-                >
-                  <div className="aspect-[3/4] relative bg-black/40 overflow-hidden">
-                    <Image
-                      src={getOptimizedSrc(photo.displayKey, 400)}
-                      alt={photo.alt || photo.title || "Featured photo"}
-                      fill
-                      className="object-cover"
-                      sizes="(min-width:768px) 20vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
-                      <span className="text-[9px] font-mono text-emerald-400 bg-black/80 px-1 py-0.5 rounded self-start">
-                        Active on Home
-                      </span>
+              .map((photo) => {
+                const isSelected = selectedHomeCardId === photo.id;
+                const isToggling = togglingPhotoId === photo.id;
+
+                return (
+                  <div
+                    key={photo.id}
+                    onClick={() => setSelectedHomeCardId((prev) => (prev === photo.id ? null : photo.id))}
+                    className={`relative group bg-[var(--bg)] border rounded-lg overflow-hidden shadow-sm transition-all cursor-pointer ${
+                      isSelected
+                        ? "border-[var(--accent)] ring-2 ring-[var(--accent)]/50 scale-[1.01]"
+                        : "border-[var(--accent)]/40 hover:border-[var(--accent)]"
+                    }`}
+                  >
+                    <div className="aspect-[3/4] relative bg-black/40 overflow-hidden">
+                      <Image
+                        src={getOptimizedSrc(photo.displayKey, 400)}
+                        alt={photo.alt || photo.title || "Featured photo"}
+                        fill
+                        className="object-cover"
+                        sizes="(min-width:768px) 20vw, 33vw"
+                      />
+
+                      {/* Persistent Overlay on tap / click or on desktop hover */}
+                      <div
+                        className={`absolute inset-0 bg-black/75 backdrop-blur-[2px] transition-opacity flex flex-col justify-between p-2.5 z-10 ${
+                          isSelected
+                            ? "opacity-100 pointer-events-auto"
+                            : "opacity-0 md:group-hover:opacity-100 pointer-events-none md:group-hover:pointer-events-auto"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-mono text-emerald-400 bg-black/80 border border-emerald-500/30 px-1.5 py-0.5 rounded">
+                            Active on Home
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedHomeCardId(null);
+                            }}
+                            className="text-white/60 hover:text-white text-xs px-1.5 py-0.5 rounded bg-white/10"
+                            title="Dismiss overlay"
+                          >
+                            ✕
+                          </button>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5 w-full">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFeaturedHome(photo.id, true);
+                              if (isSelected) setSelectedHomeCardId(null);
+                            }}
+                            disabled={isToggling}
+                            className="w-full bg-red-600 hover:bg-red-500 text-white text-[11px] font-mono py-1.5 px-2 rounded cursor-pointer transition-colors flex items-center justify-center gap-1 shadow-md disabled:opacity-50"
+                          >
+                            {isToggling ? (
+                              <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                              <span>Remove from Home ✕</span>
+                            )}
+                          </button>
+                          <a
+                            href={`/admin/photos/${photo.id}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-full bg-white/10 hover:bg-white/20 text-[var(--fg)] text-[10px] font-mono py-1 px-2 rounded text-center border border-white/10 transition-colors"
+                          >
+                            Edit Photo Details →
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Metadata footer with permanent mobile & desktop Remove button */}
+                    <div className="p-2 flex items-center justify-between gap-1 border-t border-[var(--line)]">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-medium text-[var(--fg)] truncate">
+                          {photo.title || "Untitled"}
+                        </p>
+                        <p className="text-[9px] font-mono text-[var(--fg-dim)] truncate">
+                          {photo.collection?.title || "No section"}
+                        </p>
+                      </div>
                       <button
                         type="button"
-                        onClick={() => toggleFeaturedHome(photo.id, true)}
-                        disabled={togglingPhotoId === photo.id}
-                        className="bg-red-500/80 hover:bg-red-600 text-white text-[11px] font-sans py-1 px-2 rounded cursor-pointer transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFeaturedHome(photo.id, true);
+                          if (isSelected) setSelectedHomeCardId(null);
+                        }}
+                        disabled={isToggling}
+                        className="shrink-0 text-[10px] font-mono text-red-400 hover:text-white bg-red-950/40 hover:bg-red-600 border border-red-500/30 px-2 py-0.5 rounded cursor-pointer transition-colors disabled:opacity-50"
+                        title="Remove from Homepage"
                       >
                         Remove ✕
                       </button>
                     </div>
                   </div>
-                  <div className="p-2">
-                    <p className="text-[11px] font-medium text-[var(--fg)] truncate">
-                      {photo.title || "Untitled"}
-                    </p>
-                    <p className="text-[9px] font-mono text-[var(--fg-dim)] truncate">
-                      {photo.collection?.title || "No section"}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         </div>
 
@@ -604,16 +676,18 @@ export default function AdminSettingsPage() {
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 max-h-96 overflow-y-auto p-1 bg-[var(--bg)]/40 rounded-lg border border-[var(--line)]">
             {photos.map((photo) => {
               const isFeatured = Boolean(photo.featuredHome);
+              const isToggling = togglingPhotoId === photo.id;
+
               return (
                 <button
                   type="button"
                   key={photo.id}
                   onClick={() => toggleFeaturedHome(photo.id, isFeatured)}
-                  disabled={togglingPhotoId === photo.id}
+                  disabled={isToggling}
                   className={`group relative aspect-[3/4] rounded-md overflow-hidden border-2 transition-all cursor-pointer ${
                     isFeatured
                       ? "border-[var(--accent)] ring-2 ring-[var(--accent)]/30 scale-[0.98]"
-                      : "border-transparent opacity-60 hover:opacity-100 hover:border-white/30"
+                      : "border-transparent opacity-75 hover:opacity-100 hover:border-white/30"
                   }`}
                   title={photo.title || photo.id}
                 >
@@ -625,17 +699,21 @@ export default function AdminSettingsPage() {
                     sizes="120px"
                   />
                   <div className="absolute top-1 right-1">
-                    {isFeatured ? (
-                      <span className="w-4 h-4 bg-[var(--accent)] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow">
+                    {isToggling ? (
+                      <span className="w-5 h-5 bg-black/80 text-white rounded-full flex items-center justify-center">
+                        <span className="w-2.5 h-2.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      </span>
+                    ) : isFeatured ? (
+                      <span className="w-5 h-5 bg-[var(--accent)] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow">
                         ✓
                       </span>
                     ) : (
-                      <span className="w-4 h-4 bg-black/60 text-white/70 text-[10px] rounded-full hidden group-hover:flex items-center justify-center">
+                      <span className="w-5 h-5 bg-black/60 text-white/80 border border-white/20 text-[10px] rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                         +
                       </span>
                     )}
                   </div>
-                  <div className="absolute bottom-0 inset-x-0 bg-black/70 p-1 text-[9px] text-white truncate text-left">
+                  <div className="absolute bottom-0 inset-x-0 bg-black/75 p-1 text-[9px] text-white truncate text-left font-mono">
                     {photo.title || "Untitled"}
                   </div>
                 </button>

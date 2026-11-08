@@ -642,6 +642,24 @@ export async function toggleEnquiryHandled(id: string): Promise<boolean> {
   return true;
 }
 
+export async function deleteEnquiry(id: string): Promise<boolean> {
+  const sql = getNeonSql();
+  if (sql) {
+    try {
+      await sql`DELETE FROM enquiries WHERE id = ${id};`;
+    } catch (err) {
+      console.warn("Neon delete enquiry failed:", err);
+    }
+  }
+
+  const data = ensureDataFile() as any;
+  if (data.enquiries) {
+    data.enquiries = data.enquiries.filter((e: any) => e.id !== id);
+    persistFile(data);
+  }
+  return true;
+}
+
 // ──────────────── TESTIMONIALS ────────────────
 
 export async function getAllTestimonials(): Promise<TestimonialDTO[]> {

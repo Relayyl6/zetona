@@ -50,8 +50,34 @@ export default function AdminEnquiriesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
+      window.dispatchEvent(new CustomEvent("admin-enquiries-changed"));
     } catch (err) {
       console.error("Failed to toggle enquiry:", err);
+    }
+  };
+
+  const deleteEnquiry = async (id: string, name: string) => {
+    if (!window.confirm(`Are you sure you want to delete message from "${name}"?\nThis action cannot be undone.`)) {
+      return;
+    }
+    setEnquiries((prev) => prev.filter((e) => e.id !== id));
+    try {
+      const res = await fetch(`/api/admin/enquiries?id=${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        throw new Error("Failed to delete message");
+      }
+      window.dispatchEvent(new CustomEvent("admin-enquiries-changed"));
+    } catch (err) {
+      console.error("Failed to delete enquiry:", err);
+      alert("Could not delete message. Please try again.");
+      // Reload on failure
+      const reload = await fetch("/api/admin/enquiries");
+      if (reload.ok) {
+        const data = await reload.json();
+        if (data.enquiries) setEnquiries(data.enquiries);
+      }
     }
   };
 
@@ -101,7 +127,7 @@ export default function AdminEnquiriesPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <span
                     className={`text-[10px] font-mono px-2 py-0.5 rounded-full ${
                       enq.emailStatus === "sent"
@@ -113,9 +139,17 @@ export default function AdminEnquiriesPage() {
                   </span>
                   <button
                     onClick={() => toggleHandled(enq.id)}
-                    className="text-xs font-mono border border-[var(--line-strong)] px-3 py-1 rounded hover:bg-[var(--bg)] cursor-pointer"
+                    className="text-xs font-mono border border-[var(--line-strong)] px-3 py-1 rounded hover:bg-[var(--bg)] cursor-pointer transition-colors"
                   >
                     {enq.handledAt ? "Mark Unhandled" : "Mark Handled ✓"}
+                  </button>
+                  <button
+                    onClick={() => deleteEnquiry(enq.id, enq.name)}
+                    className="text-xs font-mono text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-500/60 px-2.5 py-1 rounded hover:bg-red-950/40 cursor-pointer transition-colors flex items-center gap-1"
+                    title="Delete message permanently"
+                  >
+                    <span>Delete</span>
+                    <span>✕</span>
                   </button>
                 </div>
               </div>
