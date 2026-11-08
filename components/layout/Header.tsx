@@ -23,188 +23,131 @@ export function Header({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const menuOpenRef = React.useRef(menuOpen);
   React.useEffect(() => {
     menuOpenRef.current = menuOpen;
   }, [menuOpen]);
 
   const isHoveredRef = React.useRef(false);
-  const autoHideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
-  const lastShowTimeRef = React.useRef(0);
+  const hideTimerRef = React.useRef<NodeJS.Timeout | null>(null);
+  const showTimeRef = React.useRef(0);
+  const lastScrollYRef = React.useRef(0);
   const { lenis, stop, start } = useLenisScroll();
 
-  const clearAutoHideTimer = React.useCallback(() => {
-    if (autoHideTimerRef.current) {
-      clearTimeout(autoHideTimerRef.current);
-      autoHideTimerRef.current = null;
+  const clearHideTimer = React.useCallback(() => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
     }
   }, []);
 
-  const showNav = React.useCallback(() => {
+  const showNavbar = React.useCallback(() => {
     setIsVisible(true);
-    lastShowTimeRef.current = Date.now();
-    clearAutoHideTimer();
+    showTimeRef.current = Date.now();
+    clearHideTimer();
 
-    const getScrollY = () =>
-      window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
+    // Auto-hide after 3.5 seconds of stationary reading unless menu is open or user is hovering
+    hideTimerRef.current = setTimeout(() => {
+      if (!isHoveredRef.current && !menuOpenRef.current) {
+        setIsVisible(false);
+      }
+    }, 3500);
+  }, [clearHideTimer]);
 
-    // When scrolled down (> 60px) and drawer is not open, automatically fade away after 3s of reading
-    if (getScrollY() > 60 && !menuOpenRef.current) {
-      autoHideTimerRef.current = setTimeout(() => {
-        const y = getScrollY();
-        if (y > 60 && !menuOpenRef.current && !isHoveredRef.current) {
-          setIsVisible(false);
-        }
-      }, 3000);
-    }
-  }, [clearAutoHideTimer]);
-
-  const hideNav = React.useCallback(() => {
+  const hideNavbar = React.useCallback(() => {
     if (menuOpenRef.current) return;
-    // 800ms cooldown: prevent thumb-lift bounce after a scroll-up swipe from immediately re-hiding the nav
-    if (Date.now() - lastShowTimeRef.current < 800) return;
     if (isHoveredRef.current) return;
+    // 600ms cooldown: prevent micro-rebound from finger-lift cancelling the reveal
+    if (Date.now() - showTimeRef.current < 600) return;
 
-    clearAutoHideTimer();
+    clearHideTimer();
     setIsVisible(false);
-  }, [clearAutoHideTimer]);
+  }, [clearHideTimer]);
 
-  // Bulletproof Headroom Navigation:
-  // - Top of page (<= 60px): ALWAYS visible
-  // - Scrolling DOWN: Immediately hides (default state down the page is hidden)
-  // - Scrolling UP from ANY point (including footer): Momentarily fades down into view (3s auto-hide)
-  // - 800ms cooldown protects against thumb-lift bounce on touch screens
-  // - Direct touchmove + wheel hardware hooks ensure 100% responsiveness on Android/iOS/Desktop
+  // Bulletproof Headroom Navigation (at ANY point on ANY non-admin route):
+  // - Invisible entirely by default
+  // - Scrolling UP from ANY point (even footer) immediately brings it into view
+  // - Stays visible for 3.5s, then automatically fades away if not hovering or interacting
+  // - Hovering on desktop keeps it pinned indefinitely
+  // - Scrolling DOWN intentionally hides it immediately
   React.useEffect(() => {
     const getScrollY = () =>
       window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
 
-    // Check initial position on mount: if already scrolled down, default to hidden
-    const initialY = getScrollY();
-    if (initialY > 60) {
-      setIsVisible(false);
-      setIsScrolled(true);
-    } else {
-      setIsVisible(true);
-      setIsScrolled(initialY > 20);
-    }
+    lastScrollYRef.current = getScrollY();
+    setIsScrolled(lastScrollYRef.current > 20);
 
-    let lastY = initialY;
-    let minReachedY = initialY;
-    let maxReachedY = initialY;
-
-    // 1. Scroll listener using Peak/Trough distance tracking
-    const handleScroll = () => {
-      const currentY = getScrollY();
-      setIsScrolled(currentY > 20);
-
-      // At the top of the page (<= 60px): ALWAYS visible, cancel any timer
-      if (currentY <= 60) {
-        clearAutoHideTimer();
-        setIsVisible(true);
-        minReachedY = currentY;
-        maxReachedY = currentY;
-        lastY = currentY;
-        return;
-      }
-
-      if (menuOpenRef.current) {
-        lastY = currentY;
-        return;
-      }
-
-      const delta = currentY - lastY;
-
-      // Scrolling DOWN
-      if (delta > 0) {
-        if (currentY > maxReachedY) {
-          maxReachedY = currentY;
-        }
-        // User has scrolled down by at least 30px from the highest point
-        const downDistance = currentY - minReachedY;
-        if (downDistance >= 30) {
-          hideNav();
-          minReachedY = currentY;
-        }
-      }
-      // Scrolling UP
-      else if (delta < 0) {
-        if (currentY < minReachedY) {
-          minReachedY = currentY;
-        }
-        // User has scrolled up by at least 15px from the lowest point reached
-        const upDistance = maxReachedY - currentY;
-        if (upDistance >= 15) {
-          showNav();
-          maxReachedY = currentY;
-        }
-      }
-
-      lastY = currentY;
-    };
-
+    // 1. Unified Window Scroll listener (covers Lenis, momentum, desktop and mobile)
     let ticking = false;
     const onScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          handleScroll();
+          const currentY = getScrollY();
+          setIsScrolled(currentY > 20);
+
+          const delta = currentY - lastScrollYRef.current;
+
+          // Scrolling UP: ANY upward movement (> 3px) brings the nav into view
+          if (delta < -3) {
+            showNavbar();
+          }
+          // Scrolling DOWN: intentional downward movement (> 12px) hides it
+          else if (delta > 12) {
+            hideNavbar();
+          }
+
+          lastScrollYRef.current = currentY;
           ticking = false;
         });
         ticking = true;
       }
     };
 
-    // 2. Mobile touch gesture listener: instantaneous hardware touch reaction
+    // 2. Hardware Wheel / Trackpad listener (instantaneous desktop response)
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY < -2) {
+        // Scrolling up with trackpad or mouse wheel
+        showNavbar();
+      } else if (e.deltaY > 12) {
+        // Scrolling down with trackpad or mouse wheel
+        hideNavbar();
+      }
+    };
+
+    // 3. Hardware Touch listener (instantaneous finger swipe response on mobile)
     let touchStartY = 0;
     const onTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0]?.clientY || 0;
     };
-
     const onTouchMove = (e: TouchEvent) => {
       const touchY = e.touches[0]?.clientY || 0;
       const diff = touchY - touchStartY; // positive = dragging finger down = scrolling UP
 
-      const currentY = getScrollY();
-      if (currentY <= 60 || menuOpenRef.current) return;
-
-      // Dragging finger DOWN by > 20px = intentional scroll UP
-      if (diff > 20) {
-        showNav();
+      if (diff > 8) {
+        // Swiping down to scroll UP
+        showNavbar();
         touchStartY = touchY;
-      }
-      // Dragging finger UP by > 35px = intentional scroll DOWN
-      else if (diff < -35) {
-        hideNav();
+      } else if (diff < -18) {
+        // Swiping up to scroll DOWN
+        hideNavbar();
         touchStartY = touchY;
-      }
-    };
-
-    // 3. Desktop wheel / trackpad listener: instantaneous hardware wheel reaction
-    const onWheel = (e: WheelEvent) => {
-      const currentY = getScrollY();
-      if (currentY <= 60 || menuOpenRef.current) return;
-
-      if (e.deltaY < -15) {
-        showNav();
-      } else if (e.deltaY > 25) {
-        hideNav();
       }
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
-    window.addEventListener("wheel", onWheel, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("wheel", onWheel);
-      clearAutoHideTimer();
+      clearHideTimer();
     };
-  }, [clearAutoHideTimer, hideNav, showNav]);
+  }, [clearHideTimer, hideNavbar, showNavbar]);
 
   // Lock body scroll when full-screen menu is open
   React.useEffect(() => {
@@ -247,17 +190,15 @@ export function Header({
 
   const handleMouseEnter = () => {
     isHoveredRef.current = true;
-    clearAutoHideTimer();
+    clearHideTimer();
   };
 
   const handleMouseLeave = () => {
     isHoveredRef.current = false;
-    const y = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
-    if (y > 60 && !menuOpenRef.current) {
-      clearAutoHideTimer();
-      autoHideTimerRef.current = setTimeout(() => {
-        const currentY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
-        if (currentY > 60 && !menuOpenRef.current && !isHoveredRef.current) {
+    if (!menuOpenRef.current) {
+      clearHideTimer();
+      hideTimerRef.current = setTimeout(() => {
+        if (!isHoveredRef.current && !menuOpenRef.current) {
           setIsVisible(false);
         }
       }, 2500);
@@ -282,11 +223,7 @@ export function Header({
         }}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 transition-[background-color,border-color,padding] duration-200 flex items-center justify-between ${
-          isScrolled
-            ? "py-3 bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/10 shadow-2xl"
-            : "py-4 sm:py-5 md:py-6 bg-transparent"
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 py-3 sm:py-4 bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/10 shadow-2xl flex items-center justify-between"
       >
         {/* Wordmark */}
         <Link
