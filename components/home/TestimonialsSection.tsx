@@ -102,21 +102,21 @@ export function TestimonialsSection() {
   };
 
   return (
-    <section className="relative min-h-[80vh] bg-[var(--bg)] border-t border-[var(--line)] overflow-hidden flex flex-col justify-between py-24 px-6 md:px-12 select-none">
+    <section className="relative bg-[var(--bg)] border-t border-[var(--line)] overflow-hidden flex flex-col justify-between py-14 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 select-none">
       {/* Cinematic subtle ambient light (pure GPU radial gradient, zero blur filter cost) */}
       <div className="absolute top-0 left-0 right-0 h-40 overflow-hidden pointer-events-none bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.05),transparent_70%)]" />
 
       {/* Main Grid: Label on left, Quote & Avatar controls on right */}
-      <div className="relative z-10 grid lg:grid-cols-12 gap-10 items-start max-w-6xl mx-auto w-full my-auto">
+      <div className="relative z-10 grid lg:grid-cols-12 gap-8 lg:gap-10 items-start max-w-6xl mx-auto w-full my-auto">
         {/* Left Column: • TESTIMONIALS */}
         <div className="lg:col-span-3">
-          <span className="font-condensed uppercase tracking-tight text-[var(--fg)] text-2xl md:text-3xl flex items-center gap-2">
+          <span className="font-condensed uppercase tracking-tight text-[var(--fg)] text-xl sm:text-2xl md:text-3xl flex items-center gap-2">
             <span className="text-[var(--accent-text)]">•</span> TESTIMONIALS
           </span>
-          <span className="font-mono text-xs text-[var(--fg-dim)] block mt-2">
+          <span className="font-mono text-xs text-[var(--fg-dim)] block mt-1.5 sm:mt-2">
             [ 0{activeIdx + 1} / 0{TESTIMONIALS.length} ]
           </span>
-          <div className="mt-4 flex items-center gap-2 text-[11px] font-mono text-[var(--fg-dim)]">
+          <div className="mt-3 sm:mt-4 flex items-center gap-2 text-[11px] font-mono text-[var(--fg-dim)]">
             <span className={`w-1.5 h-1.5 rounded-full ${isPaused ? "bg-amber-400" : "bg-[var(--accent)] animate-pulse"}`} />
             <span>{isPaused ? "Paused" : "Auto-playing"}</span>
           </div>
@@ -127,7 +127,7 @@ export function TestimonialsSection() {
           <div
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
-            className="bg-[#101010] border border-white/10 p-8 md:p-12 rounded-2xl shadow-2xl relative transform-gpu"
+            className="bg-[#101010] border border-white/10 p-5 sm:p-8 md:p-12 rounded-2xl shadow-2xl relative transform-gpu"
           >
             <AnimatePresence mode="wait">
               <m.div
@@ -138,13 +138,13 @@ export function TestimonialsSection() {
                 transition={{ duration: 0.35, ease: ease.outExpo }}
               >
                 {/* Quote Text */}
-                <p className="font-sans text-[var(--fg-muted)] text-base md:text-lg lg:text-xl leading-relaxed mb-8">
+                <p className="font-sans text-[var(--fg-muted)] text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed mb-6 sm:mb-8">
                   &ldquo;{current.quote}&rdquo;
                 </p>
 
                 {/* Author Info */}
-                <div className="mb-10">
-                  <h4 className="font-condensed uppercase text-[var(--fg)] text-xl md:text-2xl tracking-wide">
+                <div className="mb-6 sm:mb-10">
+                  <h4 className="font-condensed uppercase text-[var(--fg)] text-lg sm:text-xl md:text-2xl tracking-wide">
                     {current.author}
                   </h4>
                   <p className="font-sans text-xs text-[var(--fg-dim)] mt-0.5">
@@ -155,7 +155,7 @@ export function TestimonialsSection() {
             </AnimatePresence>
 
             {/* Avatar thumbnail row with smooth timing indicators going across */}
-            <div className="pt-6 border-t border-white/10 flex items-center gap-3.5 overflow-x-auto no-scrollbar">
+            <div className="pt-5 sm:pt-6 border-t border-white/10 flex items-center gap-2.5 sm:gap-3.5 overflow-x-auto no-scrollbar">
               {TESTIMONIALS.map((t, idx) => {
                 const isActive = idx === activeIdx;
                 const isPassed = idx < activeIdx;
@@ -168,7 +168,7 @@ export function TestimonialsSection() {
                     className="focus:outline-none cursor-pointer flex-shrink-0 flex flex-col items-center gap-2 group"
                   >
                     <div
-                      className={`w-11 h-11 md:w-12 md:h-12 rounded overflow-hidden relative transition-all duration-300 ${
+                      className={`w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded overflow-hidden relative transition-all duration-300 ${
                         isActive
                           ? "ring-2 ring-[var(--accent)] ring-offset-2 ring-offset-black scale-105 brightness-100 shadow-xl"
                           : "opacity-40 grayscale hover:opacity-80 hover:grayscale-0"

@@ -55,17 +55,23 @@ export function FeaturedEditorialList({ items }: FeaturedEditorialListProps) {
                 }}
                 className="group cursor-pointer py-1"
               >
-                <Link
-                  href={item.href}
-                  className="flex items-baseline justify-between transition-opacity duration-200"
+                <div
+                  onClick={(e) => {
+                    // Mobile/Tablet tap: show picture in-place without immediately leaving the screen
+                    if (hoveredIdx !== idx) {
+                      e.preventDefault();
+                      setHoveredIdx(idx);
+                    }
+                  }}
+                  className="flex items-baseline justify-between transition-opacity duration-200 select-none"
                   style={{
                     opacity: hoveredIdx === null || isHovered ? 1 : 0.35,
                   }}
                 >
-                  <div className="flex items-baseline gap-3">
+                  <div className="flex items-baseline gap-2.5 sm:gap-3">
                     {/* Active em-dash indicator */}
                     <span
-                      className={`font-condensed text-[var(--fg)] text-3xl md:text-5xl transition-all duration-200 ${
+                      className={`font-condensed text-[var(--fg)] text-2xl sm:text-3xl md:text-5xl transition-all duration-200 ${
                         isHovered ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"
                       }`}
                     >
@@ -74,25 +80,25 @@ export function FeaturedEditorialList({ items }: FeaturedEditorialListProps) {
                     <h3
                       className={`font-condensed uppercase tracking-tight transition-transform duration-200 ${
                         isHovered
-                          ? "translate-x-2 text-[var(--fg)]"
+                          ? "translate-x-1 sm:translate-x-2 text-[var(--fg)]"
                           : "text-[var(--fg-muted)] group-hover:text-[var(--fg)]"
                       }`}
-                      style={{ fontSize: "clamp(2rem, 4.5vw, 4.5rem)", lineHeight: 1 }}
+                      style={{ fontSize: "clamp(1.6rem, 4vw, 4.5rem)", lineHeight: 1.05 }}
                     >
                       {item.title}
                     </h3>
                   </div>
 
                   {/* Bracketed year */}
-                  <span className="font-mono text-xs text-[var(--fg-dim)] ml-4 flex-shrink-0">
+                  <span className="font-mono text-[11px] sm:text-xs text-[var(--fg-dim)] ml-4 flex-shrink-0">
                     [ {item.year} ]
                   </span>
-                </Link>
+                </div>
 
                 {/* Mobile-only inline preview when tapped with smooth hardware accordion */}
                 <div
                   className={`lg:hidden overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
-                    isHovered ? "max-h-80 opacity-100 mt-3 mb-4" : "max-h-0 opacity-0"
+                    isHovered ? "max-h-[30rem] opacity-100 mt-3 mb-5" : "max-h-0 opacity-0 pointer-events-none"
                   }`}
                 >
                   <div className="aspect-[4/5] w-full max-w-sm rounded overflow-hidden relative shadow-xl">
@@ -103,6 +109,17 @@ export function FeaturedEditorialList({ items }: FeaturedEditorialListProps) {
                       className="object-cover"
                       sizes="(max-width: 1024px) 90vw, 400px"
                     />
+                  </div>
+
+                  {/* Dedicated button to navigate to /work only when the user explicitly chooses */}
+                  <div className="mt-3 flex items-center justify-between max-w-sm">
+                    <span className="font-mono text-xs text-[var(--fg-dim)]">[ {item.year} ]</span>
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#F6F2E6] bg-white/10 hover:bg-white hover:text-black border border-white/20 px-3.5 py-1.5 rounded-full transition-colors"
+                    >
+                      View in Work →
+                    </Link>
                   </div>
                 </div>
               </div>

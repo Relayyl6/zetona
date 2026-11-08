@@ -56,8 +56,8 @@ export function SplitNameHeroSection({ photos }: SplitNameHeroSectionProps) {
           {/* GIANT ZETONA - positioned across the EXACT vertical middle of the focal photo with taller character proportions */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[92vw] pointer-events-none z-10">
             <m.h2
-              className="font-heavy uppercase text-[#F6F2E6] leading-none select-none w-full flex justify-between items-center text-center font-black px-4 sm:px-6 md:px-8 scale-y-[1.38] origin-center tracking-tight"
-              style={{ fontSize: "clamp(4rem, 14.2vw, 14.5rem)", fontWeight: 900 }}
+              className="font-heavy uppercase text-[#F6F2E6] leading-none select-none w-full flex justify-between items-center text-center font-black px-3 sm:px-6 md:px-8 scale-y-[1.38] origin-center tracking-tight"
+              style={{ fontSize: "clamp(2.75rem, 13.8vw, 14.5rem)", fontWeight: 900 }}
               initial={{ y: "25%", opacity: 0 }}
               whileInView={{ y: "0%", opacity: 1 }}
               viewport={{ once: true }}
@@ -106,8 +106,8 @@ export function SplitNameHeroSection({ photos }: SplitNameHeroSectionProps) {
                 className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 overflow-hidden"
               >
                 <div
-                  className="w-[92vw] min-w-[92vw] flex justify-between items-center text-center font-heavy uppercase font-black text-[#F6F2E6]/70 filter blur-[2.5px] select-none scale-y-[1.38] origin-center px-4 sm:px-6 md:px-8 mix-blend-plus-lighter tracking-tight"
-                  style={{ fontSize: "clamp(4rem, 14.2vw, 14.5rem)", fontWeight: 900 }}
+                  className="w-[92vw] min-w-[92vw] flex justify-between items-center text-center font-heavy uppercase font-black text-[#F6F2E6]/70 filter blur-[2.5px] select-none scale-y-[1.38] origin-center px-3 sm:px-6 md:px-8 mix-blend-plus-lighter tracking-tight"
+                  style={{ fontSize: "clamp(2.75rem, 13.8vw, 14.5rem)", fontWeight: 900 }}
                 >
                   <span>Z</span>
                   <span>E</span>

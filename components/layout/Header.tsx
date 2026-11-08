@@ -28,62 +28,62 @@ export function Header({
   const lastScrollYRef = React.useRef(0);
   const { lenis, stop, start } = useLenisScroll();
 
-  // Bulletproof Sticky Headroom Navigation:
-  // - Immediately slides/pops into view on ANY upward scroll (wheel, touch swipe, or scroll delta)
-  // - Stays reliably visible while reading or navigating (4.5s idle timeout)
+  // Universal Bulletproof Sticky Headroom Navigation across all devices (Mobile, Tablet, Desktop):
+  // - Immediately slides/pops into view on ANY upward scroll (native scroll, touch swipe, or wheel)
+  // - Stays reliably visible while reading (6s idle timeout)
   // - Disappears ONLY on intentional downward scroll (> 15px downward delta)
   // - Always visible at top of page (<= 60px) or when mobile drawer menu is open
   React.useEffect(() => {
     let idleTimer: NodeJS.Timeout | null = null;
-    let lastY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    let lastY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
     let accumulatedDown = 0;
 
     const showNav = () => {
       accumulatedDown = 0;
       setIsVisible(true);
       if (idleTimer) clearTimeout(idleTimer);
-      // Gentle idle fade after 4.5 seconds of stationary inactivity
+      // Keep visible for 6 seconds of stationary reading
       idleTimer = setTimeout(() => {
-        const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        const currentY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
         if (!menuOpen && currentY > 60) {
           setIsVisible(false);
         }
-      }, 4500);
+      }, 6000);
     };
 
     const hideNav = () => {
-      const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const currentY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
       if (currentY > 60 && !menuOpen) {
         if (idleTimer) clearTimeout(idleTimer);
         setIsVisible(false);
       }
     };
 
-    // 1. Direct hardware wheel / trackpad listener (immediate user intent)
+    // 1. Direct hardware wheel / trackpad listener (immediate desktop intent)
     const onWheel = (e: WheelEvent) => {
-      const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const currentY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
       if (currentY <= 60 || menuOpen) {
         showNav();
         return;
       }
 
       // Scrolling UP with wheel/trackpad
-      if (e.deltaY < -4) {
+      if (e.deltaY < -3) {
         showNav();
       }
-      // Intentional downward scroll (filter out minor trackpad lift bounce)
-      else if (e.deltaY > 18) {
+      // Intentional downward scroll
+      else if (e.deltaY > 15) {
         hideNav();
       }
     };
 
-    // 2. Mobile touch screen gestures
+    // 2. Mobile touch screen gestures (immediate finger drag response)
     let touchStartY = 0;
     const onTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0]?.clientY || 0;
     };
     const onTouchMove = (e: TouchEvent) => {
-      const currentY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      const currentY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
       if (currentY <= 60 || menuOpen) {
         showNav();
         return;
@@ -93,37 +93,39 @@ export function Header({
       const diff = touchY - touchStartY;
 
       // Dragging finger DOWN means scrolling UP
-      if (diff > 8) {
+      if (diff > 6) {
         showNav();
         touchStartY = touchY;
       }
       // Dragging finger UP means scrolling DOWN
-      else if (diff < -18) {
+      else if (diff < -15) {
         hideNav();
         touchStartY = touchY;
       }
     };
 
-    // 3. Unified scroll position tracking (handles scrollbar drag, keyboard navigation, and Lenis updates)
-    const onScrollPosition = (currentY: number) => {
+    // 3. Native window scroll listener (guaranteed on 100% of devices, iOS, Android, Desktop)
+    const onScroll = () => {
+      const currentY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
       setIsScrolled(currentY > 20);
 
       if (currentY <= 60 || menuOpen) {
         showNav();
         lastY = currentY;
+        accumulatedDown = 0;
         return;
       }
 
       const delta = currentY - lastY;
 
       // Scrolling UP (delta is negative)
-      if (delta < -3) {
+      if (delta < -2) {
         showNav();
       }
       // Scrolling DOWN: accumulate delta so settling jitter never accidentally hides the navbar
       else if (delta > 0) {
         accumulatedDown += delta;
-        if (accumulatedDown > 16) {
+        if (accumulatedDown > 15) {
           hideNav();
           accumulatedDown = 0;
         }
@@ -132,36 +134,19 @@ export function Header({
       lastY = currentY;
     };
 
-    // 4. Attach scroll listener: use Lenis if active, otherwise fallback to native scroll
-    let unsubLenis: (() => void) | null = null;
-    if (lenis) {
-      const onLenis = (l: any) => {
-        const y = typeof l.scroll === "number" ? l.scroll : (window.pageYOffset || 0);
-        onScrollPosition(y);
-      };
-      lenis.on("scroll", onLenis);
-      unsubLenis = () => lenis.off("scroll", onLenis);
-    } else {
-      const onNative = () => {
-        const y = window.pageYOffset || document.documentElement.scrollTop || 0;
-        onScrollPosition(y);
-      };
-      window.addEventListener("scroll", onNative, { passive: true });
-      unsubLenis = () => window.removeEventListener("scroll", onNative);
-    }
-
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("wheel", onWheel, { passive: true });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
-      if (unsubLenis) unsubLenis();
       if (idleTimer) clearTimeout(idleTimer);
     };
-  }, [lenis, menuOpen]);
+  }, [menuOpen]);
 
   // Lock body scroll when full-screen menu is open
   React.useEffect(() => {
@@ -218,10 +203,10 @@ export function Header({
         style={{
           pointerEvents: isVisible ? "auto" : "none",
         }}
-        className={`fixed top-0 left-0 right-0 z-50 px-6 md:px-12 transition-[background-color,border-color,padding] duration-200 flex items-center justify-between ${
+        className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 transition-[background-color,border-color,padding] duration-200 flex items-center justify-between ${
           isScrolled
-            ? "py-3.5 bg-[#0A0A0A]/85 backdrop-blur-xl border-b border-white/10 shadow-2xl"
-            : "py-5 md:py-6 bg-transparent"
+            ? "py-3 bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-white/10 shadow-2xl"
+            : "py-4 sm:py-5 md:py-6 bg-transparent"
         }`}
       >
         {/* Wordmark */}

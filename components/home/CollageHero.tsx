@@ -101,12 +101,12 @@ export function CollageHero({
       <div className="hidden md:block absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[var(--bg)] via-[var(--bg)]/60 to-transparent pointer-events-none z-10" />
 
       {/* ──────────────── MOBILE RESPONSIVE SCROLLABLE CAROUSEL (BIG IMPACT EDITORIAL CARDS) ──────────────── */}
-      <div className="md:hidden relative z-20 pb-12 pt-6">
-        <div className="flex gap-4 overflow-x-auto no-scrollbar px-6 snap-x snap-mandatory">
+      <div className="md:hidden relative z-20 pb-10 pt-4">
+        <div className="flex gap-3.5 overflow-x-auto no-scrollbar px-5 snap-x snap-mandatory">
           {photos.slice(0, 6).map((photo, i) => (
             <div
               key={photo.id}
-              className="w-[84vw] flex-shrink-0 snap-center aspect-[4/5] relative overflow-hidden rounded-md bg-[var(--bg-elevated)] shadow-2xl ring-1 ring-white/10"
+              className="w-[74vw] max-w-[290px] flex-shrink-0 snap-center aspect-[4/5] relative overflow-hidden rounded-md bg-[var(--bg-elevated)] shadow-2xl ring-1 ring-white/10"
             >
               <Image
                 src={buildImageSrc(photo)}
@@ -116,7 +116,7 @@ export function CollageHero({
                 style={{
                   objectPosition: `${(photo.focal?.x ?? 0.5) * 100}% ${(photo.focal?.y ?? 0.35) * 100}%`,
                 }}
-                sizes="85vw"
+                sizes="75vw"
                 priority={i === 0}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
@@ -137,7 +137,7 @@ export function CollageHero({
             </div>
           ))}
         </div>
-        <div className="flex justify-center items-center gap-2 mt-4">
+        <div className="flex justify-center items-center gap-2 mt-3.5">
           <span className="font-mono text-[10px] text-[var(--fg-dim)] uppercase tracking-widest flex items-center gap-1.5 backdrop-blur-md bg-white/[0.03] border border-white/5 px-3 py-1 rounded-full">
             <span>←</span> swipe to explore <span>→</span>
           </span>
@@ -264,8 +264,8 @@ function HeroText({
     <div className="max-w-6xl mx-auto px-4 z-30 pointer-events-auto">
       {/* Serif Headline with high visual contrast – strictly two lines, larger and commanding */}
       <h1
-        className="font-serif text-[var(--fg)] leading-[0.92] drop-shadow-2xl select-none text-center tracking-tight"
-        style={{ fontSize: "clamp(3.2rem, 9.4vw, 9.8rem)" }}
+        className="font-serif text-[var(--fg)] leading-[0.96] drop-shadow-2xl select-none text-center tracking-tight"
+        style={{ fontSize: "clamp(1.95rem, 7.5vw, 9.5rem)" }}
       >
         <span className="block overflow-hidden py-1">
           <m.span
