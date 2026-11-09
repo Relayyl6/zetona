@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { m, AnimatePresence, useReducedMotion } from "motion/react";
 import { TestimonialDTO, mockTestimonials } from "@/lib/db/queries";
 import { ease } from "@/lib/motion/tokens";
+import { useLenisScroll } from "@/components/layout/SmoothScroll";
 
 interface TestimonialsSectionProps {
   testimonials?: TestimonialDTO[];
@@ -27,7 +29,9 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
   const [activeIdx, setActiveIdx] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [progressKey, setProgressKey] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const shouldReduce = useReducedMotion();
+  const { stop, start } = useLenisScroll();
 
   // "Leave a review" modal state
   const [isReviewOpen, setIsReviewOpen] = useState(false);
@@ -46,19 +50,17 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
   const list = testimonials && testimonials.length > 0 ? testimonials : mockTestimonials;
   const current = list[activeIdx % list.length];
 
-  // Deep-link support: Automatically open review pane when visiting /#leaveareview or /#review
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Deep-link support: Automatically open review pane directly in view when visiting /#leaveareview or /#review
   useEffect(() => {
     const handleHash = () => {
       if (typeof window === "undefined") return;
       const h = window.location.hash.toLowerCase();
       if (h === "#leaveareview" || h === "#review" || h === "#leave-a-review") {
         setIsReviewOpen(true);
-        setTimeout(() => {
-          const el = document.getElementById("leaveareview") || document.getElementById("testimonials");
-          if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        }, 150);
       }
     };
 
@@ -66,6 +68,21 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
     window.addEventListener("hashchange", handleHash);
     return () => window.removeEventListener("hashchange", handleHash);
   }, []);
+
+  // Lock background scroll & pause Lenis while review modal is open so nothing jumps or scrolls
+  useEffect(() => {
+    if (isReviewOpen) {
+      stop();
+      document.body.style.overflow = "hidden";
+    } else {
+      start();
+      document.body.style.overflow = "";
+    }
+    return () => {
+      start();
+      document.body.style.overflow = "";
+    };
+  }, [isReviewOpen, stop, start]);
 
   // Keyboard navigation & accessibility (close on Escape)
   useEffect(() => {
@@ -134,6 +151,219 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
   };
 
   if (!list || list.length === 0) return null;
+
+  const reviewModal = (
+    <AnimatePresence>
+      {isReviewOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="review-modal-title"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsReviewOpen(false);
+          }}
+        >
+          <m.div
+            initial={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ duration: 0.25, ease: ease.outExpo }}
+            className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto no-scrollbar bg-[#141414] border border-white/15 rounded-2xl p-6 sm:p-8 shadow-2xl text-left"
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setIsReviewOpen(false)}
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[var(--fg-dim)] hover:text-white flex items-center justify-center text-xs font-mono transition-colors cursor-pointer"
+              aria-label="Close review dialog"
+            >
+              ✕
+            </button>
+
+            {submitted ? (
+              <div className="py-6 text-center space-y-4">
+                <div className="w-14 h-14 mx-auto rounded-full bg-[var(--accent)]/15 border border-[var(--accent)]/40 flex items-center justify-center text-[var(--accent-text)] text-2xl font-bold font-mono">
+                  ✓
+                </div>
+                <h3 id="review-modal-title" className="text-xl sm:text-2xl font-serif text-[var(--fg)]">
+                  Thank You, {author.trim()}!
+                </h3>
+                <p className="text-xs sm:text-sm font-sans text-[var(--fg-muted)] leading-relaxed max-w-sm mx-auto">
+                  Your review has been submitted. Zetona reviews every testimonial before publishing it to the live portfolio.
+                </p>
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsReviewOpen(false);
+                      setSubmitted(false);
+                      setAuthor("");
+                      setRole("");
+                      setLocation("");
+                      setEmail("");
+                      setQuote("");
+                    }}
+                    className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-6 py-2.5 rounded-full transition-colors cursor-pointer"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleReviewSubmit} className="space-y-4">
+                <div>
+                  <span className="text-[11px] font-mono text-[var(--accent-text)] uppercase tracking-wider block mb-1">
+                    • Client Feedback
+                  </span>
+                  <h3 id="review-modal-title" className="text-xl sm:text-2xl font-serif text-[var(--fg)]">
+                    Share Your Experience
+                  </h3>
+                  <p className="text-xs font-sans text-[var(--fg-muted)] mt-1">
+                    Shot with Zetona in Benin City or beyond? Leave your review below to be featured on the site.
+                  </p>
+                </div>
+
+                {/* Honeypot hidden input */}
+                <div className="hidden" aria-hidden="true">
+                  <input
+                    type="text"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                  />
+                </div>
+
+                {errorMsg && (
+                  <div className="bg-red-950/60 border border-red-500/40 text-red-300 text-xs p-3 rounded-lg">
+                    {errorMsg}
+                  </div>
+                )}
+
+                {/* Rating selection (1 to 5 stars) */}
+                <div>
+                  <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1.5">
+                    Your Rating
+                  </label>
+                  <div className="flex items-center gap-1.5">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setRating(star)}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        className="text-xl sm:text-2xl transition-transform hover:scale-110 focus:outline-none cursor-pointer"
+                        aria-label={`${star} star rating`}
+                      >
+                        <span
+                          className={
+                            (hoverRating ? star <= hoverRating : star <= rating)
+                              ? "text-amber-400"
+                              : "text-white/20"
+                          }
+                        >
+                          ★
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                      Your Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={author}
+                      onChange={(e) => setAuthor(e.target.value)}
+                      placeholder="e.g. Osasere Ighodaro"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                      Session / Title *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={role}
+                      onChange={(e) => setRole(e.target.value)}
+                      placeholder="e.g. Portrait Session / Fashion"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                      City / Location (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="e.g. Benin City, Nigeria"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                      Email (Private, Optional)
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@domain.com"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                    Your Review *
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    value={quote}
+                    onChange={(e) => setQuote(e.target.value)}
+                    placeholder="Share your experience working with Zetona..."
+                    className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg p-3 text-xs text-[var(--fg)] font-serif leading-relaxed focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] resize-none"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-between gap-3">
+                  <span className="text-[10px] font-mono text-[var(--fg-dim)]">
+                    Approved by Zetona before publishing.
+                  </span>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !author.trim() || !quote.trim()}
+                    className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-5 py-2.5 rounded-full transition-all cursor-pointer disabled:opacity-40 flex items-center gap-2 flex-shrink-0"
+                  >
+                    {isSubmitting && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                    <span>{isSubmitting ? "Submitting..." : "Submit Review →"}</span>
+                  </button>
+                </div>
+              </form>
+            )}
+          </m.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
 
   return (
     <section
@@ -292,217 +522,10 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
         </div>
       </m.div>
 
-      {/* Leave a Review Modal Pane */}
-      <AnimatePresence>
-        {isReviewOpen && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="review-modal-title"
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md overflow-y-auto"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) setIsReviewOpen(false);
-            }}
-          >
-            <m.div
-              initial={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: 15 }}
-              transition={{ duration: 0.3, ease: ease.outExpo }}
-              className="relative w-full max-w-lg bg-[#141414] border border-white/15 rounded-2xl p-6 sm:p-8 shadow-2xl my-auto text-left"
-            >
-              {/* Close Button */}
-              <button
-                type="button"
-                onClick={() => setIsReviewOpen(false)}
-                className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[var(--fg-dim)] hover:text-white flex items-center justify-center text-xs font-mono transition-colors cursor-pointer"
-                aria-label="Close review dialog"
-              >
-                ✕
-              </button>
-
-              {submitted ? (
-                <div className="py-6 text-center space-y-4">
-                  <div className="w-14 h-14 mx-auto rounded-full bg-[var(--accent)]/15 border border-[var(--accent)]/40 flex items-center justify-center text-[var(--accent-text)] text-2xl font-bold font-mono">
-                    ✓
-                  </div>
-                  <h3 id="review-modal-title" className="text-xl sm:text-2xl font-serif text-[var(--fg)]">
-                    Thank You, {author.trim()}!
-                  </h3>
-                  <p className="text-xs sm:text-sm font-sans text-[var(--fg-muted)] leading-relaxed max-w-sm mx-auto">
-                    Your review has been submitted. Zetona reviews every testimonial before publishing it to the live portfolio.
-                  </p>
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsReviewOpen(false);
-                        setSubmitted(false);
-                        setAuthor("");
-                        setRole("");
-                        setLocation("");
-                        setEmail("");
-                        setQuote("");
-                      }}
-                      className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-6 py-2.5 rounded-full transition-colors cursor-pointer"
-                    >
-                      Done
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <form onSubmit={handleReviewSubmit} className="space-y-4">
-                  <div>
-                    <span className="text-[11px] font-mono text-[var(--accent-text)] uppercase tracking-wider block mb-1">
-                      • Client Feedback
-                    </span>
-                    <h3 id="review-modal-title" className="text-xl sm:text-2xl font-serif text-[var(--fg)]">
-                      Share Your Experience
-                    </h3>
-                    <p className="text-xs font-sans text-[var(--fg-muted)] mt-1">
-                      Shot with Zetona in Benin City or beyond? Leave your review below to be featured on the site.
-                    </p>
-                  </div>
-
-                  {/* Honeypot hidden input */}
-                  <div className="hidden" aria-hidden="true">
-                    <input
-                      type="text"
-                      name="website"
-                      tabIndex={-1}
-                      autoComplete="off"
-                      value={website}
-                      onChange={(e) => setWebsite(e.target.value)}
-                    />
-                  </div>
-
-                  {errorMsg && (
-                    <div className="bg-red-950/60 border border-red-500/40 text-red-300 text-xs p-3 rounded-lg">
-                      {errorMsg}
-                    </div>
-                  )}
-
-                  {/* Rating selection (1 to 5 stars) */}
-                  <div>
-                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1.5">
-                      Your Rating
-                    </label>
-                    <div className="flex items-center gap-1.5">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => setRating(star)}
-                          onMouseEnter={() => setHoverRating(star)}
-                          onMouseLeave={() => setHoverRating(0)}
-                          className="text-xl sm:text-2xl transition-transform hover:scale-110 focus:outline-none cursor-pointer"
-                          aria-label={`${star} star rating`}
-                        >
-                          <span
-                            className={
-                              (hoverRating ? star <= hoverRating : star <= rating)
-                                ? "text-amber-400"
-                                : "text-white/20"
-                            }
-                          >
-                            ★
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
-                        Your Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={author}
-                        onChange={(e) => setAuthor(e.target.value)}
-                        placeholder="e.g. Osasere Ighodaro"
-                        className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
-                        Session / Title *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                        placeholder="e.g. Portrait Session / Fashion"
-                        className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
-                        City / Location (Optional)
-                      </label>
-                      <input
-                        type="text"
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder="e.g. Benin City, Nigeria"
-                        className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
-                        Email (Private, Optional)
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@domain.com"
-                        className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
-                      Your Review *
-                    </label>
-                    <textarea
-                      required
-                      rows={4}
-                      value={quote}
-                      onChange={(e) => setQuote(e.target.value)}
-                      placeholder="Share your experience working with Zetona..."
-                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg p-3 text-xs text-[var(--fg)] font-serif leading-relaxed focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] resize-none"
-                    />
-                  </div>
-
-                  <div className="pt-2 flex items-center justify-between gap-3">
-                    <span className="text-[10px] font-mono text-[var(--fg-dim)]">
-                      Approved by Zetona before publishing.
-                    </span>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting || !author.trim() || !quote.trim()}
-                      className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-5 py-2.5 rounded-full transition-all cursor-pointer disabled:opacity-40 flex items-center gap-2 flex-shrink-0"
-                    >
-                      {isSubmitting && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-                      <span>{isSubmitting ? "Submitting..." : "Submit Review →"}</span>
-                    </button>
-                  </div>
-                </form>
-              )}
-            </m.div>
-          </div>
-        )}
-      </AnimatePresence>
+      {/* Portal to document.body ensures the modal is strictly attached to the root viewport and pops up directly in view */}
+      {mounted && typeof document !== "undefined"
+        ? createPortal(reviewModal, document.body)
+        : null}
     </section>
   );
 }
