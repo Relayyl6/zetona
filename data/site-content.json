@@ -1315,6 +1315,22 @@
   ],
   "testimonials": [
     {
+      "id": "test_approve_1794188025029",
+      "author": "Approved Client",
+      "quote": "Incredible attention to natural light.",
+      "visible": true,
+      "status": "approved",
+      "sortOrder": 10
+    },
+    {
+      "id": "test_pending_1794188025025",
+      "author": "Test Client",
+      "quote": "Amazing photo session in Benin City!",
+      "visible": false,
+      "status": "pending",
+      "sortOrder": 99
+    },
+    {
       "id": "test_approve_1794183757430",
       "author": "Approved Client",
       "quote": "Incredible attention to natural light.",

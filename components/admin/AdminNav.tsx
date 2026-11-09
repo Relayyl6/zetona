@@ -119,7 +119,7 @@ export function AdminNav({ initialCount = 0 }: { initialCount?: number } = {}) {
   const isSettings = pathname.startsWith("/admin/settings") && hash !== "#testimonials";
 
   return (
-    <nav className="flex items-center gap-6 text-sm text-[var(--fg-muted)]">
+    <nav className="hidden md:flex items-center gap-6 text-sm text-[var(--fg-muted)]">
       <Link
         href="/admin"
         onClick={() => setHash("")}

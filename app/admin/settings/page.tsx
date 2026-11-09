@@ -713,7 +713,7 @@ export default function AdminSettingsPage() {
               Photographs that float dynamically around the headline on desktop &amp; form the touch swipe carousel on mobile (6–12 recommended)
             </p>
           </div>
-          <span className="font-mono text-xs bg-[var(--accent)]/15 text-[var(--accent-text)] px-3 py-1 rounded-full border border-[var(--accent)]/30 w-fit">
+          <span className="font-mono text-xs bg-[var(--accent)]/15 text-[var(--accent-text)] px-3 py-1 rounded-full border border-[var(--accent)]/30 w-fit whitespace-nowrap shrink-0">
             {homeHeroPhotoIds.length} in Hero Collage
           </span>
         </div>
@@ -836,7 +836,7 @@ export default function AdminSettingsPage() {
               The focal portrait(s) positioned between giant &apos;ZETONA&apos; and &apos;_E&apos;. If multiple are chosen, the central crop frame cycles between them.
             </p>
           </div>
-          <span className="font-mono text-xs bg-purple-500/15 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30 w-fit">
+          <span className="font-mono text-xs bg-purple-500/15 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30 w-fit whitespace-nowrap shrink-0">
             {homeSplitPhotoIds.length} Focal Portraits
           </span>
         </div>
@@ -959,14 +959,14 @@ export default function AdminSettingsPage() {
               Edit each award title, year, and select the EXACT photograph that reveals when hovered on desktop or tapped on mobile
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-xs bg-amber-500/15 text-amber-300 px-3 py-1 rounded-full border border-amber-500/30 w-fit">
+          <div className="flex items-center gap-2.5 shrink-0 flex-wrap sm:flex-nowrap">
+            <span className="font-mono text-xs bg-amber-500/15 text-amber-300 px-3 py-1 rounded-full border border-amber-500/30 w-fit whitespace-nowrap shrink-0">
               {homeAwardsList.length} Awards
             </span>
             <button
               type="button"
               onClick={handleAddAward}
-              className="text-xs font-mono text-[var(--accent-text)] bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+              className="text-xs font-mono text-[var(--accent-text)] bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 px-3 py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0"
             >
               + Add Award
             </button>
@@ -1078,7 +1078,7 @@ export default function AdminSettingsPage() {
               Photographs featured in the interactive horizontal filmstrip carousel at the base of the homepage before the footer
             </p>
           </div>
-          <span className="font-mono text-xs bg-emerald-500/15 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30 w-fit">
+          <span className="font-mono text-xs bg-emerald-500/15 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30 w-fit whitespace-nowrap shrink-0">
             {homeFilmstripPhotoIds.length} in Filmstrip
           </span>
         </div>
@@ -1201,7 +1201,7 @@ export default function AdminSettingsPage() {
               Choose the full-height portrait showcased on the right side of the full-screen footer across the website
             </p>
           </div>
-          <span className="font-mono text-xs bg-blue-500/15 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30 w-fit">
+          <span className="font-mono text-xs bg-blue-500/15 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30 w-fit whitespace-nowrap shrink-0">
             1 Active Portrait
           </span>
         </div>
@@ -1305,11 +1305,11 @@ export default function AdminSettingsPage() {
               <div>
                 <h2 className="text-sm font-medium text-[var(--fg)] flex items-center gap-2 flex-wrap">
                   <span>Client Testimonials & Monograms</span>
-                  <span className="font-mono text-[10px] bg-[var(--accent)]/15 text-[var(--accent-text)] px-2.5 py-0.5 rounded-full border border-[var(--accent)]/30">
+                  <span className="font-mono text-[10px] bg-[var(--accent)]/15 text-[var(--accent-text)] px-2.5 py-0.5 rounded-full border border-[var(--accent)]/30 whitespace-nowrap shrink-0">
                     {publishedTestimonials.length} Published
                   </span>
                   {pendingTestimonials.length > 0 && (
-                    <span className="font-mono text-[10px] bg-amber-400 text-black font-bold px-2.5 py-0.5 rounded-full shadow-sm animate-pulse">
+                    <span className="font-mono text-[10px] bg-amber-400 text-black font-bold px-2.5 py-0.5 rounded-full shadow-sm animate-pulse whitespace-nowrap shrink-0">
                       {pendingTestimonials.length} Pending Approval
                     </span>
                   )}
@@ -1318,11 +1318,11 @@ export default function AdminSettingsPage() {
                   Approve and manage client reviews. Approved reviews shine on the live home page with bold initials monograms.
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowAddTestimonial((prev) => !prev)}
-                  className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[var(--accent-text)] bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 px-3.5 py-2 rounded-lg transition-colors cursor-pointer w-fit"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[var(--accent-text)] bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 px-3.5 py-2 rounded-lg transition-colors cursor-pointer w-fit whitespace-nowrap shrink-0"
                 >
                   <span>{showAddTestimonial ? "✕ Close Form" : "+ Add Testimonial"}</span>
                 </button>

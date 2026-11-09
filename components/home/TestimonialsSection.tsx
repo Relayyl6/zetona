@@ -159,23 +159,26 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
           role="dialog"
           aria-modal="true"
           aria-labelledby="review-modal-title"
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md"
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/80 backdrop-blur-md"
           onClick={(e) => {
             if (e.target === e.currentTarget) setIsReviewOpen(false);
           }}
         >
           <m.div
-            initial={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ duration: 0.25, ease: ease.outExpo }}
-            className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto no-scrollbar bg-[#141414] border border-white/15 rounded-2xl p-6 sm:p-8 shadow-2xl text-left"
+            initial={shouldReduce ? { opacity: 0 } : { opacity: 0, y: 30, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: 30, scale: 0.98 }}
+            transition={{ duration: 0.28, ease: ease.outExpo }}
+            className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto no-scrollbar bg-[#141414] border-t sm:border border-white/15 rounded-t-3xl sm:rounded-2xl p-5 sm:p-8 shadow-2xl text-left"
           >
+            {/* Mobile Drag Indicator */}
+            <div className="sm:hidden w-10 h-1 bg-white/20 rounded-full mx-auto mb-3 pointer-events-none" />
+
             {/* Close Button */}
             <button
               type="button"
               onClick={() => setIsReviewOpen(false)}
-              className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[var(--fg-dim)] hover:text-white flex items-center justify-center text-xs font-mono transition-colors cursor-pointer"
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/5 hover:bg-white/10 active:bg-white/20 border border-white/10 text-[var(--fg-dim)] hover:text-white flex items-center justify-center text-sm sm:text-xs font-mono transition-colors cursor-pointer touch-manipulation z-10"
               aria-label="Close review dialog"
             >
               ✕
@@ -204,7 +207,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                       setEmail("");
                       setQuote("");
                     }}
-                    className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-6 py-2.5 rounded-full transition-colors cursor-pointer"
+                    className="w-full sm:w-auto bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-6 py-3 sm:py-2.5 rounded-full transition-colors cursor-pointer font-medium"
                   >
                     Done
                   </button>
@@ -212,14 +215,14 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
               </div>
             ) : (
               <form onSubmit={handleReviewSubmit} className="space-y-4">
-                <div>
+                <div className="pr-8 sm:pr-0">
                   <span className="text-[11px] font-mono text-[var(--accent-text)] uppercase tracking-wider block mb-1">
                     • Client Feedback
                   </span>
-                  <h3 id="review-modal-title" className="text-xl sm:text-2xl font-serif text-[var(--fg)]">
+                  <h3 id="review-modal-title" className="text-xl sm:text-2xl font-serif text-[var(--fg)] leading-tight">
                     Share Your Experience
                   </h3>
-                  <p className="text-xs font-sans text-[var(--fg-muted)] mt-1">
+                  <p className="text-xs font-sans text-[var(--fg-muted)] mt-1 leading-normal">
                     Shot with Zetona in Benin City or beyond? Leave your review below to be featured on the site.
                   </p>
                 </div>
@@ -244,10 +247,10 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
 
                 {/* Rating selection (1 to 5 stars) */}
                 <div>
-                  <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1.5">
+                  <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
                     Your Rating
                   </label>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
@@ -255,7 +258,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                         onClick={() => setRating(star)}
                         onMouseEnter={() => setHoverRating(star)}
                         onMouseLeave={() => setHoverRating(0)}
-                        className="text-xl sm:text-2xl transition-transform hover:scale-110 focus:outline-none cursor-pointer"
+                        className="p-1.5 sm:p-1 text-2xl sm:text-2xl transition-transform active:scale-90 hover:scale-110 focus:outline-none cursor-pointer touch-manipulation"
                         aria-label={`${star} star rating`}
                       >
                         <span
@@ -283,7 +286,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                       value={author}
                       onChange={(e) => setAuthor(e.target.value)}
                       placeholder="e.g. Osasere Ighodaro"
-                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3.5 py-2.5 sm:py-2 text-base sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
                     />
                   </div>
 
@@ -297,7 +300,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
                       placeholder="e.g. Portrait Session / Fashion"
-                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3.5 py-2.5 sm:py-2 text-base sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
                     />
                   </div>
                 </div>
@@ -312,7 +315,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder="e.g. Benin City, Nigeria"
-                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3.5 py-2.5 sm:py-2 text-base sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
                     />
                   </div>
 
@@ -325,7 +328,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@domain.com"
-                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)]"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3.5 py-2.5 sm:py-2 text-base sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
                     />
                   </div>
                 </div>
@@ -340,20 +343,20 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                     value={quote}
                     onChange={(e) => setQuote(e.target.value)}
                     placeholder="Share your experience working with Zetona..."
-                    className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg p-3 text-xs text-[var(--fg)] font-serif leading-relaxed focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] resize-none"
+                    className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg p-3 text-base sm:text-xs text-[var(--fg)] font-serif leading-relaxed focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] resize-none transition-colors"
                   />
                 </div>
 
-                <div className="pt-2 flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-mono text-[var(--fg-dim)]">
+                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <span className="text-[11px] sm:text-[10px] font-mono text-[var(--fg-dim)] text-center sm:text-left order-2 sm:order-1">
                     Approved by Zetona before publishing.
                   </span>
                   <button
                     type="submit"
                     disabled={isSubmitting || !author.trim() || !quote.trim()}
-                    className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-5 py-2.5 rounded-full transition-all cursor-pointer disabled:opacity-40 flex items-center gap-2 flex-shrink-0"
+                    className="w-full sm:w-auto bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-6 py-3.5 sm:py-2.5 rounded-full transition-all cursor-pointer disabled:opacity-40 flex items-center justify-center gap-2 font-semibold shadow-lg order-1 sm:order-2"
                   >
-                    {isSubmitting && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                    {isSubmitting && <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                     <span>{isSubmitting ? "Submitting..." : "Submit Review →"}</span>
                   </button>
                 </div>
