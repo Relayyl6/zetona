@@ -159,30 +159,18 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
           role="dialog"
           aria-modal="true"
           aria-labelledby="review-modal-title"
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6 bg-black/80 backdrop-blur-md"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md overflow-y-auto overscroll-contain"
           onClick={(e) => {
             if (e.target === e.currentTarget) setIsReviewOpen(false);
           }}
         >
           <m.div
-            initial={shouldReduce ? { opacity: 0 } : { opacity: 0, y: 30, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={shouldReduce ? { opacity: 0 } : { opacity: 0, y: 30, scale: 0.98 }}
-            transition={{ duration: 0.28, ease: ease.outExpo }}
-            className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto no-scrollbar bg-[#141414] border-t sm:border border-white/15 rounded-t-3xl sm:rounded-2xl p-5 sm:p-8 shadow-2xl text-left"
+            initial={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={shouldReduce ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 15 }}
+            transition={{ duration: 0.25, ease: ease.outExpo }}
+            className="relative w-full max-w-lg max-h-[92dvh] sm:max-h-[90vh] overflow-y-auto overscroll-contain bg-[#141414] border border-white/15 rounded-2xl p-4 sm:p-7 shadow-2xl text-left my-auto space-y-3.5"
           >
-            {/* Mobile Drag Indicator */}
-            <div className="sm:hidden w-10 h-1 bg-white/20 rounded-full mx-auto mb-3 pointer-events-none" />
-
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setIsReviewOpen(false)}
-              className="absolute top-4 right-4 sm:top-5 sm:right-5 w-10 h-10 sm:w-8 sm:h-8 rounded-full bg-white/5 hover:bg-white/10 active:bg-white/20 border border-white/10 text-[var(--fg-dim)] hover:text-white flex items-center justify-center text-sm sm:text-xs font-mono transition-colors cursor-pointer touch-manipulation z-10"
-              aria-label="Close review dialog"
-            >
-              ✕
-            </button>
 
             {submitted ? (
               <div className="py-6 text-center space-y-4">
@@ -214,17 +202,28 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleReviewSubmit} className="space-y-4">
-                <div className="pr-8 sm:pr-0">
-                  <span className="text-[11px] font-mono text-[var(--accent-text)] uppercase tracking-wider block mb-1">
-                    • Client Feedback
-                  </span>
-                  <h3 id="review-modal-title" className="text-xl sm:text-2xl font-serif text-[var(--fg)] leading-tight">
-                    Share Your Experience
-                  </h3>
-                  <p className="text-xs font-sans text-[var(--fg-muted)] mt-1 leading-normal">
-                    Shot with Zetona in Benin City or beyond? Leave your review below to be featured on the site.
-                  </p>
+              <form onSubmit={handleReviewSubmit} className="space-y-3 sm:space-y-3.5">
+                {/* Header row with integrated Close button */}
+                <div className="flex items-start justify-between gap-3 pb-2 border-b border-white/10">
+                  <div>
+                    <span className="text-[10px] font-mono text-[var(--accent-text)] uppercase tracking-wider block">
+                      • Client Feedback
+                    </span>
+                    <h3 id="review-modal-title" className="text-lg sm:text-2xl font-serif text-[var(--fg)] leading-tight mt-0.5">
+                      Share Your Experience
+                    </h3>
+                    <p className="text-[11px] sm:text-xs font-sans text-[var(--fg-muted)] mt-0.5">
+                      Leave your review to be featured on Zetona&apos;s site.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsReviewOpen(false)}
+                    className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 text-[var(--fg)] flex items-center justify-center text-xs font-mono transition-colors cursor-pointer shrink-0 touch-manipulation"
+                    aria-label="Close review dialog"
+                  >
+                    ✕
+                  </button>
                 </div>
 
                 {/* Honeypot hidden input */}
@@ -240,16 +239,16 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                 </div>
 
                 {errorMsg && (
-                  <div className="bg-red-950/60 border border-red-500/40 text-red-300 text-xs p-3 rounded-lg">
+                  <div className="bg-red-950/60 border border-red-500/40 text-red-300 text-xs p-2.5 rounded-lg">
                     {errorMsg}
                   </div>
                 )}
 
-                {/* Rating selection (1 to 5 stars) */}
-                <div>
-                  <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
-                    Your Rating
-                  </label>
+                {/* Rating selection (compact horizontal row) */}
+                <div className="flex items-center justify-between py-0.5">
+                  <span className="text-[10px] sm:text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider">
+                    Rating *
+                  </span>
                   <div className="flex items-center gap-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -258,7 +257,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                         onClick={() => setRating(star)}
                         onMouseEnter={() => setHoverRating(star)}
                         onMouseLeave={() => setHoverRating(0)}
-                        className="p-1.5 sm:p-1 text-2xl sm:text-2xl transition-transform active:scale-90 hover:scale-110 focus:outline-none cursor-pointer touch-manipulation"
+                        className="p-1 text-xl sm:text-2xl transition-transform active:scale-90 hover:scale-110 focus:outline-none cursor-pointer touch-manipulation"
                         aria-label={`${star} star rating`}
                       >
                         <span
@@ -275,9 +274,10 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Name & Session in 2 columns (even on mobile) */}
+                <div className="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                    <label className="text-[10px] sm:text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
                       Your Name *
                     </label>
                     <input
@@ -285,13 +285,13 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                       required
                       value={author}
                       onChange={(e) => setAuthor(e.target.value)}
-                      placeholder="e.g. Osasere Ighodaro"
-                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3.5 py-2.5 sm:py-2 text-base sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
+                      placeholder="e.g. Osasere I."
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-[16px] sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                    <label className="text-[10px] sm:text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
                       Session / Title *
                     </label>
                     <input
@@ -299,42 +299,44 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                       required
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
-                      placeholder="e.g. Portrait Session / Fashion"
-                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3.5 py-2.5 sm:py-2 text-base sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
+                      placeholder="e.g. Portrait / Studio"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-[16px] sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Location & Email in 2 columns (even on mobile) */}
+                <div className="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
-                      City / Location (Optional)
+                    <label className="text-[10px] sm:text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                      City / Location
                     </label>
                     <input
                       type="text"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      placeholder="e.g. Benin City, Nigeria"
-                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3.5 py-2.5 sm:py-2 text-base sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
+                      placeholder="e.g. Benin City"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-[16px] sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
-                      Email (Private, Optional)
+                    <label className="text-[10px] sm:text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                      Email (Private)
                     </label>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@domain.com"
-                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3.5 py-2.5 sm:py-2 text-base sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
+                      className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg px-3 py-2 text-[16px] sm:text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] transition-colors"
                     />
                   </div>
                 </div>
 
+                {/* Review Textarea */}
                 <div>
-                  <label className="text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
+                  <label className="text-[10px] sm:text-[11px] font-mono text-[var(--fg-dim)] uppercase tracking-wider block mb-1">
                     Your Review *
                   </label>
                   <textarea
@@ -343,18 +345,19 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                     value={quote}
                     onChange={(e) => setQuote(e.target.value)}
                     placeholder="Share your experience working with Zetona..."
-                    className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg p-3 text-base sm:text-xs text-[var(--fg)] font-serif leading-relaxed focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] resize-none transition-colors"
+                    className="w-full bg-[var(--bg)] border border-[var(--line)] rounded-lg p-2.5 text-[16px] sm:text-xs text-[var(--fg)] font-serif leading-relaxed focus:outline-none focus:border-[var(--accent)] placeholder:text-[var(--fg-dim)] resize-none transition-colors min-h-[75px]"
                   />
                 </div>
 
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <span className="text-[11px] sm:text-[10px] font-mono text-[var(--fg-dim)] text-center sm:text-left order-2 sm:order-1">
+                {/* Submit row: always visible */}
+                <div className="pt-1 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+                  <span className="text-[10px] font-mono text-[var(--fg-dim)] text-center sm:text-left order-2 sm:order-1">
                     Approved by Zetona before publishing.
                   </span>
                   <button
                     type="submit"
                     disabled={isSubmitting || !author.trim() || !quote.trim()}
-                    className="w-full sm:w-auto bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-6 py-3.5 sm:py-2.5 rounded-full transition-all cursor-pointer disabled:opacity-40 flex items-center justify-center gap-2 font-semibold shadow-lg order-1 sm:order-2"
+                    className="w-full sm:w-auto bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-mono uppercase tracking-wider px-6 py-2.5 sm:py-2.5 rounded-full transition-all cursor-pointer disabled:opacity-40 flex items-center justify-center gap-2 font-semibold shadow-lg order-1 sm:order-2 shrink-0 active:scale-95"
                   >
                     {isSubmitting && <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                     <span>{isSubmitting ? "Submitting..." : "Submit Review →"}</span>
