@@ -1,26 +1,27 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
 
 /**
- * Shared hook to track unhandled messages dynamically.
- * Listens to custom event "admin-enquiries-changed", window focus, and polls periodically.
+ * Custom hook to fetch dynamic unhandled enquiries count.
+ * Refreshes on window focus, custom 'admin-enquiries-changed' event,
+ * and periodic poll.
  */
-export function useUnhandledCount(initialCount = 0) {
-  const [count, setCount] = useState<number>(initialCount);
+function useUnhandledEnquiriesCount(initialCount: number = 0) {
+  const [count, setCount] = useState(initialCount);
 
   const refreshCount = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/enquiries/count", { cache: "no-store" });
+      const res = await fetch("/api/admin/enquiries/count");
       if (res.ok) {
         const data = await res.json();
         if (typeof data.unhandled === "number") {
           setCount(data.unhandled);
         }
       }
-    } catch (err) {
+    } catch {
       // Graceful fallback
     }
   }, []);
@@ -38,6 +39,44 @@ export function useUnhandledCount(initialCount = 0) {
 
     return () => {
       window.removeEventListener("admin-enquiries-changed", handleChanged);
+      window.removeEventListener("focus", handleChanged);
+      clearInterval(interval);
+    };
+  }, [refreshCount]);
+
+  return count;
+}
+
+/**
+ * Custom hook to fetch pending client reviews count requiring approval.
+ */
+function usePendingReviewsCount() {
+  const [count, setCount] = useState(0);
+
+  const refreshCount = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/testimonials/count");
+      if (res.ok) {
+        const data = await res.json();
+        if (typeof data.pendingCount === "number") {
+          setCount(data.pendingCount);
+        }
+      }
+    } catch {
+      // Graceful fallback
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshCount();
+
+    const handleChanged = () => refreshCount();
+    window.addEventListener("admin-testimonials-changed", handleChanged);
+    window.addEventListener("focus", handleChanged);
+    const interval = setInterval(refreshCount, 20000);
+
+    return () => {
+      window.removeEventListener("admin-testimonials-changed", handleChanged);
       window.removeEventListener("focus", handleChanged);
       clearInterval(interval);
     };
@@ -66,21 +105,21 @@ function useUrlHash() {
 
 /**
  * Desktop navigation bar (Photos, Collections, Messages, Testimonials, Settings)
- * Rendered in the top header on md+ screens.
  */
-export function AdminDesktopNav({ initialCount = 0 }: { initialCount?: number }) {
+export function AdminNav({ initialCount = 0 }: { initialCount?: number } = {}) {
   const pathname = usePathname();
-  const unhandledCount = useUnhandledCount(initialCount);
   const [hash, setHash] = useUrlHash();
+  const unhandledCount = useUnhandledEnquiriesCount(initialCount);
+  const pendingReviewsCount = usePendingReviewsCount();
 
   const isPhotos = pathname === "/admin" || pathname.startsWith("/admin/photos");
   const isCollections = pathname.startsWith("/admin/collections");
   const isEnquiries = pathname.startsWith("/admin/enquiries");
   const isTestimonials = pathname.startsWith("/admin/settings") && hash === "#testimonials";
-  const isSettings = pathname === "/admin/settings" && hash !== "#testimonials";
+  const isSettings = pathname.startsWith("/admin/settings") && hash !== "#testimonials";
 
   return (
-    <nav className="hidden md:flex items-center gap-6 text-sm text-[var(--fg-muted)]">
+    <nav className="flex items-center gap-6 text-sm text-[var(--fg-muted)]">
       <Link
         href="/admin"
         onClick={() => setHash("")}
@@ -116,11 +155,16 @@ export function AdminDesktopNav({ initialCount = 0 }: { initialCount?: number })
       <Link
         href="/admin/settings#testimonials"
         onClick={() => setHash("#testimonials")}
-        className={`hover:text-[var(--fg)] transition-colors ${
+        className={`hover:text-[var(--fg)] transition-colors flex items-center gap-1.5 ${
           isTestimonials ? "text-[var(--accent-text)] font-semibold" : ""
         }`}
       >
-        Testimonials
+        <span>Testimonials</span>
+        {pendingReviewsCount > 0 && (
+          <span className="bg-amber-400 text-black text-[10px] font-mono px-1.5 py-0.5 rounded-full font-bold shadow-sm">
+            {pendingReviewsCount}
+          </span>
+        )}
       </Link>
       <Link
         href="/admin/settings"
@@ -138,23 +182,24 @@ export function AdminDesktopNav({ initialCount = 0 }: { initialCount?: number })
 /**
  * Mobile secondary top navigation bar.
  * Persistently visible beneath header on mobile so Photos, Collections, Messages, Testimonials, Settings NEVER disappear!
- * Features smooth momentum horizontal scrolling with right-edge breathing space so no item is clipped.
  */
-export function AdminMobileSubNav({ initialCount = 0 }: { initialCount?: number }) {
+export function AdminMobileNav({ initialCount = 0 }: { initialCount?: number } = {}) {
   const pathname = usePathname();
-  const unhandledCount = useUnhandledCount(initialCount);
   const [hash, setHash] = useUrlHash();
+  const unhandledCount = useUnhandledEnquiriesCount(initialCount);
+  const pendingReviewsCount = usePendingReviewsCount();
 
   const isPhotos = pathname === "/admin" || pathname.startsWith("/admin/photos");
   const isCollections = pathname.startsWith("/admin/collections");
   const isEnquiries = pathname.startsWith("/admin/enquiries");
   const isTestimonials = pathname.startsWith("/admin/settings") && hash === "#testimonials";
-  const isSettings = pathname === "/admin/settings" && hash !== "#testimonials";
+  const isSettings = pathname.startsWith("/admin/settings") && hash !== "#testimonials";
 
   return (
     <div
-      aria-label="Admin mobile sub-navigation"
-      className="md:hidden border-t border-[var(--line)] bg-[var(--bg)] px-3 py-2.5 overflow-x-auto touch-pan-x scroll-smooth no-scrollbar flex items-center gap-2 text-xs font-mono"
+      role="navigation"
+      aria-label="Admin Navigation"
+      className="md:hidden flex items-center gap-2 overflow-x-auto no-scrollbar py-2.5 px-4 text-xs font-mono border-b border-[var(--line)] bg-[var(--bg)]/95 backdrop-blur-md sticky top-14 z-30 shadow-md"
     >
       <Link
         href="/admin"
@@ -206,13 +251,24 @@ export function AdminMobileSubNav({ initialCount = 0 }: { initialCount?: number 
       <Link
         href="/admin/settings#testimonials"
         onClick={() => setHash("#testimonials")}
-        className={`shrink-0 px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
+        className={`shrink-0 px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all flex items-center gap-1.5 ${
           isTestimonials
             ? "bg-[var(--accent)] text-white font-semibold shadow-sm ring-1 ring-[var(--accent)]/50"
             : "text-[var(--fg-muted)] hover:text-[var(--fg)] bg-[var(--bg-elevated)] border border-[var(--line)] hover:border-white/20"
         }`}
       >
-        Testimonials
+        <span>Testimonials</span>
+        {pendingReviewsCount > 0 && (
+          <span
+            className={`text-[9px] font-mono px-1.5 py-0.2 rounded-full font-bold shadow-sm ${
+              isTestimonials
+                ? "bg-amber-300 text-black"
+                : "bg-amber-400 text-black"
+            }`}
+          >
+            {pendingReviewsCount}
+          </span>
+        )}
       </Link>
 
       <Link
@@ -228,7 +284,12 @@ export function AdminMobileSubNav({ initialCount = 0 }: { initialCount?: number 
       </Link>
 
       {/* Trailing spacer ensures 'Settings' has comfortable padding and is never clipped at the screen edge */}
-      <div className="w-4 shrink-0" aria-hidden="true" />
+      <div className="w-2 shrink-0 pointer-events-none" aria-hidden="true" />
     </div>
   );
 }
+
+// Aliases for compatibility
+export const AdminDesktopNav = AdminNav;
+export const AdminMobileSubNav = AdminMobileNav;
+

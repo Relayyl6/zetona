@@ -261,9 +261,33 @@ export default function AdminSettingsPage() {
 
       setTestimonials((prev) => prev.filter((t) => t.id !== id));
       setTestimonialFeedback("Testimonial removed.");
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("admin-testimonials-changed"));
+      }
       setTimeout(() => setTestimonialFeedback(""), 4000);
     } catch (err: any) {
       alert(err.message || "Failed to delete testimonial");
+    }
+  };
+
+  const handleApproveTestimonial = async (id: string, authorName: string) => {
+    try {
+      const res = await fetch("/api/admin/testimonials", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, visible: true, status: "approved" }),
+      });
+      if (!res.ok) throw new Error("Failed to approve review");
+      setTestimonials((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, visible: true, status: "approved" } : t))
+      );
+      setTestimonialFeedback(`Review from ${authorName} approved and published to portfolio!`);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("admin-testimonials-changed"));
+      }
+      setTimeout(() => setTestimonialFeedback(""), 4000);
+    } catch (err: any) {
+      alert(err.message || "Failed to approve review");
     }
   };
 
@@ -1267,272 +1291,419 @@ export default function AdminSettingsPage() {
       </div>
 
       {/* ──────────────── 5. CLIENT TESTIMONIALS & QUOTES (PATTERN P7 / P8) ──────────────── */}
-      <div id="testimonials" className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-6 scroll-mt-20">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
-          <div>
-            <h2 className="text-sm font-medium text-[var(--fg)] flex items-center gap-2">
-              <span>Client Testimonials & Monograms</span>
-              <span className="font-mono text-[10px] bg-[var(--accent)]/15 text-[var(--accent-text)] px-2.5 py-0.5 rounded-full border border-[var(--accent)]/30">
-                {testimonials.length} Reviews
-              </span>
-            </h2>
-            <p className="text-[11px] text-[var(--fg-muted)] font-mono mt-0.5">
-              Edit client praise. Photos are replaced by bold typographic initials that shine on the live site.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowAddTestimonial((prev) => !prev)}
-            className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[var(--accent-text)] bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 px-3.5 py-2 rounded-lg transition-colors cursor-pointer w-fit"
-          >
-            <span>{showAddTestimonial ? "✕ Close Form" : "+ Add Testimonial"}</span>
-          </button>
-        </div>
+      {(() => {
+        const pendingTestimonials = testimonials.filter(
+          (t) => t.status === "pending" || t.visible === false
+        );
+        const publishedTestimonials = testimonials.filter(
+          (t) => t.status !== "pending" && t.visible !== false
+        );
 
-        {testimonialFeedback && (
-          <div className="bg-emerald-950/60 border border-emerald-500/50 text-emerald-300 text-xs p-3 rounded-lg flex items-center gap-2">
-            <span>✓</span>
-            <span>{testimonialFeedback}</span>
-          </div>
-        )}
-
-        {/* Add Testimonial Form Drawer */}
-        {showAddTestimonial && (
-          <div className="bg-[var(--bg)] p-5 rounded-xl border border-[var(--accent)]/30 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--fg)]">
-                New Testimonial
-              </h3>
-              {newAuthor && (
-                <div className="flex items-center gap-2 text-xs font-mono text-[var(--fg-dim)]">
-                  <span>Monogram Preview:</span>
-                  <div className="w-8 h-8 rounded-lg bg-[#252525] border border-[var(--accent)]/40 text-[var(--accent-text)] font-serif font-bold flex items-center justify-center text-sm shadow">
-                    {getInitials(newAuthor)}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        return (
+          <div id="testimonials" className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-6 scroll-mt-20">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
               <div>
-                <label className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1">
-                  Client Name *
-                </label>
-                <input
-                  type="text"
-                  value={newAuthor}
-                  onChange={(e) => setNewAuthor(e.target.value)}
-                  placeholder="e.g. Osasere Ighodaro"
-                  required
-                  className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1">
-                  Role / Title
-                </label>
-                <input
-                  type="text"
-                  value={newRole}
-                  onChange={(e) => setNewRole(e.target.value)}
-                  placeholder="e.g. Editorial Lead"
-                  className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
-                />
-              </div>
-
-              <div>
-                <label className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1">
-                  Location / Brand
-                </label>
-                <input
-                  type="text"
-                  value={newLocation}
-                  onChange={(e) => setNewLocation(e.target.value)}
-                  placeholder="e.g. Edo Contemporary Arts"
-                  className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1">
-                Client Review / Quote *
-              </label>
-              <textarea
-                value={newQuote}
-                onChange={(e) => setNewQuote(e.target.value)}
-                rows={3}
-                placeholder="Write the client's testimonial..."
-                required
-                className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded-lg p-3 text-xs text-[var(--fg)] leading-relaxed focus:outline-none focus:border-[var(--accent)] font-serif"
-              />
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowAddTestimonial(false)}
-                className="text-xs font-mono text-[var(--fg-dim)] hover:text-white px-3 py-1.5 rounded transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleCreateTestimonial}
-                disabled={savingTestimonial || !newAuthor.trim() || !newQuote.trim()}
-                className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-medium px-4 py-1.5 rounded-lg transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
-              >
-                {savingTestimonial && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-                <span>Add Testimonial</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Existing Testimonials List */}
-        <div className="space-y-3">
-          {testimonials.map((t, idx) => {
-            const isEditing = editingTestimonialId === t.id;
-            const initials = getInitials(t.author);
-
-            if (isEditing) {
-              return (
-                <div
-                  key={t.id}
-                  className="bg-[var(--bg)] border border-[var(--accent)]/50 rounded-xl p-5 space-y-4 shadow-lg"
-                >
-                  <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
-                    <span className="text-xs font-mono text-[var(--accent-text)]">
-                      Editing Review #{idx + 1}
+                <h2 className="text-sm font-medium text-[var(--fg)] flex items-center gap-2 flex-wrap">
+                  <span>Client Testimonials & Monograms</span>
+                  <span className="font-mono text-[10px] bg-[var(--accent)]/15 text-[var(--accent-text)] px-2.5 py-0.5 rounded-full border border-[var(--accent)]/30">
+                    {publishedTestimonials.length} Published
+                  </span>
+                  {pendingTestimonials.length > 0 && (
+                    <span className="font-mono text-[10px] bg-amber-400 text-black font-bold px-2.5 py-0.5 rounded-full shadow-sm animate-pulse">
+                      {pendingTestimonials.length} Pending Approval
                     </span>
+                  )}
+                </h2>
+                <p className="text-[11px] text-[var(--fg-muted)] font-mono mt-0.5">
+                  Approve and manage client reviews. Approved reviews shine on the live home page with bold initials monograms.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddTestimonial((prev) => !prev)}
+                  className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[var(--accent-text)] bg-[var(--accent)]/10 hover:bg-[var(--accent)]/20 border border-[var(--accent)]/30 px-3.5 py-2 rounded-lg transition-colors cursor-pointer w-fit"
+                >
+                  <span>{showAddTestimonial ? "✕ Close Form" : "+ Add Testimonial"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Share Link Banner */}
+            <div className="bg-[var(--bg)] border border-white/10 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <span className="text-sm">🔗</span>
+                <div>
+                  <span className="text-xs font-mono text-[var(--fg)] font-medium block">
+                    Direct Client Review Link
+                  </span>
+                  <span className="text-[11px] font-mono text-[var(--fg-dim)] block">
+                    Send to clients so they land directly on your site with the review pane open:
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const url = typeof window !== "undefined" ? `${window.location.origin}/#leaveareview` : "https://zetona.com/#leaveareview";
+                  navigator.clipboard.writeText(url);
+                  setTestimonialFeedback("Direct review link copied to clipboard!");
+                  setTimeout(() => setTestimonialFeedback(""), 3500);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-[var(--accent)] text-white hover:border-[var(--accent)] border border-white/10 text-xs font-mono transition-colors cursor-pointer shrink-0"
+              >
+                <span>/#leaveareview</span>
+                <span className="text-[10px] text-white/60">📋 Copy Link</span>
+              </button>
+            </div>
+
+            {testimonialFeedback && (
+              <div className="bg-emerald-950/60 border border-emerald-500/50 text-emerald-300 text-xs p-3 rounded-lg flex items-center gap-2">
+                <span>✓</span>
+                <span>{testimonialFeedback}</span>
+              </div>
+            )}
+
+            {/* Pending Client Reviews Queue */}
+            {pendingTestimonials.length > 0 && (
+              <div className="bg-amber-950/20 border border-amber-500/40 rounded-xl p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                    <h3 className="text-xs font-mono uppercase tracking-wider text-amber-300 font-bold">
+                      Pending Reviews Awaiting Approval ({pendingTestimonials.length})
+                    </h3>
+                  </div>
+                  <span className="text-[10px] font-mono text-[var(--fg-dim)]">
+                    Submitted via /#leaveareview
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {pendingTestimonials.map((t) => {
+                    const initials = getInitials(t.author);
+                    return (
+                      <div
+                        key={t.id}
+                        className="bg-[var(--bg)] border border-amber-500/30 rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+                      >
+                        <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                          <div className="w-10 h-10 rounded-lg bg-[#252525] border border-amber-400/50 flex items-center justify-center font-serif text-sm font-bold text-amber-300 shadow flex-shrink-0">
+                            {initials}
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-baseline gap-2 flex-wrap">
+                              <h4 className="font-condensed uppercase text-sm font-bold text-[var(--fg)] tracking-wide">
+                                {t.author}
+                              </h4>
+                              {(t.role || t.location) && (
+                                <span className="text-[11px] font-sans text-amber-200/80">
+                                  · {t.role} {t.location ? `(${t.location})` : ""}
+                                </span>
+                              )}
+                              {t.rating && (
+                                <span className="text-xs text-amber-400 font-mono tracking-tighter">
+                                  {"★".repeat(t.rating)}
+                                </span>
+                              )}
+                              {t.email && (
+                                <span className="text-[10px] font-mono text-[var(--fg-dim)] bg-white/5 px-2 py-0.5 rounded">
+                                  {t.email}
+                                </span>
+                              )}
+                              {t.createdAt && (
+                                <span className="text-[10px] font-mono text-[var(--fg-dim)]">
+                                  {new Date(t.createdAt).toLocaleDateString()}
+                                </span>
+                              )}
+                            </div>
+
+                            <p className="font-serif italic text-xs text-[var(--fg)] mt-1.5 leading-relaxed bg-black/40 p-3 rounded-lg border border-white/5">
+                              &ldquo;{t.quote}&rdquo;
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 self-end md:self-center flex-shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => handleApproveTestimonial(t.id, t.author)}
+                            className="text-xs font-mono bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+                          >
+                            <span>✓</span>
+                            <span>Approve & Publish</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleStartEdit(t)}
+                            className="text-xs font-mono text-[var(--fg-dim)] hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                          >
+                            Edit ✎
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteTestimonial(t.id, t.author)}
+                            className="text-xs font-mono text-red-400 hover:text-red-300 bg-red-950/30 hover:bg-red-950/50 border border-red-500/20 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                            title="Reject and delete review"
+                          >
+                            ✕ Reject
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Add Testimonial Form Drawer */}
+            {showAddTestimonial && (
+              <div className="bg-[var(--bg)] p-5 rounded-xl border border-[var(--accent)]/30 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--fg)]">
+                    New Testimonial
+                  </h3>
+                  {newAuthor && (
                     <div className="flex items-center gap-2 text-xs font-mono text-[var(--fg-dim)]">
-                      <span>Monogram:</span>
-                      <div className="w-7 h-7 rounded-md bg-[#252525] border border-[var(--accent)]/50 text-[var(--accent-text)] font-serif font-bold flex items-center justify-center text-xs">
-                        {getInitials(editAuthor)}
+                      <span>Monogram Preview:</span>
+                      <div className="w-8 h-8 rounded-lg bg-[#252525] border border-[var(--accent)]/40 text-[var(--accent-text)] font-serif font-bold flex items-center justify-center text-sm shadow">
+                        {getInitials(newAuthor)}
                       </div>
                     </div>
-                  </div>
+                  )}
+                </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="text-[10px] font-mono text-[var(--fg-muted)] uppercase block mb-1">
-                        Client Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={editAuthor}
-                        onChange={(e) => setEditAuthor(e.target.value)}
-                        className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded px-3 py-1.5 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-mono text-[var(--fg-muted)] uppercase block mb-1">
-                        Role / Title
-                      </label>
-                      <input
-                        type="text"
-                        value={editRole}
-                        onChange={(e) => setEditRole(e.target.value)}
-                        className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded px-3 py-1.5 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-mono text-[var(--fg-muted)] uppercase block mb-1">
-                        Location / Brand
-                      </label>
-                      <input
-                        type="text"
-                        value={editLocation}
-                        onChange={(e) => setEditLocation(e.target.value)}
-                        className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded px-3 py-1.5 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
-                      />
-                    </div>
-                  </div>
-
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="text-[10px] font-mono text-[var(--fg-muted)] uppercase block mb-1">
-                      Quote Text *
+                    <label className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1">
+                      Client Name *
                     </label>
-                    <textarea
-                      value={editQuote}
-                      onChange={(e) => setEditQuote(e.target.value)}
-                      rows={3}
-                      className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded p-2.5 text-xs text-[var(--fg)] font-serif leading-relaxed focus:outline-none focus:border-[var(--accent)]"
+                    <input
+                      type="text"
+                      value={newAuthor}
+                      onChange={(e) => setNewAuthor(e.target.value)}
+                      placeholder="e.g. Osasere Ighodaro"
+                      required
+                      className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
                     />
                   </div>
 
-                  <div className="flex justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={handleCancelEdit}
-                      className="text-xs font-mono text-[var(--fg-dim)] hover:text-white px-3 py-1.5"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleSaveEdit(t.id)}
-                      disabled={savingTestimonial}
-                      className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs px-4 py-1.5 rounded transition-all cursor-pointer flex items-center gap-1.5"
-                    >
-                      {savingTestimonial && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-                      <span>Save Changes</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            }
-
-            return (
-              <div
-                key={t.id}
-                className="bg-[var(--bg)]/70 border border-[var(--line)] rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-white/20 transition-all group"
-              >
-                <div className="flex items-start gap-3.5 flex-1 min-w-0">
-                  {/* Monogram with Initials */}
-                  <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#242424] to-[#121212] border border-[var(--accent)]/40 flex items-center justify-center font-serif text-xs font-bold text-[var(--accent-text)] shadow flex-shrink-0">
-                    {initials}
+                  <div>
+                    <label className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1">
+                      Role / Title
+                    </label>
+                    <input
+                      type="text"
+                      value={newRole}
+                      onChange={(e) => setNewRole(e.target.value)}
+                      placeholder="e.g. Editorial Lead"
+                      className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
+                    />
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-baseline gap-2 flex-wrap">
-                      <h4 className="font-condensed uppercase text-sm font-medium text-[var(--fg)] tracking-wide">
-                        {t.author}
-                      </h4>
-                      {(t.role || t.location) && (
-                        <span className="text-[11px] font-sans text-[var(--fg-dim)]">
-                          · {t.role} {t.location ? `(${t.location})` : ""}
-                        </span>
-                      )}
-                    </div>
-                    <p className="font-serif italic text-xs text-[var(--fg-muted)] line-clamp-2 mt-1 leading-relaxed">
-                      &ldquo;{t.quote}&rdquo;
-                    </p>
+                  <div>
+                    <label className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1">
+                      Location / Brand
+                    </label>
+                    <input
+                      type="text"
+                      value={newLocation}
+                      onChange={(e) => setNewLocation(e.target.value)}
+                      placeholder="e.g. Edo Contemporary Arts"
+                      className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded-lg px-3 py-2 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
+                    />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+                <div>
+                  <label className="text-[11px] font-mono text-[var(--fg-muted)] uppercase tracking-wider block mb-1">
+                    Client Review / Quote *
+                  </label>
+                  <textarea
+                    value={newQuote}
+                    onChange={(e) => setNewQuote(e.target.value)}
+                    rows={3}
+                    placeholder="Write the client's testimonial..."
+                    required
+                    className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded-lg p-3 text-xs text-[var(--fg)] leading-relaxed focus:outline-none focus:border-[var(--accent)] font-serif"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
                   <button
                     type="button"
-                    onClick={() => handleStartEdit(t)}
-                    className="text-[11px] font-mono text-[var(--fg-dim)] hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1 rounded transition-colors cursor-pointer"
+                    onClick={() => setShowAddTestimonial(false)}
+                    className="text-xs font-mono text-[var(--fg-dim)] hover:text-white px-3 py-1.5 rounded transition-colors"
                   >
-                    Edit ✎
+                    Cancel
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDeleteTestimonial(t.id, t.author)}
-                    className="text-[11px] font-mono text-red-400 hover:text-red-300 bg-red-950/30 hover:bg-red-950/50 border border-red-500/20 px-2 py-1 rounded transition-colors cursor-pointer"
+                    onClick={handleCreateTestimonial}
+                    disabled={savingTestimonial || !newAuthor.trim() || !newQuote.trim()}
+                    className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs font-medium px-4 py-1.5 rounded-lg transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
                   >
-                    ✕
+                    {savingTestimonial && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                    <span>Add Testimonial</span>
                   </button>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      </div>
+            )}
+
+            {/* Published Testimonials List */}
+            <div className="space-y-3">
+              <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--fg-dim)]">
+                Published Testimonials ({publishedTestimonials.length})
+              </h3>
+              {publishedTestimonials.map((t, idx) => {
+                const isEditing = editingTestimonialId === t.id;
+                const initials = getInitials(t.author);
+
+                if (isEditing) {
+                  return (
+                    <div
+                      key={t.id}
+                      className="bg-[var(--bg)] border border-[var(--accent)]/50 rounded-xl p-5 space-y-4 shadow-lg"
+                    >
+                      <div className="flex items-center justify-between border-b border-white/5 pb-2.5">
+                        <span className="text-xs font-mono text-[var(--accent-text)]">
+                          Editing Review #{idx + 1}
+                        </span>
+                        <div className="flex items-center gap-2 text-xs font-mono text-[var(--fg-dim)]">
+                          <span>Monogram:</span>
+                          <div className="w-7 h-7 rounded-md bg-[#252525] border border-[var(--accent)]/50 text-[var(--accent-text)] font-serif font-bold flex items-center justify-center text-xs">
+                            {getInitials(editAuthor)}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label className="text-[10px] font-mono text-[var(--fg-muted)] uppercase block mb-1">
+                            Client Name *
+                          </label>
+                          <input
+                            type="text"
+                            value={editAuthor}
+                            onChange={(e) => setEditAuthor(e.target.value)}
+                            className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded px-3 py-1.5 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-mono text-[var(--fg-muted)] uppercase block mb-1">
+                            Role / Title
+                          </label>
+                          <input
+                            type="text"
+                            value={editRole}
+                            onChange={(e) => setEditRole(e.target.value)}
+                            className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded px-3 py-1.5 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-mono text-[var(--fg-muted)] uppercase block mb-1">
+                            Location / Brand
+                          </label>
+                          <input
+                            type="text"
+                            value={editLocation}
+                            onChange={(e) => setEditLocation(e.target.value)}
+                            className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded px-3 py-1.5 text-xs text-[var(--fg)] focus:outline-none focus:border-[var(--accent)]"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-mono text-[var(--fg-muted)] uppercase block mb-1">
+                          Quote Text *
+                        </label>
+                        <textarea
+                          value={editQuote}
+                          onChange={(e) => setEditQuote(e.target.value)}
+                          rows={3}
+                          className="w-full bg-[var(--bg-elevated)] border border-[var(--line)] rounded p-2.5 text-xs text-[var(--fg)] font-serif leading-relaxed focus:outline-none focus:border-[var(--accent)]"
+                        />
+                      </div>
+
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={handleCancelEdit}
+                          className="text-xs font-mono text-[var(--fg-dim)] hover:text-white px-3 py-1.5"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveEdit(t.id)}
+                          disabled={savingTestimonial}
+                          className="bg-[var(--accent)] hover:bg-[var(--accent-deep)] text-white text-xs px-4 py-1.5 rounded transition-all cursor-pointer flex items-center gap-1.5"
+                        >
+                          {savingTestimonial && <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                          <span>Save Changes</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div
+                    key={t.id}
+                    className="bg-[var(--bg)]/70 border border-[var(--line)] rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:border-white/20 transition-all group"
+                  >
+                    <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                      {/* Monogram with Initials */}
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#242424] to-[#121212] border border-[var(--accent)]/40 flex items-center justify-center font-serif text-xs font-bold text-[var(--accent-text)] shadow flex-shrink-0">
+                        {initials}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline gap-2 flex-wrap">
+                          <h4 className="font-condensed uppercase text-sm font-medium text-[var(--fg)] tracking-wide">
+                            {t.author}
+                          </h4>
+                          {(t.role || t.location) && (
+                            <span className="text-[11px] font-sans text-[var(--fg-dim)]">
+                              · {t.role} {t.location ? `(${t.location})` : ""}
+                            </span>
+                          )}
+                          {t.rating && (
+                            <span className="text-xs text-amber-400 font-mono tracking-tighter">
+                              {"★".repeat(t.rating)}
+                            </span>
+                          )}
+                        </div>
+                        <p className="font-serif italic text-xs text-[var(--fg-muted)] line-clamp-2 mt-1 leading-relaxed">
+                          &ldquo;{t.quote}&rdquo;
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => handleStartEdit(t)}
+                        className="text-[11px] font-mono text-[var(--fg-dim)] hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-2.5 py-1 rounded transition-colors cursor-pointer"
+                      >
+                        Edit ✎
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTestimonial(t.id, t.author)}
+                        className="text-[11px] font-mono text-red-400 hover:text-red-300 bg-red-950/30 hover:bg-red-950/50 border border-red-500/20 px-2 py-1 rounded transition-colors cursor-pointer"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ──────────────── 6. SECTION VISIBILITY TOGGLES ──────────────── */}
       <div className="bg-[var(--bg-elevated)] p-6 rounded-xl border border-[var(--line)] space-y-5">

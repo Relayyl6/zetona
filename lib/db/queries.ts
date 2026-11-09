@@ -71,6 +71,10 @@ export interface TestimonialDTO {
   quote: string;
   sortOrder?: number;
   visible?: boolean;
+  status?: "pending" | "approved" | "rejected";
+  rating?: number;
+  email?: string | null;
+  createdAt?: string;
 }
 
 export const mockTestimonials: TestimonialDTO[] = [

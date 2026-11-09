@@ -679,15 +679,20 @@ export async function deleteEnquiry(id: string): Promise<boolean> {
 
 // ──────────────── TESTIMONIALS ────────────────
 
-export async function getAllTestimonials(): Promise<TestimonialDTO[]> {
+export async function getAllTestimonials(options?: { includeAll?: boolean }): Promise<TestimonialDTO[]> {
   const sql = getNeonSql();
   if (sql) {
     try {
-      const rows = await sql`
-        SELECT * FROM testimonials 
-        WHERE visible = true 
-        ORDER BY sort_order ASC, created_at ASC;
-      `;
+      const rows = options?.includeAll
+        ? await sql`
+            SELECT * FROM testimonials 
+            ORDER BY sort_order ASC, created_at DESC;
+          `
+        : await sql`
+            SELECT * FROM testimonials 
+            WHERE visible = true 
+            ORDER BY sort_order ASC, created_at ASC;
+          `;
       if (rows && rows.length > 0) {
         return rows.map((r: any) => ({
           id: r.id,
@@ -697,6 +702,10 @@ export async function getAllTestimonials(): Promise<TestimonialDTO[]> {
           quote: r.quote,
           sortOrder: r.sort_order ?? 0,
           visible: Boolean(r.visible),
+          status: r.status || (r.visible ? "approved" : "pending"),
+          rating: r.rating ? Number(r.rating) : undefined,
+          email: r.email || null,
+          createdAt: r.created_at ? new Date(r.created_at).toISOString() : undefined,
         }));
       }
     } catch (err) {
@@ -706,7 +715,12 @@ export async function getAllTestimonials(): Promise<TestimonialDTO[]> {
 
   const data = ensureDataFile() as any;
   if (data.testimonials && Array.isArray(data.testimonials) && data.testimonials.length > 0) {
-    return data.testimonials.filter((t: any) => t.visible !== false);
+    if (options?.includeAll) {
+      return data.testimonials;
+    }
+    return data.testimonials.filter(
+      (t: any) => t.visible !== false && t.status !== "pending"
+    );
   }
   return mockTestimonials;
 }
@@ -747,7 +761,7 @@ export async function saveTestimonial(item: TestimonialDTO): Promise<Testimonial
   if (idx >= 0) {
     data.testimonials[idx] = { ...data.testimonials[idx], ...item };
   } else {
-    data.testimonials.push(item);
+    data.testimonials.unshift(item);
   }
   persistFile(data);
   return item;
